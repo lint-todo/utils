@@ -13,11 +13,14 @@
     "lint": "eslint . --ext .ts",
     "test": "jest --passWithNoTests --no-cache"
   },
+  "dependencies": {
+    "ember-template-lint": "^2.12.1",
+    "eslint": "^7.9.0"
+  },
   "devDependencies": {
-    "@types/jest": "^26.0.14",
+    "@types/eslint": "^7.2.3",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
-    "eslint": "^7.9.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-jest": "^24.0.2",
     "eslint-plugin-node": "^11.1.0",
@@ -28,7 +31,10 @@
     "release-it": "^13.6.5",
     "release-it-lerna-changelog": "^2.3.0",
     "ts-jest": "^26.4.0",
-    "typescript": "^4.0.3"
+    "typescript": "^3.9.3"
+  },
+  "resolutions": {
+    "yargs-parser": "^20.2.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
