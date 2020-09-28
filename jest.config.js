@@ -14,5 +14,5 @@ module.exports = {
       statements: 100,
     },
   },
-  testPathIgnorePatterns: ['/__fixtures__/'],
+  testPathIgnorePatterns: ['/__fixtures__/', '/__utils__/'],
 };

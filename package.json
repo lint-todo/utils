@@ -15,10 +15,13 @@
   },
   "dependencies": {
     "ember-template-lint": "^2.12.1",
-    "eslint": "^7.9.0"
+    "eslint": "^7.9.0",
+    "fs-extra": "^9.0.1"
   },
   "devDependencies": {
     "@types/eslint": "^7.2.3",
+    "@types/fs-extra": "^9.0.1",
+    "@types/tmp": "^0.2.0",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
     "eslint-config-prettier": "^6.11.0",
@@ -30,6 +33,7 @@
     "prettier": "^2.1.2",
     "release-it": "^13.6.5",
     "release-it-lerna-changelog": "^2.3.0",
+    "tmp": "^0.2.1",
     "ts-jest": "^26.4.0",
     "typescript": "^3.9.3"
   },

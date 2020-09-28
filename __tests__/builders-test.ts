@@ -3,7 +3,7 @@ import { buildPendingLintMessage, buildPendingLintMessages } from '../src';
 import { TemplateLintMessage, TemplateLintResult } from '../src/types';
 import fixtures from './__fixtures__/fixtures';
 
-describe('buildPendingLintMessages', () => {
+describe('builders', () => {
   describe('eslint', () => {
     it('builds a pending lint message from eslint result', () => {
       const eslintResult: ESLint.LintResult = {
@@ -106,7 +106,7 @@ describe('buildPendingLintMessages', () => {
         emberTemplateLintResult,
         emberTemplateLintMessage
       );
-      debugger;
+
       expect(pendingLintMessage).toEqual(
         expect.objectContaining({
           engine: 'ember-template-lint',
