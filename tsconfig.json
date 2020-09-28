@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "composite": true,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -11,6 +10,7 @@
     "baseUrl": ".",
     "outDir": "lib",
     "rootDir": "src",
+    "resolveJsonModule": true,
     "paths": {
       "*": ["./types/*"]
     }
