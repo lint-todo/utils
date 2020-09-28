@@ -45,7 +45,7 @@ Having the ability to identify violations as `pending` would allow for this incr
 
 - violations added to pending list MUST not fail any existing lint checks (`yarn lint*` or `yarn test`) and result in failed local runs _or_ CI runs
 - violations added to pending list MUST fail in the editor (and thus encourage fixing and, ultimately, code quality improvement)
-- no violations in a file (but items in pending list) do not trigger an error in the editor
+- a file that doesn't contain any violations (but may have pending items generated for this file) will not trigger an error in the editor for that file
 - updating `pending` list MUST be automated
 - after fixing a `pending` violation, lint checks MUST fail until the `pending` list is regenerated
 - `pending` list CAN be regenerated anytime
