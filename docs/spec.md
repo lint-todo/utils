@@ -58,17 +58,15 @@ Having the ability to identify violations as `pending` would allow for this incr
 
 ### High Level Flow
 
-The implementation of the `pending` feature will extend and enhance existing linting tools. Rules will be identified as
-pending in a list, which will be provided to the pending tool as _inputs_. The pending tool will
-subsequently run linting, using that list to identify rules that should not be considered `error` severity. That pending
-list will be serialized to disc, one file per violation.
+The implementation of the `pending` feature will extend and enhance existing linting tools. 
+
+Upon first generation of the list of pending lint rules, any existing lint violation will be marked as pending by creating a file that includes identifiable details for that specific lint violation (file, line, column). That pending list will be serialized to disc, one file per violation. The respective lint tool can be run, using that list to identify rules that should not be considered `error` severity for certain key situation (a CI system, for instance, where we don't want to block merges).
 
 ### Workflows
 
-#### New `pending` rule added
+#### `pending` list doesn't exist
 
-- new rule is added to pending rules file
-- lint tool re-run to regenerate pending violation files
+- lint tool run to regenerate pending violation files
 
 #### `pending` violation fixed
 
