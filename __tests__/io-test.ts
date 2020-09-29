@@ -1,9 +1,10 @@
-import { existsSync, statSync, readdirSync } from 'fs-extra';
+import { existsSync, statSync, readdirSync, readdir } from 'fs-extra';
 import { join } from 'path';
 import { generateFileName, generatePendingFiles } from '../src';
 import { PendingLintMessage } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import fixtures from './__fixtures__/fixtures';
+import { updatePendingForFile } from '../src/io';
 
 const PENDING_LINT_MESSAGE: PendingLintMessage = {
   engine: 'eslint',
@@ -95,10 +96,10 @@ describe('io', () => {
 
       expect(subsequentFiles).toHaveLength(18);
 
-      initialFileStats.forEach((initalFileStat) => {
-        const subsequentFile = statSync(join(lintPendingDir, initalFileStat.fileName));
+      initialFileStats.forEach((initialFileStat) => {
+        const subsequentFile = statSync(join(lintPendingDir, initialFileStat.fileName));
 
-        expect(subsequentFile.ctime).toEqual(initalFileStat.ctime);
+        expect(subsequentFile.ctime).toEqual(initialFileStat.ctime);
       });
     });
 
@@ -124,6 +125,52 @@ describe('io', () => {
           !existsSync(join(lintPendingDir, `${generateFileName(pendingLintMessage)}.json`))
         ).toEqual(true);
       });
+    });
+  });
+
+  describe('updatePendingForFile', () => {
+    let tmp: string;
+
+    beforeEach(() => {
+      tmp = createTmpDir();
+    });
+
+    it("creates .lint-pending directory if one doesn't exist", async () => {
+      const lintPendingDir = await generatePendingFiles(tmp, []);
+
+      expect(existsSync(lintPendingDir)).toEqual(true);
+    });
+
+    it("doesn't write files when no pending items provided", async () => {
+      const lintPendingDir = await generatePendingFiles(tmp, []);
+
+      expect(readdirSync(lintPendingDir)).toHaveLength(0);
+    });
+
+    it('updates specific pending files for a specific filePath', async () => {
+      const lintPendingDir = await generatePendingFiles(tmp, fixtures.singleFilePending);
+
+      expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`
+        Array [
+          "1fa0a511346d560f2e57fc9d025c54950347ae2b.json",
+          "a51d0173759432bd1e160c56f4642427e83544d9.json",
+          "a72d388d48e71caa653cff498b756bc479216a00.json",
+        ]
+      `);
+
+      await updatePendingForFile(
+        tmp,
+        '/Users/fake/app/controllers/settings.js',
+        fixtures.singleFilePendingUpdated
+      );
+
+      expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`
+        Array [
+          "1fa0a511346d560f2e57fc9d025c54950347ae2b.json",
+          "8d86d32b87429a038840a1c17903e93e7dc6ac5b.json",
+          "a51d0173759432bd1e160c56f4642427e83544d9.json",
+        ]
+      `);
     });
   });
 });

@@ -1,5 +1,9 @@
 import { LintMessage, LintResult, PendingLintMessage } from './types';
 
+/**
+ * @param lintResult The lint result object, either an {ESLint.LintResult} or an {TemplateLintResult}.
+ * @param lintMessage A lint message object representing a specific violation for a file.
+ */
 export function buildPendingLintMessage(
   lintResult: LintResult,
   lintMessage: LintMessage
@@ -14,10 +18,13 @@ export function buildPendingLintMessage(
   };
 }
 
-export function buildPendingLintMessages(results: LintResult[]): PendingLintMessage[] {
-  const lintResults = results.filter((result) => result.messages.length > 0);
+/**
+ * @param lintResults A list of {LintResult} objects to convert to {PendingLintMessage} objects.
+ */
+export function buildPendingLintMessages(lintResults: LintResult[]): PendingLintMessage[] {
+  const results = lintResults.filter((result) => result.messages.length > 0);
 
-  const pendingLintMessages = lintResults.reduce((converted, lintResult) => {
+  const pendingLintMessages = results.reduce((converted, lintResult) => {
     lintResult.messages.forEach((message: LintMessage) => {
       if (message.severity === 2) {
         converted.push(buildPendingLintMessage(lintResult, message));

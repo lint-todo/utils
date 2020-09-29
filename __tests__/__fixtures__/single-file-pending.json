@@ -1,0 +1,26 @@
+[
+  {
+    "engine": "eslint",
+    "filePath": "/Users/fake/app/controllers/settings.js",
+    "ruleId": "no-prototype-builtins",
+    "line": 25,
+    "column": 21,
+    "createdDate": 1601332963373
+  },
+  {
+    "engine": "eslint",
+    "filePath": "/Users/fake/app/controllers/settings.js",
+    "ruleId": "no-prototype-builtins",
+    "line": 26,
+    "column": 19,
+    "createdDate": 1601332963373
+  },
+  {
+    "engine": "eslint",
+    "filePath": "/Users/fake/app/controllers/settings.js",
+    "ruleId": "no-prototype-builtins",
+    "line": 32,
+    "column": 34,
+    "createdDate": 1601332963373
+  }
+]
