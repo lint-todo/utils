@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import { join, parse } from 'path';
-import { ensureDir, readdir, writeFileSync } from 'fs-extra';
+import { ensureDir, readdir, unlink, writeFile } from 'fs-extra';
 import { PendingLintMessage } from './types';
 
 export async function ensurePendingDir(baseDir: string): Promise<string> {
@@ -35,7 +35,7 @@ export async function generatePendingFiles(
   );
 
   const existingPendingItemFilenames = new Set(
-    (await readdir(path)).map((fileName) => parse(fileName).name)
+    (await readdir(path)).map((fileName: string) => parse(fileName).name)
   );
 
   const pendingFileNamesToWrite = new Set(
@@ -49,8 +49,18 @@ export async function generatePendingFiles(
 
     if (pendingLintMessage) {
       // eslint-disable-next-line unicorn/no-null
-      writeFileSync(join(path, `${fileName}.json`), JSON.stringify(pendingLintMessage, null, 2));
+      await writeFile(join(path, `${fileName}.json`), JSON.stringify(pendingLintMessage, null, 2));
     }
+  }
+
+  const pendingFileNamesToDelete = new Set(
+    [...existingPendingItemFilenames].filter(
+      (fileName) => !new Set(pendingLintMessagesMap.keys()).has(fileName)
+    )
+  );
+
+  for (const fileName of pendingFileNamesToDelete) {
+    await unlink(join(path, `${fileName}.json`));
   }
 
   return path;

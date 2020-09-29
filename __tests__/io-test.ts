@@ -101,5 +101,29 @@ describe('io', () => {
         expect(subsequentFile.ctime).toEqual(initalFileStat.ctime);
       });
     });
+
+    it('removes old pending files if pending items no longer contains violations', async () => {
+      const lintPendingDir = await generatePendingFiles(tmp, fixtures.pending);
+
+      const initialFiles = readdirSync(lintPendingDir);
+
+      expect(initialFiles).toHaveLength(18);
+
+      const half = Math.ceil(fixtures.pending.length / 2);
+      const firstHalf = fixtures.pending.slice(0, half);
+      const secondHalf = fixtures.pending.slice(half, fixtures.pending.length);
+
+      await generatePendingFiles(tmp, firstHalf);
+
+      const subsequentFiles = readdirSync(lintPendingDir);
+
+      expect(subsequentFiles).toHaveLength(9);
+
+      secondHalf.forEach((pendingLintMessage) => {
+        expect(
+          !existsSync(join(lintPendingDir, `${generateFileName(pendingLintMessage)}.json`))
+        ).toEqual(true);
+      });
+    });
   });
 });
