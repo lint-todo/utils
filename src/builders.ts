@@ -1,7 +1,9 @@
 import { LintMessage, LintResult, PendingLintMessage } from './types';
 
 /**
- * @param lintResult The lint result object, either an {ESLint.LintResult} or an {TemplateLintResult}.
+ * Adapts an {ESLint.LintResult} or {TemplateLintResult} to a {PendingLintMessage}
+ *
+ * @param lintResult The lint result object, either an {ESLint.LintResult} or a {TemplateLintResult}.
  * @param lintMessage A lint message object representing a specific violation for a file.
  */
 export function buildPendingLintMessage(
@@ -19,6 +21,8 @@ export function buildPendingLintMessage(
 }
 
 /**
+ * * Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a list of {PendingLintMessage}.
+ *
  * @param lintResults A list of {LintResult} objects to convert to {PendingLintMessage} objects.
  */
 export function buildPendingLintMessages(lintResults: LintResult[]): PendingLintMessage[] {
