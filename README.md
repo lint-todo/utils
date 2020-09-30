@@ -4,7 +4,6 @@
 
 A collection of utilities to generate and store lint item metadata.
 
-
 Those utilities are:
 
 <dl>
@@ -25,6 +24,12 @@ Those utilities are:
 hash to identify each.</p>
 <p>Given a list of pending lint violations, this function will also delete existing files that no longer
 have a pending lint violation.</p>
+</dd>
+<dt><a href="#updatePendingForFile">updatePendingForFile(baseDir, filePath, pendingLintMessages)</a></dt>
+<dd><p>Updates violations for a single file.</p>
+</dd>
+<dt><a href="#readPendingFiles">readPendingFiles(baseDir)</a></dt>
+<dd><p>Reads all pending files in the .lint-pending directory.</p>
 </dd>
 </dl>
 
@@ -57,9 +62,9 @@ Creates, or ensures the creation of, the .lint-pending directory.
 
 **Kind**: global function
 
-| Param   | Description                                                         |
-| ------- | ------------------------------------------------------------------- |
-| baseDir | The base directory that houses the .lint-pending storage directory. |
+| Param   | Description                                                           |
+| ------- | --------------------------------------------------------------------- |
+| baseDir | The base directory that contains the .lint-pending storage directory. |
 
 <a name="generateFileName"></a>
 
@@ -85,7 +90,33 @@ have a pending lint violation.
 
 **Kind**: global function
 
-| Param               | Description                                                         |
-| ------------------- | ------------------------------------------------------------------- |
-| baseDir             | The base directory that houses the .lint-pending storage directory. |
-| pendingLintMessages | The linting data for all violations.                                |
+| Param               | Description                                                           |
+| ------------------- | --------------------------------------------------------------------- |
+| baseDir             | The base directory that contains the .lint-pending storage directory. |
+| pendingLintMessages | The linting data for all violations.                                  |
+
+<a name="updatePendingForFile"></a>
+
+## updatePendingForFile(baseDir, filePath, pendingLintMessages)
+
+Updates violations for a single file.
+
+**Kind**: global function
+
+| Param               | Description                                                           |
+| ------------------- | --------------------------------------------------------------------- |
+| baseDir             | The base directory that contains the .lint-pending storage directory. |
+| filePath            | The absolute file path of the file to update violations for.          |
+| pendingLintMessages | The linting data for all violations.                                  |
+
+<a name="readPendingFiles"></a>
+
+## readPendingFiles(baseDir)
+
+Reads all pending files in the .lint-pending directory.
+
+**Kind**: global function
+
+| Param   | Description                                                           |
+| ------- | --------------------------------------------------------------------- |
+| baseDir | The base directory that contains the .lint-pending storage directory. |

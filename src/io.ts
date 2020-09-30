@@ -84,6 +84,11 @@ export async function updatePendingForFile(
   return path;
 }
 
+/**
+ * Reads all pending files in the .lint-pending directory.
+ *
+ * @param baseDir The base directory that contains the .lint-pending storage directory.
+ */
 async function readPendingFiles(baseDir: string): Promise<PendingLintMessage[]> {
   const pendingDir = getPendingDirPath(baseDir);
   const fileNames = await readdir(pendingDir);
