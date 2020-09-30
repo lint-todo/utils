@@ -188,5 +188,21 @@ describe('io', () => {
         ]
       `);
     });
+
+    it('deletes pending files for a specific filePath', async () => {
+      const lintPendingDir = await generatePendingFiles(tmp, fixtures.singleFilePending);
+
+      expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`
+        Array [
+          "1fa0a511346d560f2e57fc9d025c54950347ae2b.json",
+          "a51d0173759432bd1e160c56f4642427e83544d9.json",
+          "a72d388d48e71caa653cff498b756bc479216a00.json",
+        ]
+      `);
+
+      await updatePendingForFile(tmp, '/Users/fake/app/controllers/settings.js', []);
+
+      expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`Array []`);
+    });
   });
 });
