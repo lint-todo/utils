@@ -27,7 +27,7 @@ export function getPendingDirPath(baseDir: string): string {
  * @param pendingLintMessage The linting data for an individual violation.
  */
 export function generateFileName(pendingLintMessage: PendingLintMessage): string {
-  const hashParams = `${pendingLintMessage.filePath}${pendingLintMessage.line}${pendingLintMessage.column}`;
+  const hashParams = `${pendingLintMessage.engine}${pendingLintMessage.filePath}${pendingLintMessage.ruleId}${pendingLintMessage.line}${pendingLintMessage.column}`;
 
   return createHash('sha1').update(hashParams).digest('hex');
 }

@@ -20,15 +20,15 @@ describe('io', () => {
     it('can generate a unique hash for pending lint message', () => {
       const fileName = generateFileName(PENDING_LINT_MESSAGE);
 
-      expect(fileName).toEqual('1fa0a511346d560f2e57fc9d025c54950347ae2b');
+      expect(fileName).toEqual('e382776914ba08603a3f1006431cf7c893962e65');
     });
 
     it('generates idempotent file names', () => {
       const fileName = generateFileName(PENDING_LINT_MESSAGE);
       const secondFileName = generateFileName(PENDING_LINT_MESSAGE);
 
-      expect(fileName).toEqual('1fa0a511346d560f2e57fc9d025c54950347ae2b');
-      expect(secondFileName).toEqual('1fa0a511346d560f2e57fc9d025c54950347ae2b');
+      expect(fileName).toEqual('e382776914ba08603a3f1006431cf7c893962e65');
+      expect(secondFileName).toEqual('e382776914ba08603a3f1006431cf7c893962e65');
     });
   });
 
@@ -156,9 +156,9 @@ describe('io', () => {
 
       expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`
         Array [
-          "1fa0a511346d560f2e57fc9d025c54950347ae2b.json",
-          "a51d0173759432bd1e160c56f4642427e83544d9.json",
-          "a72d388d48e71caa653cff498b756bc479216a00.json",
+          "3c19eab21259dcb5eee1035f69528e4a060e700d.json",
+          "e382776914ba08603a3f1006431cf7c893962e65.json",
+          "f65bb1f69ecaab090153bcbf6413cfda826133ba.json",
         ]
       `);
     });
@@ -168,9 +168,9 @@ describe('io', () => {
 
       expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`
         Array [
-          "1fa0a511346d560f2e57fc9d025c54950347ae2b.json",
-          "a51d0173759432bd1e160c56f4642427e83544d9.json",
-          "a72d388d48e71caa653cff498b756bc479216a00.json",
+          "3c19eab21259dcb5eee1035f69528e4a060e700d.json",
+          "e382776914ba08603a3f1006431cf7c893962e65.json",
+          "f65bb1f69ecaab090153bcbf6413cfda826133ba.json",
         ]
       `);
 
@@ -182,9 +182,9 @@ describe('io', () => {
 
       expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`
         Array [
-          "1fa0a511346d560f2e57fc9d025c54950347ae2b.json",
-          "8d86d32b87429a038840a1c17903e93e7dc6ac5b.json",
-          "a51d0173759432bd1e160c56f4642427e83544d9.json",
+          "082d442a601be9bbb41c75ed3a0c685473a2c9db.json",
+          "3c19eab21259dcb5eee1035f69528e4a060e700d.json",
+          "e382776914ba08603a3f1006431cf7c893962e65.json",
         ]
       `);
     });
@@ -194,9 +194,9 @@ describe('io', () => {
 
       expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`
         Array [
-          "1fa0a511346d560f2e57fc9d025c54950347ae2b.json",
-          "a51d0173759432bd1e160c56f4642427e83544d9.json",
-          "a72d388d48e71caa653cff498b756bc479216a00.json",
+          "3c19eab21259dcb5eee1035f69528e4a060e700d.json",
+          "e382776914ba08603a3f1006431cf7c893962e65.json",
+          "f65bb1f69ecaab090153bcbf6413cfda826133ba.json",
         ]
       `);
 
