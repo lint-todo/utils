@@ -21,7 +21,7 @@ export function buildPendingLintMessage(
 }
 
 /**
- * * Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a list of {PendingLintMessage}.
+ * Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a list of {PendingLintMessage}.
  *
  * @param lintResults A list of {LintResult} objects to convert to {PendingLintMessage} objects.
  */

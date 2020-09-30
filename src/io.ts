@@ -89,7 +89,7 @@ export async function updatePendingForFile(
  *
  * @param baseDir The base directory that contains the .lint-pending storage directory.
  */
-async function readPendingFiles(baseDir: string): Promise<PendingLintMessage[]> {
+export async function readPendingFiles(baseDir: string): Promise<PendingLintMessage[]> {
   const pendingDir = getPendingDirPath(baseDir);
   const fileNames = await readdir(pendingDir);
 

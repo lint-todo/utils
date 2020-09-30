@@ -1,2 +1,9 @@
 export { buildPendingLintMessage, buildPendingLintMessages } from './builders';
-export { generateFileName, generatePendingFiles } from './io';
+export {
+  ensurePendingDir,
+  getPendingDirPath,
+  generateFileName,
+  generatePendingFiles,
+  updatePendingForFile,
+  readPendingFiles,
+} from './io';
