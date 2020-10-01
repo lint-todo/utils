@@ -1,5 +1,5 @@
 {
-  "name": "ember-template-lint-pending-utils",
+  "name": "@ember-template-lint/pending-utils",
   "version": "0.0.1",
   "repository": "https://github.com/ember-template-lint/ember-template-lint-pending-utils.git",
   "license": "MIT",
@@ -14,8 +14,6 @@
     "test": "jest --passWithNoTests --no-cache"
   },
   "dependencies": {
-    "ember-template-lint": "^2.12.1",
-    "eslint": "^7.9.0",
     "extra-set": "^2.2.4",
     "fs-extra": "^9.0.1"
   },
@@ -25,6 +23,7 @@
     "@types/tmp": "^0.2.0",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
+    "eslint": "^7.9.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-jest": "^24.0.2",
     "eslint-plugin-node": "^11.1.0",
@@ -38,6 +37,9 @@
     "ts-jest": "^26.4.0",
     "typescript": "^3.9.3"
   },
+  "files": [
+    "lib/"
+  ],
   "resolutions": {
     "yargs-parser": "^20.2.0"
   },
