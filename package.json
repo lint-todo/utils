@@ -15,7 +15,6 @@
     "test": "jest --passWithNoTests --no-cache"
   },
   "dependencies": {
-    "extra-set": "^2.2.4",
     "fs-extra": "^9.0.1"
   },
   "devDependencies": {

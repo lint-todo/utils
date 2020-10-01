@@ -2,7 +2,6 @@ import { createHash } from 'crypto';
 import { join, parse } from 'path';
 import { ensureDir, readdir, readJSON, unlink, writeFile } from 'fs-extra';
 import { PendingLintMessage } from './types';
-import { difference } from 'extra-set';
 
 /**
  * Creates, or ensures the creation of, the .lint-pending directory.
@@ -140,4 +139,8 @@ async function _generateFiles(
   for (const fileName of pendingFileNamesToDelete) {
     await unlink(join(path, `${fileName}.json`));
   }
+}
+
+function difference<T>(a: Set<T>, b: Set<T>): Set<T> {
+  return new Set([...a].filter((v: T) => !b.has(v)));
 }
