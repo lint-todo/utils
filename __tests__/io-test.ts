@@ -1,10 +1,9 @@
 import { existsSync, statSync, readdirSync, readdir } from 'fs-extra';
 import { join } from 'path';
-import { generateFileName, generatePendingFiles } from '../src';
+import { generateFileName, generatePendingFiles, getPendingBatches, _getPendingMap } from '../src';
 import { PendingLintMessage } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import fixtures from './__fixtures__/fixtures';
-import { updatePendingForFile } from '../src/io';
 
 const PENDING_LINT_MESSAGE: PendingLintMessage = {
   engine: 'eslint',
@@ -128,7 +127,7 @@ describe('io', () => {
     });
   });
 
-  describe('updatePendingForFile', () => {
+  describe('generatePendingFiles for single file', () => {
     let tmp: string;
 
     beforeEach(() => {
@@ -148,10 +147,10 @@ describe('io', () => {
     });
 
     it('generates pending files for a specific filePath', async () => {
-      const lintPendingDir = await updatePendingForFile(
+      const lintPendingDir = await generatePendingFiles(
         tmp,
-        '/Users/fake/app/controllers/settings.js',
-        fixtures.singleFilePending
+        fixtures.singleFilePending,
+        '/Users/fake/app/controllers/settings.js'
       );
 
       expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`
@@ -174,10 +173,10 @@ describe('io', () => {
         ]
       `);
 
-      await updatePendingForFile(
+      await generatePendingFiles(
         tmp,
-        '/Users/fake/app/controllers/settings.js',
-        fixtures.singleFilePendingUpdated
+        fixtures.singleFilePendingUpdated,
+        '/Users/fake/app/controllers/settings.js'
       );
 
       expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`
@@ -200,9 +199,133 @@ describe('io', () => {
         ]
       `);
 
-      await updatePendingForFile(tmp, '/Users/fake/app/controllers/settings.js', []);
+      await generatePendingFiles(tmp, [], '/Users/fake/app/controllers/settings.js');
 
       expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`Array []`);
+    });
+  });
+
+  describe('getPendingBatches', () => {
+    const fromLintResults: PendingLintMessage[] = [
+      {
+        engine: 'eslint',
+        filePath: '/Users/fake/app/controllers/settings.js',
+        ruleId: 'no-prototype-builtins',
+        line: 26,
+        column: 19,
+        createdDate: 1601332963373,
+      },
+      {
+        engine: 'eslint',
+        filePath: '/Users/fake/app/controllers/settings.js',
+        ruleId: 'no-prototype-builtins',
+        line: 32,
+        column: 34,
+        createdDate: 1601332963373,
+      },
+      {
+        engine: 'eslint',
+        filePath: '/Users/fake/app/initializers/tracer.js',
+        ruleId: 'no-redeclare',
+        line: 1,
+        column: 11,
+        createdDate: 1601332963373,
+      },
+      {
+        engine: 'eslint',
+        filePath: '/Users/fake/app/initializers/tracer.js',
+        ruleId: 'no-redeclare',
+        line: 1,
+        column: 19,
+        createdDate: 1601332963373,
+      },
+    ];
+
+    const existing: PendingLintMessage[] = [
+      {
+        engine: 'eslint',
+        filePath: '/Users/fake/app/initializers/tracer.js',
+        ruleId: 'no-redeclare',
+        line: 1,
+        column: 11,
+        createdDate: 1601332963373,
+      },
+      {
+        engine: 'eslint',
+        filePath: '/Users/fake/app/initializers/tracer.js',
+        ruleId: 'no-redeclare',
+        line: 1,
+        column: 19,
+        createdDate: 1601332963373,
+      },
+      {
+        engine: 'eslint',
+        filePath: '/Users/fake/app/models/build.js',
+        ruleId: 'no-prototype-builtins',
+        line: 108,
+        column: 50,
+        createdDate: 1601332963373,
+      },
+      {
+        engine: 'eslint',
+        filePath: '/Users/fake/app/models/build.js',
+        ruleId: 'no-prototype-builtins',
+        line: 120,
+        column: 25,
+        createdDate: 1601332963373,
+      },
+    ];
+
+    it('creates items to add', async () => {
+      const [add] = await getPendingBatches(_getPendingMap(fromLintResults), new Map());
+
+      expect([...add.keys()]).toMatchInlineSnapshot(`
+        Array [
+          "3c19eab21259dcb5eee1035f69528e4a060e700d",
+          "f65bb1f69ecaab090153bcbf6413cfda826133ba",
+          "24e99f01beff611d12524745b4125d5effc76b4b",
+          "d15fa0773bc05998d7ae34d1ad3d401cfa73604a",
+        ]
+      `);
+    });
+
+    it('creates items to delete', async () => {
+      const [, remove] = await getPendingBatches(new Map(), _getPendingMap(fromLintResults));
+
+      expect([...remove.keys()]).toMatchInlineSnapshot(`
+        Array [
+          "3c19eab21259dcb5eee1035f69528e4a060e700d",
+          "f65bb1f69ecaab090153bcbf6413cfda826133ba",
+          "24e99f01beff611d12524745b4125d5effc76b4b",
+          "d15fa0773bc05998d7ae34d1ad3d401cfa73604a",
+        ]
+      `);
+    });
+
+    it('creates all batches', async () => {
+      const [add, remove, stable] = await getPendingBatches(
+        _getPendingMap(fromLintResults),
+        _getPendingMap(existing)
+      );
+
+      expect([...add.keys()]).toMatchInlineSnapshot(`
+        Array [
+          "3c19eab21259dcb5eee1035f69528e4a060e700d",
+          "f65bb1f69ecaab090153bcbf6413cfda826133ba",
+        ]
+      `);
+      expect([...remove.keys()]).toMatchInlineSnapshot(`
+        Array [
+          "e0b38cee71605a6150f7e179cbedb09e43290986",
+          "c1c43ce5c33d99435e9d7241ef2c920112c3871c",
+        ]
+      `);
+      expect([...stable.keys()]).toMatchInlineSnapshot(`
+        Array [
+          "24e99f01beff611d12524745b4125d5effc76b4b",
+          "d15fa0773bc05998d7ae34d1ad3d401cfa73604a",
+        ]
+      `);
     });
   });
 });

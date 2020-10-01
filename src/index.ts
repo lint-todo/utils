@@ -4,6 +4,7 @@ export {
   getPendingDirPath,
   generateFileName,
   generatePendingFiles,
-  updatePendingForFile,
   readPendingFiles,
+  getPendingBatches,
+  _getPendingMap,
 } from './io';
