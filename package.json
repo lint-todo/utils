@@ -11,6 +11,7 @@
     "build:watch": "tsc --watch",
     "clean": "tsc --build --clean",
     "lint": "eslint . --ext .ts",
+    "prepare": "yarn build",
     "test": "jest --passWithNoTests --no-cache"
   },
   "dependencies": {
@@ -44,7 +45,8 @@
     "yargs-parser": "^20.2.0"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org"
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   },
   "release-it": {
     "plugins": {
