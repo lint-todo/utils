@@ -19,17 +19,17 @@ Those utilities are:
 <dt><a href="#generateFileName">generateFileName(pendingLintMessage)</a></dt>
 <dd><p>Generates a unique filename for a pending lint message.</p>
 </dd>
-<dt><a href="#generatePendingFiles">generatePendingFiles(baseDir, pendingLintMessages)</a></dt>
+<dt><a href="#generatePendingFiles">generatePendingFiles(baseDir, pendingLintMessages, filePath?)</a></dt>
 <dd><p>Generates files for pending lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
 <p>Given a list of pending lint violations, this function will also delete existing files that no longer
 have a pending lint violation.</p>
 </dd>
-<dt><a href="#updatePendingForFile">updatePendingForFile(baseDir, filePath, pendingLintMessages)</a></dt>
-<dd><p>Updates violations for a single file.</p>
-</dd>
-<dt><a href="#readPendingFiles">readPendingFiles(baseDir)</a></dt>
+<dt><a href="#readPendingFiles">readPendingFiles(baseDir, filePath?)</a></dt>
 <dd><p>Reads all pending files in the .lint-pending directory.</p>
+</dd>
+<dt><a href="#getPendingBatches">getPendingBatches(lintResults, existing)</a></dt>
+<dd><p>Gets 3 maps containing pending items to add, remove, or those that are stable (not to be modified).</p>
 </dd>
 </dl>
 
@@ -80,7 +80,7 @@ Generates a unique filename for a pending lint message.
 
 <a name="generatePendingFiles"></a>
 
-## generatePendingFiles(baseDir, pendingLintMessages)
+## generatePendingFiles(baseDir, pendingLintMessages, filePath?)
 
 Generates files for pending lint violations. One file is generated for each violation, using a generated
 hash to identify each.
@@ -94,29 +94,30 @@ have a pending lint violation.
 | ------------------- | --------------------------------------------------------------------- |
 | baseDir             | The base directory that contains the .lint-pending storage directory. |
 | pendingLintMessages | The linting data for all violations.                                  |
-
-<a name="updatePendingForFile"></a>
-
-## updatePendingForFile(baseDir, filePath, pendingLintMessages)
-
-Updates violations for a single file.
-
-**Kind**: global function
-
-| Param               | Description                                                           |
-| ------------------- | --------------------------------------------------------------------- |
-| baseDir             | The base directory that contains the .lint-pending storage directory. |
-| filePath            | The absolute file path of the file to update violations for.          |
-| pendingLintMessages | The linting data for all violations.                                  |
+| filePath?           | The absolute file path of the file to update violations for.          |
 
 <a name="readPendingFiles"></a>
 
-## readPendingFiles(baseDir)
+## readPendingFiles(baseDir, filePath?)
 
 Reads all pending files in the .lint-pending directory.
 
 **Kind**: global function
 
-| Param   | Description                                                           |
-| ------- | --------------------------------------------------------------------- |
-| baseDir | The base directory that contains the .lint-pending storage directory. |
+| Param     | Description                                                           |
+| --------- | --------------------------------------------------------------------- |
+| baseDir   | The base directory that contains the .lint-pending storage directory. |
+| filePath? | The absolute file path of the file to return pending items for.       |
+
+<a name="getPendingBatches"></a>
+
+## getPendingBatches(lintResults, existing)
+
+Gets 3 maps containing pending items to add, remove, or those that are stable (not to be modified).
+
+**Kind**: global function
+
+| Param       | Description                          |
+| ----------- | ------------------------------------ |
+| lintResults | The linting data for all violations. |
+| existing    | Existing pending lint data.          |
