@@ -1,3 +1,12 @@
+## v2.1.0 (2020-10-02)
+
+#### :rocket: Enhancement
+* [#10](https://github.com/ember-template-lint/ember-template-lint-pending-utils/pull/10) Make pending lint messages map building public ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v2.0.0 (2020-10-02)
 
 #### :boom: Breaking Change
