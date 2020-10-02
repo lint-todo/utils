@@ -1,3 +1,12 @@
+## v2.0.0 (2020-10-02)
+
+#### :boom: Breaking Change
+* [#9](https://github.com/ember-template-lint/ember-template-lint-pending-utils/pull/9) Cleanup of APIs/batch generation ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v1.0.0 (2020-10-01)
 
 #### :rocket: Enhancement
