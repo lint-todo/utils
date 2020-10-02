@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import { join, parse } from 'path';
 import { ensureDir, readdir, readJSON, unlink, writeFile } from 'fs-extra';
 import { PendingLintMessage } from './types';
+import { buildPendingLintMessagesMap } from './builders';
 
 /**
  * Creates, or ensures the creation of, the .lint-pending directory.
@@ -51,7 +52,10 @@ export async function generatePendingFiles(
 
   const existing: Map<string, PendingLintMessage> = await readPendingFiles(pendingDir, filePath);
 
-  const [add, remove] = await getPendingBatches(_getPendingMap(pendingLintMessages), existing);
+  const [add, remove] = await getPendingBatches(
+    buildPendingLintMessagesMap(pendingLintMessages),
+    existing
+  );
 
   await _generateFiles(baseDir, add, remove);
 
@@ -131,16 +135,4 @@ async function _generateFiles(
   for (const [fileHash] of remove) {
     await unlink(join(path, `${fileHash}.json`));
   }
-}
-
-export function _getPendingMap(
-  pendingLintMessages: PendingLintMessage[]
-): Map<string, PendingLintMessage> {
-  return new Map(
-    pendingLintMessages.map((currentLintMessage: PendingLintMessage) => {
-      const fileName = generateFileName(currentLintMessage);
-
-      return [fileName, currentLintMessage];
-    })
-  );
 }

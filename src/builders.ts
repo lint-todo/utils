@@ -1,3 +1,4 @@
+import { generateFileName } from './io';
 import { LintMessage, LintResult, PendingLintMessage } from './types';
 
 /**
@@ -39,6 +40,23 @@ export function buildPendingLintMessages(lintResults: LintResult[]): PendingLint
   }, [] as PendingLintMessage[]);
 
   return pendingLintMessages;
+}
+
+/**
+ * Builds a map of fileHash, pendingLintMessage.
+ *
+ * @param pendingLintMessages The linting data for all violations.
+ */
+export function buildPendingLintMessagesMap(
+  pendingLintMessages: PendingLintMessage[]
+): Map<string, PendingLintMessage> {
+  return new Map(
+    pendingLintMessages.map((currentLintMessage: PendingLintMessage) => {
+      const fileName = generateFileName(currentLintMessage);
+
+      return [fileName, currentLintMessage];
+    })
+  );
 }
 
 function getEngine(result: LintResult) {
