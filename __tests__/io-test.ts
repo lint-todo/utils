@@ -1,6 +1,11 @@
 import { existsSync, statSync, readdirSync, readdir } from 'fs-extra';
 import { join } from 'path';
-import { generateFileName, generatePendingFiles, getPendingBatches, _getPendingMap } from '../src';
+import {
+  generateFileName,
+  generatePendingFiles,
+  getPendingBatches,
+  buildPendingLintMessagesMap,
+} from '../src';
 import { PendingLintMessage } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import fixtures from './__fixtures__/fixtures';
@@ -277,7 +282,10 @@ describe('io', () => {
     ];
 
     it('creates items to add', async () => {
-      const [add] = await getPendingBatches(_getPendingMap(fromLintResults), new Map());
+      const [add] = await getPendingBatches(
+        buildPendingLintMessagesMap(fromLintResults),
+        new Map()
+      );
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
         Array [
@@ -290,7 +298,10 @@ describe('io', () => {
     });
 
     it('creates items to delete', async () => {
-      const [, remove] = await getPendingBatches(new Map(), _getPendingMap(fromLintResults));
+      const [, remove] = await getPendingBatches(
+        new Map(),
+        buildPendingLintMessagesMap(fromLintResults)
+      );
 
       expect([...remove.keys()]).toMatchInlineSnapshot(`
         Array [
@@ -304,8 +315,8 @@ describe('io', () => {
 
     it('creates all batches', async () => {
       const [add, remove, stable] = await getPendingBatches(
-        _getPendingMap(fromLintResults),
-        _getPendingMap(existing)
+        buildPendingLintMessagesMap(fromLintResults),
+        buildPendingLintMessagesMap(existing)
       );
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
