@@ -48,32 +48,32 @@ export async function generateTodoFiles(
   lintResults: LintResult[],
   filePath?: string
 ): Promise<string> {
-  const pendingDir: string = await ensureTodoDir(baseDir);
+  const todoDir: string = await ensureTodoDir(baseDir);
 
-  const existing: Map<string, TodoData> = await readTodoFiles(pendingDir, filePath);
+  const existing: Map<string, TodoData> = await readTodoFiles(todoDir, filePath);
 
   const [add, remove] = await getTodoBatches(buildTodoData(lintResults), existing);
 
   await _generateFiles(baseDir, add, remove);
 
-  return pendingDir;
+  return todoDir;
 }
 
 /**
  * Reads all todo files in the .lint-todo directory.
  *
- * @param baseDir The base directory that contains the .lint-todo storage directory.
+ * @param todoDir The .lint-todo storage directory.
  * @param filePath? The absolute file path of the file to return todo items for.
  */
 export async function readTodoFiles(
-  pendingDir: string,
+  todoDir: string,
   filePath?: string
 ): Promise<Map<string, TodoData>> {
-  const fileNames = await readdir(pendingDir);
+  const fileNames = await readdir(todoDir);
 
   const map = new Map();
   for (const fileName of fileNames) {
-    const todoDatum = await readJSON(join(pendingDir, fileName));
+    const todoDatum = await readJSON(join(todoDir, fileName));
 
     if (filePath && todoDatum.filePath !== filePath) {
       continue;

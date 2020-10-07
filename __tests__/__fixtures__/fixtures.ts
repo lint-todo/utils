@@ -7,8 +7,8 @@ import * as eslintNoResults from './eslint-no-results.json';
 import * as emberTemplateLintWithErrors from './ember-template-lint-with-errors.json';
 import * as emberTemplateLintWithWarnings from './ember-template-lint-with-warnings.json';
 import * as emberTemplateLintNoResults from './ember-template-lint-no-results.json';
-import * as singleFilePending from './single-file-pending.json';
-import * as singleFilePendingUpdated from './single-file-pending-updated.json';
+import * as singleFileTodo from './single-file-todo.json';
+import * as singleFileTodoUpdated from './single-file-todo-updated.json';
 
 export default {
   eslintWithErrors: <ESLint.LintResult[]>(
@@ -29,6 +29,6 @@ export default {
   emberTemplateLintNoResults: <TemplateLintResult[]>(
     (<TemplateLintReport>(emberTemplateLintNoResults as unknown)).results
   ),
-  singleFilePending: <ESLint.LintResult[]>singleFilePending,
-  singleFilePendingUpdated: <ESLint.LintResult[]>singleFilePendingUpdated,
+  singleFileTodo: <ESLint.LintResult[]>singleFileTodo,
+  singleFileTodoUpdated: <ESLint.LintResult[]>singleFileTodoUpdated,
 };
