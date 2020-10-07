@@ -1,5 +1,5 @@
 import { ESLint, Linter } from 'eslint';
-import { _buildPendingLintMessage, buildPendingLintMessages } from '../src';
+import { _buildTodoDatum, buildTodoData } from '../src';
 import { TemplateLintMessage, TemplateLintResult } from '../src/types';
 import fixtures from './__fixtures__/fixtures';
 
@@ -41,7 +41,7 @@ describe('builders', () => {
         endColumn: 35,
       };
 
-      const pendingLintMessage = _buildPendingLintMessage(eslintResult, eslintMessage);
+      const pendingLintMessage = _buildTodoDatum(eslintResult, eslintMessage);
 
       expect(pendingLintMessage).toEqual(
         expect.objectContaining({
@@ -55,19 +55,19 @@ describe('builders', () => {
     });
 
     it('can build pending lint messages from results', () => {
-      const pendingLintMessages = buildPendingLintMessages(fixtures.eslintWithErrors);
+      const pendingLintMessages = buildTodoData(fixtures.eslintWithErrors);
 
       expect(pendingLintMessages.size).toEqual(18);
     });
 
     it('can returns empty array with only warnings', () => {
-      const pendingLintMessages = buildPendingLintMessages(fixtures.eslintWithWarnings);
+      const pendingLintMessages = buildTodoData(fixtures.eslintWithWarnings);
 
       expect(pendingLintMessages.size).toEqual(0);
     });
 
     it('can returns empty array with no results', () => {
-      const pendingLintMessages = buildPendingLintMessages(fixtures.eslintNoResults);
+      const pendingLintMessages = buildTodoData(fixtures.eslintNoResults);
 
       expect(pendingLintMessages.size).toEqual(0);
     });
@@ -102,10 +102,7 @@ describe('builders', () => {
         source: '',
       };
 
-      const pendingLintMessage = _buildPendingLintMessage(
-        emberTemplateLintResult,
-        emberTemplateLintMessage
-      );
+      const pendingLintMessage = _buildTodoDatum(emberTemplateLintResult, emberTemplateLintMessage);
 
       expect(pendingLintMessage).toEqual(
         expect.objectContaining({
@@ -119,19 +116,19 @@ describe('builders', () => {
     });
 
     it('can build pending lint messages from results', () => {
-      const pendingLintMessages = buildPendingLintMessages(fixtures.emberTemplateLintWithErrors);
+      const pendingLintMessages = buildTodoData(fixtures.emberTemplateLintWithErrors);
 
       expect(pendingLintMessages.size).toEqual(39);
     });
 
     it('can returns empty array with only warnings', () => {
-      const pendingLintMessages = buildPendingLintMessages(fixtures.emberTemplateLintWithWarnings);
+      const pendingLintMessages = buildTodoData(fixtures.emberTemplateLintWithWarnings);
 
       expect(pendingLintMessages.size).toEqual(0);
     });
 
     it('can returns empty array with no results', () => {
-      const pendingLintMessages = buildPendingLintMessages(fixtures.emberTemplateLintNoResults);
+      const pendingLintMessages = buildTodoData(fixtures.emberTemplateLintNoResults);
 
       expect(pendingLintMessages.size).toEqual(0);
     });

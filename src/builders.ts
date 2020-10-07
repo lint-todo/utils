@@ -1,41 +1,36 @@
 import { generateFileName } from './io';
-import { LintMessage, LintResult, PendingLintMessage } from './types';
+import { LintMessage, LintResult, TodoData } from './types';
 
 /**
- * Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a map of fileHash, pendingLintMessage.
+ * Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a map of fileHash, todoDatum.
  *
- * @param lintResults A list of {LintResult} objects to convert to {PendingLintMessage} objects.
+ * @param lintResults A list of {LintResult} objects to convert to {TodoData} objects.
  */
-export function buildPendingLintMessages(
-  lintResults: LintResult[]
-): Map<string, PendingLintMessage> {
+export function buildTodoData(lintResults: LintResult[]): Map<string, TodoData> {
   const results = lintResults.filter((result) => result.messages.length > 0);
 
-  const pendingLintMessages = results.reduce((converted, lintResult) => {
+  const todoData = results.reduce((converted, lintResult) => {
     lintResult.messages.forEach((message: LintMessage) => {
       if (message.severity === 2) {
-        const pendingLintMessage = _buildPendingLintMessage(lintResult, message);
+        const todoDatum = _buildTodoDatum(lintResult, message);
 
-        converted.set(generateFileName(pendingLintMessage), pendingLintMessage);
+        converted.set(generateFileName(todoDatum), todoDatum);
       }
     });
 
     return converted;
-  }, new Map<string, PendingLintMessage>());
+  }, new Map<string, TodoData>());
 
-  return pendingLintMessages;
+  return todoData;
 }
 
 /**
- * Adapts an {ESLint.LintResult} or {TemplateLintResult} to a {PendingLintMessage}
+ * Adapts an {ESLint.LintResult} or {TemplateLintResult} to a {TodoData}
  *
  * @param lintResult The lint result object, either an {ESLint.LintResult} or a {TemplateLintResult}.
  * @param lintMessage A lint message object representing a specific violation for a file.
  */
-export function _buildPendingLintMessage(
-  lintResult: LintResult,
-  lintMessage: LintMessage
-): PendingLintMessage {
+export function _buildTodoDatum(lintResult: LintResult, lintMessage: LintMessage): TodoData {
   return {
     engine: getEngine(lintResult),
     filePath: lintResult.filePath,

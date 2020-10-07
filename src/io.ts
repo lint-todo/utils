@@ -1,58 +1,58 @@
 import { createHash } from 'crypto';
 import { join, parse } from 'path';
 import { ensureDir, readdir, readJSON, unlink, writeFile } from 'fs-extra';
-import { LintResult, PendingLintMessage } from './types';
-import { buildPendingLintMessages } from './builders';
+import { LintResult, TodoData } from './types';
+import { buildTodoData } from './builders';
 
 /**
- * Creates, or ensures the creation of, the .lint-pending directory.
+ * Creates, or ensures the creation of, the .lint-todo directory.
  *
- * @param baseDir The base directory that contains the .lint-pending storage directory.
+ * @param baseDir The base directory that contains the .lint-todo storage directory.
  */
-export async function ensurePendingDir(baseDir: string): Promise<string> {
-  const path = getPendingDirPath(baseDir);
+export async function ensureTodoDir(baseDir: string): Promise<string> {
+  const path = getTodoDirPath(baseDir);
 
   await ensureDir(path);
 
   return path;
 }
 
-export function getPendingDirPath(baseDir: string): string {
-  return join(baseDir, '.lint-pending');
+export function getTodoDirPath(baseDir: string): string {
+  return join(baseDir, '.lint-todo');
 }
 
 /**
- * Generates a unique filename for a pending lint message.
+ * Generates a unique filename for a todo lint data.
  *
- * @param pendingLintMessage The linting data for an individual violation.
+ * @param todoData The linting data for an individual violation.
  */
-export function generateFileName(pendingLintMessage: PendingLintMessage): string {
-  const hashParams = `${pendingLintMessage.engine}${pendingLintMessage.filePath}${pendingLintMessage.ruleId}${pendingLintMessage.line}${pendingLintMessage.column}`;
+export function generateFileName(todoData: TodoData): string {
+  const hashParams = `${todoData.engine}${todoData.filePath}${todoData.ruleId}${todoData.line}${todoData.column}`;
 
   return createHash('sha1').update(hashParams).digest('hex');
 }
 
 /**
- * Generates files for pending lint violations. One file is generated for each violation, using a generated
+ * Generates files for todo lint violations. One file is generated for each violation, using a generated
  * hash to identify each.
  *
- * Given a list of pending lint violations, this function will also delete existing files that no longer
- * have a pending lint violation.
+ * Given a list of todo lint violations, this function will also delete existing files that no longer
+ * have a todo lint violation.
  *
- * @param baseDir The base directory that contains the .lint-pending storage directory.
- * @param pendingLintMessages The linting data for all violations.
+ * @param baseDir The base directory that contains the .lint-todo storage directory.
+ * @param lintResults The raw linting data.
  * @param filePath? The absolute file path of the file to update violations for.
  */
-export async function generatePendingFiles(
+export async function generateTodoFiles(
   baseDir: string,
   lintResults: LintResult[],
   filePath?: string
 ): Promise<string> {
-  const pendingDir: string = await ensurePendingDir(baseDir);
+  const pendingDir: string = await ensureTodoDir(baseDir);
 
-  const existing: Map<string, PendingLintMessage> = await readPendingFiles(pendingDir, filePath);
+  const existing: Map<string, TodoData> = await readTodoFiles(pendingDir, filePath);
 
-  const [add, remove] = await getPendingBatches(buildPendingLintMessages(lintResults), existing);
+  const [add, remove] = await getTodoBatches(buildTodoData(lintResults), existing);
 
   await _generateFiles(baseDir, add, remove);
 
@@ -60,57 +60,57 @@ export async function generatePendingFiles(
 }
 
 /**
- * Reads all pending files in the .lint-pending directory.
+ * Reads all todo files in the .lint-todo directory.
  *
- * @param baseDir The base directory that contains the .lint-pending storage directory.
- * @param filePath? The absolute file path of the file to return pending items for.
+ * @param baseDir The base directory that contains the .lint-todo storage directory.
+ * @param filePath? The absolute file path of the file to return todo items for.
  */
-export async function readPendingFiles(
+export async function readTodoFiles(
   pendingDir: string,
   filePath?: string
-): Promise<Map<string, PendingLintMessage>> {
+): Promise<Map<string, TodoData>> {
   const fileNames = await readdir(pendingDir);
 
   const map = new Map();
   for (const fileName of fileNames) {
-    const pendingLintMessage = await readJSON(join(pendingDir, fileName));
+    const todoDatum = await readJSON(join(pendingDir, fileName));
 
-    if (filePath && pendingLintMessage.filePath !== filePath) {
+    if (filePath && todoDatum.filePath !== filePath) {
       continue;
     }
-    map.set(parse(fileName).name, pendingLintMessage);
+    map.set(parse(fileName).name, todoDatum);
   }
 
   return map;
 }
 
 /**
- * Gets 3 maps containing pending items to add, remove, or those that are stable (not to be modified).
+ * Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).
  *
  * @param lintResults The linting data for all violations.
- * @param existing Existing pending lint data.
+ * @param existing Existing todo lint data.
  */
-export async function getPendingBatches(
-  lintResults: Map<string, PendingLintMessage>,
-  existing: Map<string, PendingLintMessage>
-): Promise<Map<string, PendingLintMessage>[]> {
-  const add = new Map<string, PendingLintMessage>();
-  const remove = new Map<string, PendingLintMessage>();
-  const stable = new Map<string, PendingLintMessage>();
+export async function getTodoBatches(
+  lintResults: Map<string, TodoData>,
+  existing: Map<string, TodoData>
+): Promise<Map<string, TodoData>[]> {
+  const add = new Map<string, TodoData>();
+  const remove = new Map<string, TodoData>();
+  const stable = new Map<string, TodoData>();
 
-  for (const [fileHash, pendingLintMessage] of lintResults) {
+  for (const [fileHash, todoDatum] of lintResults) {
     if (!existing.has(fileHash)) {
-      add.set(fileHash, pendingLintMessage);
+      add.set(fileHash, todoDatum);
     } else {
-      stable.set(fileHash, pendingLintMessage);
+      stable.set(fileHash, todoDatum);
     }
   }
 
-  for (const [fileHash, pendingLintMessage] of existing) {
+  for (const [fileHash, todoDatum] of existing) {
     if (!lintResults.has(fileHash)) {
-      remove.set(fileHash, pendingLintMessage);
+      remove.set(fileHash, todoDatum);
     } else {
-      stable.set(fileHash, pendingLintMessage);
+      stable.set(fileHash, todoDatum);
     }
   }
 
@@ -119,14 +119,14 @@ export async function getPendingBatches(
 
 async function _generateFiles(
   baseDir: string,
-  add: Map<string, PendingLintMessage>,
-  remove: Map<string, PendingLintMessage>
+  add: Map<string, TodoData>,
+  remove: Map<string, TodoData>
 ) {
-  const path = getPendingDirPath(baseDir);
+  const path = getTodoDirPath(baseDir);
 
-  for (const [fileHash, pendingLintMessage] of add) {
+  for (const [fileHash, todoDatum] of add) {
     // eslint-disable-next-line unicorn/no-null
-    await writeFile(join(path, `${fileHash}.json`), JSON.stringify(pendingLintMessage, null, 2));
+    await writeFile(join(path, `${fileHash}.json`), JSON.stringify(todoDatum, null, 2));
   }
 
   for (const [fileHash] of remove) {
