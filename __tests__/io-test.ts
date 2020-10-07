@@ -1,16 +1,11 @@
 import { existsSync, statSync, readdirSync, readdir } from 'fs-extra';
 import { join } from 'path';
-import {
-  generateFileName,
-  generatePendingFiles,
-  getPendingBatches,
-  buildPendingLintMessages,
-} from '../src';
-import { LintResult, PendingLintMessage } from '../src/types';
+import { buildTodoData, generateFileName, generateTodoFiles, getTodoBatches } from '../src';
+import { LintResult, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import fixtures from './__fixtures__/fixtures';
 
-const PENDING_LINT_MESSAGE: PendingLintMessage = {
+const PENDING_LINT_MESSAGE: TodoData = {
   engine: 'eslint',
   filePath: '/Users/fake/app/controllers/settings.js',
   ruleId: 'no-prototype-builtins',
@@ -36,7 +31,7 @@ describe('io', () => {
     });
   });
 
-  describe('generatePendingFiles', () => {
+  describe('generateTodoFiles', () => {
     let tmp: string;
 
     beforeEach(() => {
@@ -44,19 +39,19 @@ describe('io', () => {
     });
 
     it("creates .lint-pending directory if one doesn't exist", async () => {
-      const lintPendingDir = await generatePendingFiles(tmp, []);
+      const lintPendingDir = await generateTodoFiles(tmp, []);
 
       expect(existsSync(lintPendingDir)).toEqual(true);
     });
 
     it("doesn't write files when no pending items provided", async () => {
-      const lintPendingDir = await generatePendingFiles(tmp, []);
+      const lintPendingDir = await generateTodoFiles(tmp, []);
 
       expect(readdirSync(lintPendingDir)).toHaveLength(0);
     });
 
     it('generates pending files when pending items provided', async () => {
-      const lintPendingDir = await generatePendingFiles(tmp, fixtures.eslintWithErrors);
+      const lintPendingDir = await generateTodoFiles(tmp, fixtures.eslintWithErrors);
 
       expect(readdirSync(lintPendingDir)).toHaveLength(18);
     });
@@ -98,7 +93,7 @@ describe('io', () => {
         },
       ];
 
-      const lintPendingDir = await generatePendingFiles(tmp, initialPendingItems);
+      const lintPendingDir = await generateTodoFiles(tmp, initialPendingItems);
 
       const initialFiles = readdirSync(lintPendingDir);
 
@@ -111,7 +106,7 @@ describe('io', () => {
         };
       });
 
-      await generatePendingFiles(tmp, fixtures.eslintWithErrors);
+      await generateTodoFiles(tmp, fixtures.eslintWithErrors);
 
       const subsequentFiles = readdirSync(lintPendingDir);
 
@@ -125,7 +120,7 @@ describe('io', () => {
     });
 
     it('removes old pending files if pending items no longer contains violations', async () => {
-      const lintPendingDir = await generatePendingFiles(tmp, fixtures.eslintWithErrors);
+      const lintPendingDir = await generateTodoFiles(tmp, fixtures.eslintWithErrors);
       const initialFiles = readdirSync(lintPendingDir);
 
       expect(initialFiles).toHaveLength(18);
@@ -133,13 +128,13 @@ describe('io', () => {
       const firstHalf = fixtures.eslintWithErrors.slice(0, 3);
       const secondHalf = fixtures.eslintWithErrors.slice(3, fixtures.eslintWithErrors.length);
 
-      await generatePendingFiles(tmp, firstHalf);
+      await generateTodoFiles(tmp, firstHalf);
 
       const subsequentFiles = readdirSync(lintPendingDir);
 
       expect(subsequentFiles).toHaveLength(7);
 
-      buildPendingLintMessages(secondHalf).forEach((pendingLintMessage) => {
+      buildTodoData(secondHalf).forEach((pendingLintMessage) => {
         expect(
           !existsSync(join(lintPendingDir, `${generateFileName(pendingLintMessage)}.json`))
         ).toEqual(true);
@@ -147,7 +142,7 @@ describe('io', () => {
     });
   });
 
-  describe('generatePendingFiles for single file', () => {
+  describe('generateTodoFiles for single file', () => {
     let tmp: string;
 
     beforeEach(() => {
@@ -155,19 +150,19 @@ describe('io', () => {
     });
 
     it("creates .lint-pending directory if one doesn't exist", async () => {
-      const lintPendingDir = await generatePendingFiles(tmp, []);
+      const lintPendingDir = await generateTodoFiles(tmp, []);
 
       expect(existsSync(lintPendingDir)).toEqual(true);
     });
 
     it("doesn't write files when no pending items provided", async () => {
-      const lintPendingDir = await generatePendingFiles(tmp, []);
+      const lintPendingDir = await generateTodoFiles(tmp, []);
 
       expect(readdirSync(lintPendingDir)).toHaveLength(0);
     });
 
     it('generates pending files for a specific filePath', async () => {
-      const lintPendingDir = await generatePendingFiles(
+      const lintPendingDir = await generateTodoFiles(
         tmp,
         fixtures.singleFilePending,
         '/Users/fake/app/controllers/settings.js'
@@ -183,7 +178,7 @@ describe('io', () => {
     });
 
     it('updates pending files for a specific filePath', async () => {
-      const lintPendingDir = await generatePendingFiles(tmp, fixtures.singleFilePending);
+      const lintPendingDir = await generateTodoFiles(tmp, fixtures.singleFilePending);
 
       expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`
         Array [
@@ -193,7 +188,7 @@ describe('io', () => {
         ]
       `);
 
-      await generatePendingFiles(
+      await generateTodoFiles(
         tmp,
         fixtures.singleFilePendingUpdated,
         '/Users/fake/app/controllers/settings.js'
@@ -209,7 +204,7 @@ describe('io', () => {
     });
 
     it('deletes pending files for a specific filePath', async () => {
-      const lintPendingDir = await generatePendingFiles(tmp, fixtures.singleFilePending);
+      const lintPendingDir = await generateTodoFiles(tmp, fixtures.singleFilePending);
 
       expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`
         Array [
@@ -219,13 +214,13 @@ describe('io', () => {
         ]
       `);
 
-      await generatePendingFiles(tmp, [], '/Users/fake/app/controllers/settings.js');
+      await generateTodoFiles(tmp, [], '/Users/fake/app/controllers/settings.js');
 
       expect(await readdir(lintPendingDir)).toMatchInlineSnapshot(`Array []`);
     });
   });
 
-  describe('getPendingBatches', () => {
+  describe('getTodoBatches', () => {
     const fromLintResults: LintResult[] = [
       {
         filePath: '/Users/fake/app/controllers/settings.js',
@@ -377,7 +372,7 @@ describe('io', () => {
 
     it('creates items to add', async () => {
       debugger;
-      const [add] = await getPendingBatches(buildPendingLintMessages(fromLintResults), new Map());
+      const [add] = await getTodoBatches(buildTodoData(fromLintResults), new Map());
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
         Array [
@@ -392,10 +387,7 @@ describe('io', () => {
 
     it('creates items to delete', async () => {
       debugger;
-      const [, remove] = await getPendingBatches(
-        new Map(),
-        buildPendingLintMessages(fromLintResults)
-      );
+      const [, remove] = await getTodoBatches(new Map(), buildTodoData(fromLintResults));
 
       expect([...remove.keys()]).toMatchInlineSnapshot(`
         Array [
@@ -410,9 +402,9 @@ describe('io', () => {
 
     it('creates all batches', async () => {
       debugger;
-      const [add, remove, stable] = await getPendingBatches(
-        buildPendingLintMessages(fromLintResults),
-        buildPendingLintMessages(existing)
+      const [add, remove, stable] = await getTodoBatches(
+        buildTodoData(fromLintResults),
+        buildTodoData(existing)
       );
 
       expect([...add.keys()]).toMatchInlineSnapshot(`

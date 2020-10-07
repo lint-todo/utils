@@ -1,9 +1,9 @@
-export { _buildPendingLintMessage, buildPendingLintMessages } from './builders';
+export { _buildTodoDatum, buildTodoData } from './builders';
 export {
-  ensurePendingDir,
-  getPendingDirPath,
+  ensureTodoDir,
+  getTodoDirPath,
   generateFileName,
-  generatePendingFiles,
-  readPendingFiles,
-  getPendingBatches,
+  generateTodoFiles,
+  readTodoFiles,
+  getTodoBatches,
 } from './io';

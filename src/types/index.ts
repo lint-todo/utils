@@ -27,7 +27,7 @@ export interface TemplateLintMessage {
 export type LintResult = ESLint.LintResult | TemplateLintResult;
 export type LintMessage = Linter.LintMessage | TemplateLintMessage;
 
-export interface PendingLintMessage {
+export interface TodoData {
   engine: 'eslint' | 'ember-template-lint';
   filePath: string;
   ruleId: string;
