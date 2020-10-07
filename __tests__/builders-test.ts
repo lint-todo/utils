@@ -5,7 +5,7 @@ import fixtures from './__fixtures__/fixtures';
 
 describe('builders', () => {
   describe('eslint', () => {
-    it('builds a pending lint message from eslint result', () => {
+    it('builds a todo from eslint result', () => {
       const eslintResult: ESLint.LintResult = {
         filePath: '/Users/fake/app/controllers/settings.js',
         messages: [
@@ -41,9 +41,9 @@ describe('builders', () => {
         endColumn: 35,
       };
 
-      const pendingLintMessage = _buildTodoDatum(eslintResult, eslintMessage);
+      const todoDatum = _buildTodoDatum(eslintResult, eslintMessage);
 
-      expect(pendingLintMessage).toEqual(
+      expect(todoDatum).toEqual(
         expect.objectContaining({
           engine: 'eslint',
           filePath: '/Users/fake/app/controllers/settings.js',
@@ -54,27 +54,27 @@ describe('builders', () => {
       );
     });
 
-    it('can build pending lint messages from results', () => {
-      const pendingLintMessages = buildTodoData(fixtures.eslintWithErrors);
+    it('can build todo data from results', () => {
+      const todoData = buildTodoData(fixtures.eslintWithErrors);
 
-      expect(pendingLintMessages.size).toEqual(18);
+      expect(todoData.size).toEqual(18);
     });
 
     it('can returns empty array with only warnings', () => {
-      const pendingLintMessages = buildTodoData(fixtures.eslintWithWarnings);
+      const todoData = buildTodoData(fixtures.eslintWithWarnings);
 
-      expect(pendingLintMessages.size).toEqual(0);
+      expect(todoData.size).toEqual(0);
     });
 
     it('can returns empty array with no results', () => {
-      const pendingLintMessages = buildTodoData(fixtures.eslintNoResults);
+      const todoData = buildTodoData(fixtures.eslintNoResults);
 
-      expect(pendingLintMessages.size).toEqual(0);
+      expect(todoData.size).toEqual(0);
     });
   });
 
   describe('ember-template-lint', () => {
-    it('builds a pending lint message from eslint result', () => {
+    it('builds a todo from eslint result', () => {
       const emberTemplateLintResult: TemplateLintResult = {
         messages: [
           {
@@ -102,9 +102,9 @@ describe('builders', () => {
         source: '',
       };
 
-      const pendingLintMessage = _buildTodoDatum(emberTemplateLintResult, emberTemplateLintMessage);
+      const todoDatum = _buildTodoDatum(emberTemplateLintResult, emberTemplateLintMessage);
 
-      expect(pendingLintMessage).toEqual(
+      expect(todoDatum).toEqual(
         expect.objectContaining({
           engine: 'ember-template-lint',
           filePath: '/Users/fake/app/templates/components/add-ssh-key.hbs',
@@ -115,22 +115,22 @@ describe('builders', () => {
       );
     });
 
-    it('can build pending lint messages from results', () => {
-      const pendingLintMessages = buildTodoData(fixtures.emberTemplateLintWithErrors);
+    it('can build todo data from results', () => {
+      const todoData = buildTodoData(fixtures.emberTemplateLintWithErrors);
 
-      expect(pendingLintMessages.size).toEqual(39);
+      expect(todoData.size).toEqual(39);
     });
 
     it('can returns empty array with only warnings', () => {
-      const pendingLintMessages = buildTodoData(fixtures.emberTemplateLintWithWarnings);
+      const todoData = buildTodoData(fixtures.emberTemplateLintWithWarnings);
 
-      expect(pendingLintMessages.size).toEqual(0);
+      expect(todoData.size).toEqual(0);
     });
 
     it('can returns empty array with no results', () => {
-      const pendingLintMessages = buildTodoData(fixtures.emberTemplateLintNoResults);
+      const todoData = buildTodoData(fixtures.emberTemplateLintNoResults);
 
-      expect(pendingLintMessages.size).toEqual(0);
+      expect(todoData.size).toEqual(0);
     });
   });
 });

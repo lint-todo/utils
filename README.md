@@ -1,123 +1,111 @@
-# @ember-template-lint/pending-utils
+# @ember-template-lint/todo-utils
 
-![CI Build](https://github.com/ember-template-lint/ember-template-lint-pending-utils/workflows/CI%20Build/badge.svg)
+![CI Build](https://github.com/ember-template-lint/ember-template-lint-todo-utils/workflows/CI%20Build/badge.svg)
 
 A collection of utilities to generate and store lint item metadata.
 
 Those utilities are:
 
 <dl>
-<dt><a href="#buildPendingLintMessage">buildPendingLintMessage(lintResult, lintMessage)</a></dt>
-<dd><p>Adapts an {ESLint.LintResult} or {TemplateLintResult} to a {PendingLintMessage}</p>
+<dt><a href="#buildTodoData">buildTodoData(lintResults)</a></dt>
+<dd><p>Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a map of fileHash, todoDatum.</p>
 </dd>
-<dt><a href="#buildPendingLintMessages">buildPendingLintMessages(lintResults)</a></dt>
-<dd><p>Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a list of {PendingLintMessage}</p>
+<dt><a href="#ensureTodoDir">ensureTodoDir(baseDir)</a></dt>
+<dd><p>Creates, or ensures the creation of, the .lint-todo directory.</p>
 </dd>
-<dt><a href="#ensurePendingDir">ensurePendingDir(baseDir)</a></dt>
-<dd><p>Creates, or ensures the creation of, the .lint-pending directory.</p>
+<dt><a href="#generateFileName">generateFileName(todoData)</a></dt>
+<dd><p>Generates a unique filename for a todo lint data.</p>
 </dd>
-<dt><a href="#generateFileName">generateFileName(pendingLintMessage)</a></dt>
-<dd><p>Generates a unique filename for a pending lint message.</p>
-</dd>
-<dt><a href="#generatePendingFiles">generatePendingFiles(baseDir, pendingLintMessages, filePath?)</a></dt>
-<dd><p>Generates files for pending lint violations. One file is generated for each violation, using a generated
+<dt><a href="#generateTodoFiles">generateTodoFiles(baseDir, lintResults, filePath?)</a></dt>
+<dd><p>Generates files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
-<p>Given a list of pending lint violations, this function will also delete existing files that no longer
-have a pending lint violation.</p>
+<p>Given a list of todo lint violations, this function will also delete existing files that no longer
+have a todo lint violation.</p>
 </dd>
-<dt><a href="#readPendingFiles">readPendingFiles(baseDir, filePath?)</a></dt>
-<dd><p>Reads all pending files in the .lint-pending directory.</p>
+<dt><a href="#readTodoFiles">readTodoFiles(todoDir, filePath?)</a></dt>
+<dd><p>Reads all todo files in the .lint-todo directory.</p>
 </dd>
-<dt><a href="#getPendingBatches">getPendingBatches(lintResults, existing)</a></dt>
-<dd><p>Gets 3 maps containing pending items to add, remove, or those that are stable (not to be modified).</p>
+<dt><a href="#getTodoBatches">getTodoBatches(lintResults, existing)</a></dt>
+<dd><p>Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).</p>
 </dd>
 </dl>
 
-<a name="buildPendingLintMessage"></a>
+<a name="buildTodoData"></a>
 
-## buildPendingLintMessage(lintResult, lintMessage)
+## buildTodoData(lintResults)
 
-**Kind**: global function
-
-| Param       | Type                           | Description                                                         |
-| ----------- | ------------------------------ | ------------------------------------------------------------------- |
-| lintResult  | <code>ESLint.LintResult</code> | The lint result object, either an or an {TemplateLintResult}.       |
-| lintMessage |                                | A lint message object representing a specific violation for a file. |
-
-<a name="buildPendingLintMessages"></a>
-
-## buildPendingLintMessages(lintResults)
+Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a map of fileHash, todoDatum.
 
 **Kind**: global function
 
-| Param       | Type                    | Description                                                   |
-| ----------- | ----------------------- | ------------------------------------------------------------- |
-| lintResults | <code>LintResult</code> | A list of objects to convert to {PendingLintMessage} objects. |
+| Param       | Type                    | Description                                         |
+| ----------- | ----------------------- | --------------------------------------------------- |
+| lintResults | <code>LintResult</code> | A list of objects to convert to {TodoData} objects. |
 
-<a name="ensurePendingDir"></a>
+<a name="ensureTodoDir"></a>
 
-## ensurePendingDir(baseDir)
+## ensureTodoDir(baseDir)
 
-Creates, or ensures the creation of, the .lint-pending directory.
+Creates, or ensures the creation of, the .lint-todo directory.
 
 **Kind**: global function
 
-| Param   | Description                                                           |
-| ------- | --------------------------------------------------------------------- |
-| baseDir | The base directory that contains the .lint-pending storage directory. |
+| Param   | Description                                                        |
+| ------- | ------------------------------------------------------------------ |
+| baseDir | The base directory that contains the .lint-todo storage directory. |
 
 <a name="generateFileName"></a>
 
-## generateFileName(pendingLintMessage)
+## generateFileName(todoData)
 
-Generates a unique filename for a pending lint message.
+Generates a unique filename for a todo lint data.
 
 **Kind**: global function
 
-| Param              | Description                                   |
-| ------------------ | --------------------------------------------- |
-| pendingLintMessage | The linting data for an individual violation. |
+| Param    | Description                                   |
+| -------- | --------------------------------------------- |
+| todoData | The linting data for an individual violation. |
 
-<a name="generatePendingFiles"></a>
+<a name="generateTodoFiles"></a>
 
-## generatePendingFiles(baseDir, pendingLintMessages, filePath?)
+## generateTodoFiles(baseDir, lintResults, filePath?)
 
-Generates files for pending lint violations. One file is generated for each violation, using a generated
+Generates files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.
 
-Given a list of pending lint violations, this function will also delete existing files that no longer
-have a pending lint violation.
+Given a list of todo lint violations, this function will also delete existing files that no longer
+have a todo lint violation.
 
 **Kind**: global function
 
-| Param               | Description                                                           |
-| ------------------- | --------------------------------------------------------------------- |
-| baseDir             | The base directory that contains the .lint-pending storage directory. |
-| pendingLintMessages | The linting data for all violations.                                  |
-| filePath?           | The absolute file path of the file to update violations for.          |
+| Param       | Description                                                        |
+| ----------- | ------------------------------------------------------------------ |
+| baseDir     | The base directory that contains the .lint-todo storage directory. |
+| lintResults | The raw linting data.                                              |
+| filePath?   | The absolute file path of the file to update violations for.       |
 
-<a name="readPendingFiles"></a>
+<a name="readTodoFiles"></a>
 
-## readPendingFiles(baseDir, filePath?)
+## readTodoFiles(todoDir, filePath?)
 
-Reads all pending files in the .lint-pending directory.
+Reads all todo files in the .lint-todo directory.
 
 **Kind**: global function
 
-| Param     | Description                                                           |
-| --------- | --------------------------------------------------------------------- |
-| baseDir   | The base directory that contains the .lint-pending storage directory. |
-| filePath? | The absolute file path of the file to return pending items for.       |
+| Param     | Description                                                  |
+| --------- | ------------------------------------------------------------ |
+| todoDir   | The .lint-todo storage directory.                            |
+| filePath? | The absolute file path of the file to return todo items for. |
 
-<a name="getPendingBatches"></a>
+<a name="getTodoBatches"></a>
 
-## getPendingBatches(lintResults, existing)
+## getTodoBatches(lintResults, existing)
 
-Gets 3 maps containing pending items to add, remove, or those that are stable (not to be modified).
+Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).
 
 **Kind**: global function
 
 | Param       | Description                          |
 | ----------- | ------------------------------------ |
 | lintResults | The linting data for all violations. |
-| existing    | Existing pending lint data.          |
+| existing    | Existing todo lint data.             |
