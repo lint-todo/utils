@@ -1,4 +1,4 @@
-import { PendingLintMessage, TemplateLintReport, TemplateLintResult } from '../../src/types';
+import { TemplateLintReport, TemplateLintResult } from '../../src/types';
 import { CLIEngine, ESLint } from 'eslint';
 
 import * as eslintWithErrors from './eslint-with-errors.json';
@@ -7,7 +7,6 @@ import * as eslintNoResults from './eslint-no-results.json';
 import * as emberTemplateLintWithErrors from './ember-template-lint-with-errors.json';
 import * as emberTemplateLintWithWarnings from './ember-template-lint-with-warnings.json';
 import * as emberTemplateLintNoResults from './ember-template-lint-no-results.json';
-import * as pending from './pending.json';
 import * as singleFilePending from './single-file-pending.json';
 import * as singleFilePendingUpdated from './single-file-pending-updated.json';
 
@@ -30,7 +29,6 @@ export default {
   emberTemplateLintNoResults: <TemplateLintResult[]>(
     (<TemplateLintReport>(emberTemplateLintNoResults as unknown)).results
   ),
-  pending: <PendingLintMessage[]>pending,
-  singleFilePending: <PendingLintMessage[]>singleFilePending,
-  singleFilePendingUpdated: <PendingLintMessage[]>singleFilePendingUpdated,
+  singleFilePending: <ESLint.LintResult[]>singleFilePending,
+  singleFilePendingUpdated: <ESLint.LintResult[]>singleFilePendingUpdated,
 };

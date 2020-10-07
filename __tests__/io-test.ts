@@ -4,9 +4,9 @@ import {
   generateFileName,
   generatePendingFiles,
   getPendingBatches,
-  buildPendingLintMessagesMap,
+  buildPendingLintMessages,
 } from '../src';
-import { PendingLintMessage } from '../src/types';
+import { LintResult, PendingLintMessage } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import fixtures from './__fixtures__/fixtures';
 
@@ -56,28 +56,45 @@ describe('io', () => {
     });
 
     it('generates pending files when pending items provided', async () => {
-      const lintPendingDir = await generatePendingFiles(tmp, fixtures.pending);
+      const lintPendingDir = await generatePendingFiles(tmp, fixtures.eslintWithErrors);
 
       expect(readdirSync(lintPendingDir)).toHaveLength(18);
     });
 
     it("generates pending files only if previous pending file doesn't exist", async () => {
-      const initialPendingItems: PendingLintMessage[] = [
+      const initialPendingItems: LintResult[] = [
         {
-          engine: 'eslint',
           filePath: '/Users/fake/app/controllers/settings.js',
-          ruleId: 'no-prototype-builtins',
-          line: 25,
-          column: 21,
-          createdDate: 1601332963373,
-        },
-        {
-          engine: 'eslint',
-          filePath: '/Users/fake/app/controllers/settings.js',
-          ruleId: 'no-prototype-builtins',
-          line: 26,
-          column: 19,
-          createdDate: 1601332963373,
+          messages: [
+            {
+              ruleId: 'no-prototype-builtins',
+              severity: 2,
+              message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
+              line: 25,
+              column: 21,
+              nodeType: 'CallExpression',
+              messageId: 'prototypeBuildIn',
+              endLine: 25,
+              endColumn: 35,
+            },
+            {
+              ruleId: 'no-prototype-builtins',
+              severity: 2,
+              message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
+              line: 26,
+              column: 19,
+              nodeType: 'CallExpression',
+              messageId: 'prototypeBuildIn',
+              endLine: 26,
+              endColumn: 33,
+            },
+          ],
+          errorCount: 2,
+          warningCount: 0,
+          fixableErrorCount: 0,
+          fixableWarningCount: 0,
+          source: '',
+          usedDeprecatedRules: [],
         },
       ];
 
@@ -94,7 +111,7 @@ describe('io', () => {
         };
       });
 
-      await generatePendingFiles(tmp, fixtures.pending);
+      await generatePendingFiles(tmp, fixtures.eslintWithErrors);
 
       const subsequentFiles = readdirSync(lintPendingDir);
 
@@ -108,23 +125,21 @@ describe('io', () => {
     });
 
     it('removes old pending files if pending items no longer contains violations', async () => {
-      const lintPendingDir = await generatePendingFiles(tmp, fixtures.pending);
-
+      const lintPendingDir = await generatePendingFiles(tmp, fixtures.eslintWithErrors);
       const initialFiles = readdirSync(lintPendingDir);
 
       expect(initialFiles).toHaveLength(18);
 
-      const half = Math.ceil(fixtures.pending.length / 2);
-      const firstHalf = fixtures.pending.slice(0, half);
-      const secondHalf = fixtures.pending.slice(half, fixtures.pending.length);
+      const firstHalf = fixtures.eslintWithErrors.slice(0, 3);
+      const secondHalf = fixtures.eslintWithErrors.slice(3, fixtures.eslintWithErrors.length);
 
       await generatePendingFiles(tmp, firstHalf);
 
       const subsequentFiles = readdirSync(lintPendingDir);
 
-      expect(subsequentFiles).toHaveLength(9);
+      expect(subsequentFiles).toHaveLength(7);
 
-      secondHalf.forEach((pendingLintMessage) => {
+      buildPendingLintMessages(secondHalf).forEach((pendingLintMessage) => {
         expect(
           !existsSync(join(lintPendingDir, `${generateFileName(pendingLintMessage)}.json`))
         ).toEqual(true);
@@ -211,84 +226,162 @@ describe('io', () => {
   });
 
   describe('getPendingBatches', () => {
-    const fromLintResults: PendingLintMessage[] = [
+    const fromLintResults: LintResult[] = [
       {
-        engine: 'eslint',
         filePath: '/Users/fake/app/controllers/settings.js',
-        ruleId: 'no-prototype-builtins',
-        line: 26,
-        column: 19,
-        createdDate: 1601332963373,
+        messages: [
+          {
+            ruleId: 'no-prototype-builtins',
+            severity: 2,
+            message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
+            line: 25,
+            column: 21,
+            nodeType: 'CallExpression',
+            messageId: 'prototypeBuildIn',
+            endLine: 25,
+            endColumn: 35,
+          },
+          {
+            ruleId: 'no-prototype-builtins',
+            severity: 2,
+            message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
+            line: 26,
+            column: 19,
+            nodeType: 'CallExpression',
+            messageId: 'prototypeBuildIn',
+            endLine: 26,
+            endColumn: 33,
+          },
+          {
+            ruleId: 'no-prototype-builtins',
+            severity: 2,
+            message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
+            line: 32,
+            column: 34,
+            nodeType: 'CallExpression',
+            messageId: 'prototypeBuildIn',
+            endLine: 32,
+            endColumn: 48,
+          },
+        ],
+        errorCount: 3,
+        warningCount: 0,
+        fixableErrorCount: 0,
+        fixableWarningCount: 0,
+        source: '',
+        usedDeprecatedRules: [],
       },
       {
-        engine: 'eslint',
-        filePath: '/Users/fake/app/controllers/settings.js',
-        ruleId: 'no-prototype-builtins',
-        line: 32,
-        column: 34,
-        createdDate: 1601332963373,
-      },
-      {
-        engine: 'eslint',
         filePath: '/Users/fake/app/initializers/tracer.js',
-        ruleId: 'no-redeclare',
-        line: 1,
-        column: 11,
-        createdDate: 1601332963373,
-      },
-      {
-        engine: 'eslint',
-        filePath: '/Users/fake/app/initializers/tracer.js',
-        ruleId: 'no-redeclare',
-        line: 1,
-        column: 19,
-        createdDate: 1601332963373,
+        messages: [
+          {
+            ruleId: 'no-redeclare',
+            severity: 2,
+            message: "'window' is already defined as a built-in global variable.",
+            line: 1,
+            column: 11,
+            nodeType: 'Block',
+            messageId: 'redeclaredAsBuiltin',
+            endLine: 1,
+            endColumn: 17,
+          },
+          {
+            ruleId: 'no-redeclare',
+            severity: 2,
+            message: "'XMLHttpRequest' is already defined as a built-in global variable.",
+            line: 1,
+            column: 19,
+            nodeType: 'Block',
+            messageId: 'redeclaredAsBuiltin',
+            endLine: 1,
+            endColumn: 33,
+          },
+        ],
+        errorCount: 2,
+        warningCount: 0,
+        fixableErrorCount: 0,
+        fixableWarningCount: 0,
+        source: '',
+        usedDeprecatedRules: [],
       },
     ];
 
-    const existing: PendingLintMessage[] = [
+    const existing: LintResult[] = [
       {
-        engine: 'eslint',
         filePath: '/Users/fake/app/initializers/tracer.js',
-        ruleId: 'no-redeclare',
-        line: 1,
-        column: 11,
-        createdDate: 1601332963373,
+        messages: [
+          {
+            ruleId: 'no-redeclare',
+            severity: 2,
+            message: "'window' is already defined as a built-in global variable.",
+            line: 1,
+            column: 11,
+            nodeType: 'Block',
+            messageId: 'redeclaredAsBuiltin',
+            endLine: 1,
+            endColumn: 17,
+          },
+          {
+            ruleId: 'no-redeclare',
+            severity: 2,
+            message: "'XMLHttpRequest' is already defined as a built-in global variable.",
+            line: 1,
+            column: 19,
+            nodeType: 'Block',
+            messageId: 'redeclaredAsBuiltin',
+            endLine: 1,
+            endColumn: 33,
+          },
+        ],
+        errorCount: 2,
+        warningCount: 0,
+        fixableErrorCount: 0,
+        fixableWarningCount: 0,
+        source: '',
+        usedDeprecatedRules: [],
       },
       {
-        engine: 'eslint',
-        filePath: '/Users/fake/app/initializers/tracer.js',
-        ruleId: 'no-redeclare',
-        line: 1,
-        column: 19,
-        createdDate: 1601332963373,
-      },
-      {
-        engine: 'eslint',
         filePath: '/Users/fake/app/models/build.js',
-        ruleId: 'no-prototype-builtins',
-        line: 108,
-        column: 50,
-        createdDate: 1601332963373,
-      },
-      {
-        engine: 'eslint',
-        filePath: '/Users/fake/app/models/build.js',
-        ruleId: 'no-prototype-builtins',
-        line: 120,
-        column: 25,
-        createdDate: 1601332963373,
+        messages: [
+          {
+            ruleId: 'no-prototype-builtins',
+            severity: 2,
+            message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
+            line: 108,
+            column: 50,
+            nodeType: 'CallExpression',
+            messageId: 'prototypeBuildIn',
+            endLine: 108,
+            endColumn: 64,
+          },
+          {
+            ruleId: 'no-prototype-builtins',
+            severity: 2,
+            message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
+            line: 120,
+            column: 25,
+            nodeType: 'CallExpression',
+            messageId: 'prototypeBuildIn',
+            endLine: 120,
+            endColumn: 39,
+          },
+        ],
+        errorCount: 2,
+        warningCount: 0,
+        fixableErrorCount: 0,
+        fixableWarningCount: 0,
+        source: '',
+        usedDeprecatedRules: [],
       },
     ];
 
     it('creates items to add', async () => {
-      const [add] = await getPendingBatches(
-        buildPendingLintMessagesMap(fromLintResults),
-        new Map()
-      );
+      debugger;
+      const [add] = await getPendingBatches(buildPendingLintMessages(fromLintResults), new Map());
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
         Array [
+          "e382776914ba08603a3f1006431cf7c893962e65",
           "3c19eab21259dcb5eee1035f69528e4a060e700d",
           "f65bb1f69ecaab090153bcbf6413cfda826133ba",
           "24e99f01beff611d12524745b4125d5effc76b4b",
@@ -298,13 +391,15 @@ describe('io', () => {
     });
 
     it('creates items to delete', async () => {
+      debugger;
       const [, remove] = await getPendingBatches(
         new Map(),
-        buildPendingLintMessagesMap(fromLintResults)
+        buildPendingLintMessages(fromLintResults)
       );
 
       expect([...remove.keys()]).toMatchInlineSnapshot(`
         Array [
+          "e382776914ba08603a3f1006431cf7c893962e65",
           "3c19eab21259dcb5eee1035f69528e4a060e700d",
           "f65bb1f69ecaab090153bcbf6413cfda826133ba",
           "24e99f01beff611d12524745b4125d5effc76b4b",
@@ -314,13 +409,15 @@ describe('io', () => {
     });
 
     it('creates all batches', async () => {
+      debugger;
       const [add, remove, stable] = await getPendingBatches(
-        buildPendingLintMessagesMap(fromLintResults),
-        buildPendingLintMessagesMap(existing)
+        buildPendingLintMessages(fromLintResults),
+        buildPendingLintMessages(existing)
       );
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
         Array [
+          "e382776914ba08603a3f1006431cf7c893962e65",
           "3c19eab21259dcb5eee1035f69528e4a060e700d",
           "f65bb1f69ecaab090153bcbf6413cfda826133ba",
         ]

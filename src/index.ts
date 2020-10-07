@@ -1,8 +1,4 @@
-export {
-  buildPendingLintMessage,
-  buildPendingLintMessages,
-  buildPendingLintMessagesMap,
-} from './builders';
+export { _buildPendingLintMessage, buildPendingLintMessages } from './builders';
 export {
   ensurePendingDir,
   getPendingDirPath,
