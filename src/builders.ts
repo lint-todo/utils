@@ -2,12 +2,37 @@ import { generateFileName } from './io';
 import { LintMessage, LintResult, PendingLintMessage } from './types';
 
 /**
+ * Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a map of fileHash, pendingLintMessage.
+ *
+ * @param lintResults A list of {LintResult} objects to convert to {PendingLintMessage} objects.
+ */
+export function buildPendingLintMessages(
+  lintResults: LintResult[]
+): Map<string, PendingLintMessage> {
+  const results = lintResults.filter((result) => result.messages.length > 0);
+
+  const pendingLintMessages = results.reduce((converted, lintResult) => {
+    lintResult.messages.forEach((message: LintMessage) => {
+      if (message.severity === 2) {
+        const pendingLintMessage = _buildPendingLintMessage(lintResult, message);
+
+        converted.set(generateFileName(pendingLintMessage), pendingLintMessage);
+      }
+    });
+
+    return converted;
+  }, new Map<string, PendingLintMessage>());
+
+  return pendingLintMessages;
+}
+
+/**
  * Adapts an {ESLint.LintResult} or {TemplateLintResult} to a {PendingLintMessage}
  *
  * @param lintResult The lint result object, either an {ESLint.LintResult} or a {TemplateLintResult}.
  * @param lintMessage A lint message object representing a specific violation for a file.
  */
-export function buildPendingLintMessage(
+export function _buildPendingLintMessage(
   lintResult: LintResult,
   lintMessage: LintMessage
 ): PendingLintMessage {
@@ -19,44 +44,6 @@ export function buildPendingLintMessage(
     column: lintMessage.column,
     createdDate: Date.now(),
   };
-}
-
-/**
- * Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a list of {PendingLintMessage}.
- *
- * @param lintResults A list of {LintResult} objects to convert to {PendingLintMessage} objects.
- */
-export function buildPendingLintMessages(lintResults: LintResult[]): PendingLintMessage[] {
-  const results = lintResults.filter((result) => result.messages.length > 0);
-
-  const pendingLintMessages = results.reduce((converted, lintResult) => {
-    lintResult.messages.forEach((message: LintMessage) => {
-      if (message.severity === 2) {
-        converted.push(buildPendingLintMessage(lintResult, message));
-      }
-    });
-
-    return converted;
-  }, [] as PendingLintMessage[]);
-
-  return pendingLintMessages;
-}
-
-/**
- * Builds a map of fileHash, pendingLintMessage.
- *
- * @param pendingLintMessages The linting data for all violations.
- */
-export function buildPendingLintMessagesMap(
-  pendingLintMessages: PendingLintMessage[]
-): Map<string, PendingLintMessage> {
-  return new Map(
-    pendingLintMessages.map((currentLintMessage: PendingLintMessage) => {
-      const fileName = generateFileName(currentLintMessage);
-
-      return [fileName, currentLintMessage];
-    })
-  );
 }
 
 function getEngine(result: LintResult) {

@@ -1,8 +1,8 @@
 import { createHash } from 'crypto';
 import { join, parse } from 'path';
 import { ensureDir, readdir, readJSON, unlink, writeFile } from 'fs-extra';
-import { PendingLintMessage } from './types';
-import { buildPendingLintMessagesMap } from './builders';
+import { LintResult, PendingLintMessage } from './types';
+import { buildPendingLintMessages } from './builders';
 
 /**
  * Creates, or ensures the creation of, the .lint-pending directory.
@@ -45,17 +45,14 @@ export function generateFileName(pendingLintMessage: PendingLintMessage): string
  */
 export async function generatePendingFiles(
   baseDir: string,
-  pendingLintMessages: PendingLintMessage[],
+  lintResults: LintResult[],
   filePath?: string
 ): Promise<string> {
   const pendingDir: string = await ensurePendingDir(baseDir);
 
   const existing: Map<string, PendingLintMessage> = await readPendingFiles(pendingDir, filePath);
 
-  const [add, remove] = await getPendingBatches(
-    buildPendingLintMessagesMap(pendingLintMessages),
-    existing
-  );
+  const [add, remove] = await getPendingBatches(buildPendingLintMessages(lintResults), existing);
 
   await _generateFiles(baseDir, add, remove);
 
