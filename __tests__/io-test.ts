@@ -1,6 +1,14 @@
-import { existsSync, statSync, readdirSync, readdir } from 'fs-extra';
-import { join } from 'path';
-import { buildTodoData, generateFileName, generateTodoFiles, getTodoBatches } from '../src';
+import { existsSync, statSync } from 'fs-extra';
+import { join, relative } from 'path';
+import * as globby from 'globby';
+import {
+  buildTodoData,
+  generateTodoFiles,
+  getTodoBatches,
+  todoDirFor,
+  todoFileNameFor,
+  todoFilePathFor,
+} from '../src';
 import { LintResult, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import fixtures from './__fixtures__/fixtures';
@@ -14,20 +22,55 @@ const TODO_DATA: TodoData = {
   createdDate: 1601324202150,
 };
 
-describe('io', () => {
-  describe('generateFileName', () => {
-    it('can generate a unique hash for todo', () => {
-      const fileName = generateFileName(TODO_DATA);
+async function readFiles(todoDir: string) {
+  const files = await globby(todoDir);
+  return files.map((path) => relative(todoDir, path));
+}
 
-      expect(fileName).toEqual('e382776914ba08603a3f1006431cf7c893962e65');
+describe('io', () => {
+  describe('todoFileNameFor', () => {
+    it('can generate a unique hash for todo', () => {
+      const fileName = todoFileNameFor(TODO_DATA);
+
+      expect(fileName).toEqual('6e3be839');
     });
 
     it('generates idempotent file names', () => {
-      const fileName = generateFileName(TODO_DATA);
-      const secondFileName = generateFileName(TODO_DATA);
+      const fileName = todoFileNameFor(TODO_DATA);
+      const secondFileName = todoFileNameFor(TODO_DATA);
 
-      expect(fileName).toEqual('e382776914ba08603a3f1006431cf7c893962e65');
-      expect(secondFileName).toEqual('e382776914ba08603a3f1006431cf7c893962e65');
+      expect(fileName).toEqual('6e3be839');
+      expect(secondFileName).toEqual('6e3be839');
+    });
+  });
+
+  describe('todoDirFor', () => {
+    it('can generate a unique dir hash for todo', () => {
+      const dir = todoDirFor(TODO_DATA.filePath);
+
+      expect(dir).toEqual('42b8532cff6da75c5e5895a6f33522bf37418d0c');
+    });
+
+    it('generates idempotent dir names', () => {
+      const dir1 = todoDirFor(TODO_DATA.filePath);
+      const dir2 = todoDirFor(TODO_DATA.filePath);
+
+      expect(dir1).toEqual(dir2);
+    });
+  });
+
+  describe('todoFilePathFor', () => {
+    it('can generate a unique file path for todo', () => {
+      const dir = todoFilePathFor(TODO_DATA);
+
+      expect(dir).toEqual('42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839');
+    });
+
+    it('generates idempotent file paths', () => {
+      const dir1 = todoFilePathFor(TODO_DATA);
+      const dir2 = todoFilePathFor(TODO_DATA);
+
+      expect(dir1).toEqual(dir2);
     });
   });
 
@@ -47,13 +90,13 @@ describe('io', () => {
     it("doesn't write files when no todos provided", async () => {
       const todoDir = await generateTodoFiles(tmp, []);
 
-      expect(readdirSync(todoDir)).toHaveLength(0);
+      expect(await readFiles(todoDir)).toHaveLength(0);
     });
 
     it('generates todos when todos provided', async () => {
       const todoDir = await generateTodoFiles(tmp, fixtures.eslintWithErrors);
 
-      expect(readdirSync(todoDir)).toHaveLength(18);
+      expect(await readFiles(todoDir)).toHaveLength(18);
     });
 
     it("generates todos only if previous todo doesn't exist", async () => {
@@ -95,7 +138,7 @@ describe('io', () => {
 
       const todoDir = await generateTodoFiles(tmp, initialTodos);
 
-      const initialFiles = readdirSync(todoDir);
+      const initialFiles = await readFiles(todoDir);
 
       expect(initialFiles).toHaveLength(2);
 
@@ -108,7 +151,7 @@ describe('io', () => {
 
       await generateTodoFiles(tmp, fixtures.eslintWithErrors);
 
-      const subsequentFiles = readdirSync(todoDir);
+      const subsequentFiles = await readFiles(todoDir);
 
       expect(subsequentFiles).toHaveLength(18);
 
@@ -121,7 +164,7 @@ describe('io', () => {
 
     it('removes old todos if todos no longer contains violations', async () => {
       const todoDir = await generateTodoFiles(tmp, fixtures.eslintWithErrors);
-      const initialFiles = readdirSync(todoDir);
+      const initialFiles = await readFiles(todoDir);
 
       expect(initialFiles).toHaveLength(18);
 
@@ -130,12 +173,12 @@ describe('io', () => {
 
       await generateTodoFiles(tmp, firstHalf);
 
-      const subsequentFiles = readdirSync(todoDir);
+      const subsequentFiles = await readFiles(todoDir);
 
       expect(subsequentFiles).toHaveLength(7);
 
       buildTodoData(secondHalf).forEach((todoDatum) => {
-        expect(!existsSync(join(todoDir, `${generateFileName(todoDatum)}.json`))).toEqual(true);
+        expect(!existsSync(join(todoDir, `${todoFilePathFor(todoDatum)}.json`))).toEqual(true);
       });
     });
   });
@@ -147,18 +190,6 @@ describe('io', () => {
       tmp = createTmpDir();
     });
 
-    it("creates .lint-todo directory if one doesn't exist", async () => {
-      const todoDir = await generateTodoFiles(tmp, []);
-
-      expect(existsSync(todoDir)).toEqual(true);
-    });
-
-    it("doesn't write files when no todos provided", async () => {
-      const todoDir = await generateTodoFiles(tmp, []);
-
-      expect(readdirSync(todoDir)).toHaveLength(0);
-    });
-
     it('generates todos for a specific filePath', async () => {
       const todoDir = await generateTodoFiles(
         tmp,
@@ -166,23 +197,27 @@ describe('io', () => {
         '/Users/fake/app/controllers/settings.js'
       );
 
-      expect(await readdir(todoDir)).toMatchInlineSnapshot(`
+      expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
-          "3c19eab21259dcb5eee1035f69528e4a060e700d.json",
-          "e382776914ba08603a3f1006431cf7c893962e65.json",
-          "f65bb1f69ecaab090153bcbf6413cfda826133ba.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/53e7a9a0.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/aad8bc25.json",
         ]
       `);
     });
 
     it('updates todos for a specific filePath', async () => {
-      const todoDir = await generateTodoFiles(tmp, fixtures.singleFileTodo);
+      const todoDir = await generateTodoFiles(
+        tmp,
+        fixtures.singleFileTodo,
+        '/Users/fake/app/controllers/settings.js'
+      );
 
-      expect(await readdir(todoDir)).toMatchInlineSnapshot(`
+      expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
-          "3c19eab21259dcb5eee1035f69528e4a060e700d.json",
-          "e382776914ba08603a3f1006431cf7c893962e65.json",
-          "f65bb1f69ecaab090153bcbf6413cfda826133ba.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/53e7a9a0.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/aad8bc25.json",
         ]
       `);
 
@@ -192,29 +227,37 @@ describe('io', () => {
         '/Users/fake/app/controllers/settings.js'
       );
 
-      expect(await readdir(todoDir)).toMatchInlineSnapshot(`
+      expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
-          "082d442a601be9bbb41c75ed3a0c685473a2c9db.json",
-          "3c19eab21259dcb5eee1035f69528e4a060e700d.json",
-          "e382776914ba08603a3f1006431cf7c893962e65.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/aad8bc25.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/ee492fc4.json",
         ]
       `);
     });
 
     it('deletes todos for a specific filePath', async () => {
-      const todoDir = await generateTodoFiles(tmp, fixtures.singleFileTodo);
+      const todoDir = await generateTodoFiles(
+        tmp,
+        fixtures.singleFileTodo,
+        '/Users/fake/app/controllers/settings.js'
+      );
 
-      expect(await readdir(todoDir)).toMatchInlineSnapshot(`
+      expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
-          "3c19eab21259dcb5eee1035f69528e4a060e700d.json",
-          "e382776914ba08603a3f1006431cf7c893962e65.json",
-          "f65bb1f69ecaab090153bcbf6413cfda826133ba.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/53e7a9a0.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839.json",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/aad8bc25.json",
         ]
       `);
 
-      await generateTodoFiles(tmp, [], '/Users/fake/app/controllers/settings.js');
+      await generateTodoFiles(
+        tmp,
+        fixtures.singleFileNoErrors,
+        '/Users/fake/app/controllers/settings.js'
+      );
 
-      expect(await readdir(todoDir)).toMatchInlineSnapshot(`Array []`);
+      expect(await readFiles(todoDir)).toHaveLength(0);
     });
   });
 
@@ -369,37 +412,34 @@ describe('io', () => {
     ];
 
     it('creates items to add', async () => {
-      debugger;
       const [add] = await getTodoBatches(buildTodoData(fromLintResults), new Map());
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
         Array [
-          "e382776914ba08603a3f1006431cf7c893962e65",
-          "3c19eab21259dcb5eee1035f69528e4a060e700d",
-          "f65bb1f69ecaab090153bcbf6413cfda826133ba",
-          "24e99f01beff611d12524745b4125d5effc76b4b",
-          "d15fa0773bc05998d7ae34d1ad3d401cfa73604a",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/aad8bc25",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/53e7a9a0",
+          "1ca7789ad58b87fa44470777e587667b2d4c191c/b9046d34",
+          "1ca7789ad58b87fa44470777e587667b2d4c191c/092271fa",
         ]
       `);
     });
 
     it('creates items to delete', async () => {
-      debugger;
       const [, remove] = await getTodoBatches(new Map(), buildTodoData(fromLintResults));
 
       expect([...remove.keys()]).toMatchInlineSnapshot(`
         Array [
-          "e382776914ba08603a3f1006431cf7c893962e65",
-          "3c19eab21259dcb5eee1035f69528e4a060e700d",
-          "f65bb1f69ecaab090153bcbf6413cfda826133ba",
-          "24e99f01beff611d12524745b4125d5effc76b4b",
-          "d15fa0773bc05998d7ae34d1ad3d401cfa73604a",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/aad8bc25",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/53e7a9a0",
+          "1ca7789ad58b87fa44470777e587667b2d4c191c/b9046d34",
+          "1ca7789ad58b87fa44470777e587667b2d4c191c/092271fa",
         ]
       `);
     });
 
     it('creates all batches', async () => {
-      debugger;
       const [add, remove, stable] = await getTodoBatches(
         buildTodoData(fromLintResults),
         buildTodoData(existing)
@@ -407,21 +447,21 @@ describe('io', () => {
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
         Array [
-          "e382776914ba08603a3f1006431cf7c893962e65",
-          "3c19eab21259dcb5eee1035f69528e4a060e700d",
-          "f65bb1f69ecaab090153bcbf6413cfda826133ba",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/aad8bc25",
+          "42b8532cff6da75c5e5895a6f33522bf37418d0c/53e7a9a0",
         ]
       `);
       expect([...remove.keys()]).toMatchInlineSnapshot(`
         Array [
-          "e0b38cee71605a6150f7e179cbedb09e43290986",
-          "c1c43ce5c33d99435e9d7241ef2c920112c3871c",
+          "e0ab64604b96684307a69bb57e5f76ab613f868d/66256fb7",
+          "e0ab64604b96684307a69bb57e5f76ab613f868d/8fd35486",
         ]
       `);
       expect([...stable.keys()]).toMatchInlineSnapshot(`
         Array [
-          "24e99f01beff611d12524745b4125d5effc76b4b",
-          "d15fa0773bc05998d7ae34d1ad3d401cfa73604a",
+          "1ca7789ad58b87fa44470777e587667b2d4c191c/b9046d34",
+          "1ca7789ad58b87fa44470777e587667b2d4c191c/092271fa",
         ]
       `);
     });

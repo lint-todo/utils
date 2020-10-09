@@ -1,4 +1,4 @@
-import { generateFileName } from './io';
+import { todoFilePathFor } from './io';
 import { LintMessage, LintResult, TodoData } from './types';
 
 /**
@@ -14,7 +14,7 @@ export function buildTodoData(lintResults: LintResult[]): Map<string, TodoData> 
       if (message.severity === 2) {
         const todoDatum = _buildTodoDatum(lintResult, message);
 
-        converted.set(generateFileName(todoDatum), todoDatum);
+        converted.set(todoFilePathFor(todoDatum), todoDatum);
       }
     });
 

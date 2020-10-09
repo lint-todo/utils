@@ -1,9 +1,13 @@
 export { _buildTodoDatum, buildTodoData } from './builders';
 export {
   ensureTodoDir,
-  getTodoDirPath,
-  generateFileName,
+  getTodoStorageDirPath,
   generateTodoFiles,
-  readTodoFiles,
   getTodoBatches,
+  todoFilePathFor,
+  todoDirFor,
+  todoFileNameFor,
+  readTodos,
 } from './io';
+
+export * from './types';

@@ -8,6 +8,7 @@ import * as emberTemplateLintWithErrors from './ember-template-lint-with-errors.
 import * as emberTemplateLintWithWarnings from './ember-template-lint-with-warnings.json';
 import * as emberTemplateLintNoResults from './ember-template-lint-no-results.json';
 import * as singleFileTodo from './single-file-todo.json';
+import * as singleFileNoErrors from './single-file-no-errors.json';
 import * as singleFileTodoUpdated from './single-file-todo-updated.json';
 
 export default {
@@ -30,5 +31,6 @@ export default {
     (<TemplateLintReport>(emberTemplateLintNoResults as unknown)).results
   ),
   singleFileTodo: <ESLint.LintResult[]>singleFileTodo,
+  singleFileNoErrors: <ESLint.LintResult[]>singleFileNoErrors,
   singleFileTodoUpdated: <ESLint.LintResult[]>singleFileTodoUpdated,
 };

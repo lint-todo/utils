@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
-import { join, parse } from 'path';
-import { ensureDir, readdir, readJSON, unlink, writeFile } from 'fs-extra';
+import { join, parse, relative } from 'path';
+import { ensureDir, readJSON, unlink, writeJson } from 'fs-extra';
+import * as globby from 'globby';
 import { LintResult, TodoData } from './types';
 import { buildTodoData } from './builders';
 
@@ -10,15 +11,39 @@ import { buildTodoData } from './builders';
  * @param baseDir The base directory that contains the .lint-todo storage directory.
  */
 export async function ensureTodoDir(baseDir: string): Promise<string> {
-  const path = getTodoDirPath(baseDir);
+  const path = getTodoStorageDirPath(baseDir);
 
   await ensureDir(path);
 
   return path;
 }
 
-export function getTodoDirPath(baseDir: string): string {
+/**
+ * @param baseDir The base directory that contains the .lint-todo storage directory.
+ */
+export function getTodoStorageDirPath(baseDir: string): string {
   return join(baseDir, '.lint-todo');
+}
+
+/**
+ * Creates a file path from the linting data. Excludes extension.
+ *
+ * @example
+ * 42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839
+ *
+ * @param todoData The linting data for an individual violation.
+ */
+export function todoFilePathFor(todoData: TodoData): string {
+  return join(todoDirFor(todoData.filePath), todoFileNameFor(todoData));
+}
+
+/**
+ * Creates a short hash for the todo's file path.
+ *
+ * @param filePath The filePath from linting data for an individual violation.
+ */
+export function todoDirFor(filePath: string): string {
+  return createHash('sha1').update(filePath).digest('hex');
 }
 
 /**
@@ -26,10 +51,10 @@ export function getTodoDirPath(baseDir: string): string {
  *
  * @param todoData The linting data for an individual violation.
  */
-export function generateFileName(todoData: TodoData): string {
-  const hashParams = `${todoData.engine}${todoData.filePath}${todoData.ruleId}${todoData.line}${todoData.column}`;
+export function todoFileNameFor(todoData: TodoData): string {
+  const hashParams = `${todoData.engine}${todoData.ruleId}${todoData.line}${todoData.column}`;
 
-  return createHash('sha1').update(hashParams).digest('hex');
+  return createHash('sha256').update(hashParams).digest('hex').slice(0, 8);
 }
 
 /**
@@ -48,37 +73,39 @@ export async function generateTodoFiles(
   lintResults: LintResult[],
   filePath?: string
 ): Promise<string> {
-  const todoDir: string = await ensureTodoDir(baseDir);
-
-  const existing: Map<string, TodoData> = await readTodoFiles(todoDir, filePath);
-
+  const todoStorageDir: string = await ensureTodoDir(baseDir);
+  const existing: Map<string, TodoData> = await readTodos(todoStorageDir, filePath);
   const [add, remove] = await getTodoBatches(buildTodoData(lintResults), existing);
 
-  await _generateFiles(baseDir, add, remove);
+  await _generateFiles(todoStorageDir, add, remove);
 
-  return todoDir;
+  return todoStorageDir;
 }
 
 /**
  * Reads all todo files in the .lint-todo directory.
  *
- * @param todoDir The .lint-todo storage directory.
+ * @param todoStorageDir The .lint-todo storage directory.
  * @param filePath? The absolute file path of the file to return todo items for.
  */
-export async function readTodoFiles(
-  todoDir: string,
-  filePath?: string
+export async function readTodos(
+  todoStorageDir: string,
+  filesDirOrPath?: string
 ): Promise<Map<string, TodoData>> {
-  const fileNames = await readdir(todoDir);
+  if (filesDirOrPath) {
+    todoStorageDir = join(todoStorageDir, todoDirFor(filesDirOrPath));
+  }
 
+  const fileNames = await globby(todoStorageDir);
   const map = new Map();
-  for (const fileName of fileNames) {
-    const todoDatum = await readJSON(join(todoDir, fileName));
 
-    if (filePath && todoDatum.filePath !== filePath) {
-      continue;
-    }
-    map.set(parse(fileName).name, todoDatum);
+  for (const fileName of fileNames) {
+    const todo = await readJSON(fileName);
+    const { dir, name } = parse(
+      relative(filesDirOrPath ? parse(todoStorageDir).dir : todoStorageDir, fileName)
+    );
+
+    map.set(join(dir, name), todo);
   }
 
   return map;
@@ -118,18 +145,18 @@ export async function getTodoBatches(
 }
 
 async function _generateFiles(
-  baseDir: string,
+  todoStorageDir: string,
   add: Map<string, TodoData>,
   remove: Map<string, TodoData>
 ) {
-  const path = getTodoDirPath(baseDir);
-
   for (const [fileHash, todoDatum] of add) {
-    // eslint-disable-next-line unicorn/no-null
-    await writeFile(join(path, `${fileHash}.json`), JSON.stringify(todoDatum, null, 2));
+    const { dir } = parse(fileHash);
+
+    await ensureDir(join(todoStorageDir, dir));
+    await writeJson(join(todoStorageDir, `${fileHash}.json`), todoDatum);
   }
 
   for (const [fileHash] of remove) {
-    await unlink(join(path, `${fileHash}.json`));
+    await unlink(join(todoStorageDir, `${fileHash}.json`));
   }
 }
