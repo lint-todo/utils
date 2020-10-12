@@ -1,6 +1,5 @@
 module.exports = {
   testEnvironment: 'node',
-  testTimeout: 2147483647,
   moduleFileExtensions: ['ts', 'js', 'json'],
   transform: { '\\.ts$': 'ts-jest' },
   coverageReporters: ['lcov', 'text-summary'],
