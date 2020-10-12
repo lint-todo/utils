@@ -1,16 +1,6 @@
 import { createHash } from 'crypto';
-import { join, parse, relative } from 'path';
-import {
-  ensureDir,
-  exists,
-  existsSync,
-  promises,
-  readdir,
-  readJSON,
-  unlink,
-  writeJson,
-} from 'fs-extra';
-import * as globby from 'globby';
+import { join, parse } from 'path';
+import { ensureDir, readdir, readJSON, unlink, writeJson } from 'fs-extra';
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData } from './types';
 
@@ -128,12 +118,21 @@ export async function readTodosForFilePath(
   const map = new Map();
   const todoFileDir = todoDirFor(filesDirOrPath);
   const todoFilePathDir = join(todoStorageDir, todoFileDir);
-  const fileNames = existsSync(todoFilePathDir) ? await readdir(todoFilePathDir) : [];
 
-  for (const fileName of fileNames) {
-    const todo = await readJSON(join(todoFilePathDir, fileName));
-    const { name } = parse(fileName);
-    map.set(join(todoFileDir, name), todo);
+  try {
+    const fileNames = await readdir(todoFilePathDir);
+
+    for (const fileName of fileNames) {
+      const todo = await readJSON(join(todoFilePathDir, fileName));
+      const { name } = parse(fileName);
+      map.set(join(todoFileDir, name), todo);
+    }
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return map;
+    }
+
+    throw error;
   }
 
   return map;
