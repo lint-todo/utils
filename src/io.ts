@@ -2,8 +2,8 @@ import { createHash } from 'crypto';
 import { join, parse, relative } from 'path';
 import { ensureDir, readJSON, unlink, writeJson } from 'fs-extra';
 import * as globby from 'globby';
-import { LintResult, TodoData } from './types';
 import { buildTodoData } from './builders';
+import { FilePath, LintResult, TodoData } from './types';
 
 /**
  * Creates, or ensures the creation of, the .lint-todo directory.
@@ -58,7 +58,7 @@ export function todoFileNameFor(todoData: TodoData): string {
 }
 
 /**
- * Generates files for todo lint violations. One file is generated for each violation, using a generated
+ * Writes files for todo lint violations. One file is generated for each violation, using a generated
  * hash to identify each.
  *
  * Given a list of todo lint violations, this function will also delete existing files that no longer
@@ -68,13 +68,13 @@ export function todoFileNameFor(todoData: TodoData): string {
  * @param lintResults The raw linting data.
  * @param filePath? The absolute file path of the file to update violations for.
  */
-export async function generateTodoFiles(
+export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
   filePath?: string
 ): Promise<string> {
   const todoStorageDir: string = await ensureTodoDir(baseDir);
-  const existing: Map<string, TodoData> = await readTodos(todoStorageDir, filePath);
+  const existing: Map<FilePath, TodoData> = await readTodos(todoStorageDir, filePath);
   const [add, remove] = await getTodoBatches(buildTodoData(lintResults), existing);
 
   await _generateFiles(todoStorageDir, add, remove);
@@ -91,7 +91,7 @@ export async function generateTodoFiles(
 export async function readTodos(
   todoStorageDir: string,
   filesDirOrPath?: string
-): Promise<Map<string, TodoData>> {
+): Promise<Map<FilePath, TodoData>> {
   if (filesDirOrPath) {
     todoStorageDir = join(todoStorageDir, todoDirFor(filesDirOrPath));
   }
@@ -118,12 +118,12 @@ export async function readTodos(
  * @param existing Existing todo lint data.
  */
 export async function getTodoBatches(
-  lintResults: Map<string, TodoData>,
-  existing: Map<string, TodoData>
-): Promise<Map<string, TodoData>[]> {
-  const add = new Map<string, TodoData>();
-  const remove = new Map<string, TodoData>();
-  const stable = new Map<string, TodoData>();
+  lintResults: Map<FilePath, TodoData>,
+  existing: Map<FilePath, TodoData>
+): Promise<Map<FilePath, TodoData>[]> {
+  const add = new Map<FilePath, TodoData>();
+  const remove = new Map<FilePath, TodoData>();
+  const stable = new Map<FilePath, TodoData>();
 
   for (const [fileHash, todoDatum] of lintResults) {
     if (!existing.has(fileHash)) {
@@ -146,8 +146,8 @@ export async function getTodoBatches(
 
 async function _generateFiles(
   todoStorageDir: string,
-  add: Map<string, TodoData>,
-  remove: Map<string, TodoData>
+  add: Map<FilePath, TodoData>,
+  remove: Map<FilePath, TodoData>
 ) {
   for (const [fileHash, todoDatum] of add) {
     const { dir } = parse(fileHash);

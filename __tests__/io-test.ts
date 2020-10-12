@@ -3,7 +3,7 @@ import { join, relative } from 'path';
 import * as globby from 'globby';
 import {
   buildTodoData,
-  generateTodoFiles,
+  writeTodos,
   getTodoBatches,
   todoDirFor,
   todoFileNameFor,
@@ -74,7 +74,7 @@ describe('io', () => {
     });
   });
 
-  describe('generateTodoFiles', () => {
+  describe('writeTodos', () => {
     let tmp: string;
 
     beforeEach(() => {
@@ -82,19 +82,19 @@ describe('io', () => {
     });
 
     it("creates .lint-todo directory if one doesn't exist", async () => {
-      const todoDir = await generateTodoFiles(tmp, []);
+      const todoDir = await writeTodos(tmp, []);
 
       expect(existsSync(todoDir)).toEqual(true);
     });
 
     it("doesn't write files when no todos provided", async () => {
-      const todoDir = await generateTodoFiles(tmp, []);
+      const todoDir = await writeTodos(tmp, []);
 
       expect(await readFiles(todoDir)).toHaveLength(0);
     });
 
     it('generates todos when todos provided', async () => {
-      const todoDir = await generateTodoFiles(tmp, fixtures.eslintWithErrors);
+      const todoDir = await writeTodos(tmp, fixtures.eslintWithErrors);
 
       expect(await readFiles(todoDir)).toHaveLength(18);
     });
@@ -136,7 +136,7 @@ describe('io', () => {
         },
       ];
 
-      const todoDir = await generateTodoFiles(tmp, initialTodos);
+      const todoDir = await writeTodos(tmp, initialTodos);
 
       const initialFiles = await readFiles(todoDir);
 
@@ -149,7 +149,7 @@ describe('io', () => {
         };
       });
 
-      await generateTodoFiles(tmp, fixtures.eslintWithErrors);
+      await writeTodos(tmp, fixtures.eslintWithErrors);
 
       const subsequentFiles = await readFiles(todoDir);
 
@@ -163,7 +163,7 @@ describe('io', () => {
     });
 
     it('removes old todos if todos no longer contains violations', async () => {
-      const todoDir = await generateTodoFiles(tmp, fixtures.eslintWithErrors);
+      const todoDir = await writeTodos(tmp, fixtures.eslintWithErrors);
       const initialFiles = await readFiles(todoDir);
 
       expect(initialFiles).toHaveLength(18);
@@ -171,7 +171,7 @@ describe('io', () => {
       const firstHalf = fixtures.eslintWithErrors.slice(0, 3);
       const secondHalf = fixtures.eslintWithErrors.slice(3, fixtures.eslintWithErrors.length);
 
-      await generateTodoFiles(tmp, firstHalf);
+      await writeTodos(tmp, firstHalf);
 
       const subsequentFiles = await readFiles(todoDir);
 
@@ -183,7 +183,7 @@ describe('io', () => {
     });
   });
 
-  describe('generateTodoFiles for single file', () => {
+  describe('writeTodos for single file', () => {
     let tmp: string;
 
     beforeEach(() => {
@@ -191,7 +191,7 @@ describe('io', () => {
     });
 
     it('generates todos for a specific filePath', async () => {
-      const todoDir = await generateTodoFiles(
+      const todoDir = await writeTodos(
         tmp,
         fixtures.singleFileTodo,
         '/Users/fake/app/controllers/settings.js'
@@ -207,7 +207,7 @@ describe('io', () => {
     });
 
     it('updates todos for a specific filePath', async () => {
-      const todoDir = await generateTodoFiles(
+      const todoDir = await writeTodos(
         tmp,
         fixtures.singleFileTodo,
         '/Users/fake/app/controllers/settings.js'
@@ -221,7 +221,7 @@ describe('io', () => {
         ]
       `);
 
-      await generateTodoFiles(
+      await writeTodos(
         tmp,
         fixtures.singleFileTodoUpdated,
         '/Users/fake/app/controllers/settings.js'
@@ -237,7 +237,7 @@ describe('io', () => {
     });
 
     it('deletes todos for a specific filePath', async () => {
-      const todoDir = await generateTodoFiles(
+      const todoDir = await writeTodos(
         tmp,
         fixtures.singleFileTodo,
         '/Users/fake/app/controllers/settings.js'
@@ -251,11 +251,7 @@ describe('io', () => {
         ]
       `);
 
-      await generateTodoFiles(
-        tmp,
-        fixtures.singleFileNoErrors,
-        '/Users/fake/app/controllers/settings.js'
-      );
+      await writeTodos(tmp, fixtures.singleFileNoErrors, '/Users/fake/app/controllers/settings.js');
 
       expect(await readFiles(todoDir)).toHaveLength(0);
     });

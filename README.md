@@ -8,21 +8,30 @@ Those utilities are:
 
 <dl>
 <dt><a href="#buildTodoData">buildTodoData(lintResults)</a></dt>
-<dd><p>Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a map of fileHash, todoDatum.</p>
+<dd><p>Adapts a list of <a href="https://github.com/DefinitelyTyped/DefinitelyTyped/blob/160f43ae6852c4eefec2641e54cff96dd7b63488/types/eslint/index.d.ts#L640">ESLint.LintResult</a>
+or <a href="TemplateLintResult">TemplateLintResult</a> to a map of <a href="FilePath">FilePath</a>, <a href="TodoData">TodoData</a>.</p>
 </dd>
 <dt><a href="#ensureTodoDir">ensureTodoDir(baseDir)</a></dt>
 <dd><p>Creates, or ensures the creation of, the .lint-todo directory.</p>
 </dd>
-<dt><a href="#generateFileName">generateFileName(todoData)</a></dt>
+<dt><a href="#getTodoStorageDirPath">getTodoStorageDirPath(baseDir)</a></dt>
+<dd></dd>
+<dt><a href="#todoFilePathFor">todoFilePathFor(todoData)</a></dt>
+<dd><p>Creates a file path from the linting data. Excludes extension.</p>
+</dd>
+<dt><a href="#todoDirFor">todoDirFor(filePath)</a></dt>
+<dd><p>Creates a short hash for the todo&#39;s file path.</p>
+</dd>
+<dt><a href="#todoFileNameFor">todoFileNameFor(todoData)</a></dt>
 <dd><p>Generates a unique filename for a todo lint data.</p>
 </dd>
-<dt><a href="#generateTodoFiles">generateTodoFiles(baseDir, lintResults, filePath?)</a></dt>
-<dd><p>Generates files for todo lint violations. One file is generated for each violation, using a generated
+<dt><a href="#writeTodos">writeTodos(baseDir, lintResults, filePath?)</a></dt>
+<dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
 <p>Given a list of todo lint violations, this function will also delete existing files that no longer
 have a todo lint violation.</p>
 </dd>
-<dt><a href="#readTodoFiles">readTodoFiles(todoDir, filePath?)</a></dt>
+<dt><a href="#readTodos">readTodos(todoStorageDir, filePath?)</a></dt>
 <dd><p>Reads all todo files in the .lint-todo directory.</p>
 </dd>
 <dt><a href="#getTodoBatches">getTodoBatches(lintResults, existing)</a></dt>
@@ -34,7 +43,8 @@ have a todo lint violation.</p>
 
 ## buildTodoData(lintResults)
 
-Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a map of fileHash, todoDatum.
+Adapts a list of [ESLint.LintResult](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/160f43ae6852c4eefec2641e54cff96dd7b63488/types/eslint/index.d.ts#L640)
+or [TemplateLintResult](TemplateLintResult) to a map of [FilePath](FilePath), [TodoData](TodoData).
 
 **Kind**: global function
 
@@ -54,9 +64,49 @@ Creates, or ensures the creation of, the .lint-todo directory.
 | ------- | ------------------------------------------------------------------ |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 
-<a name="generateFileName"></a>
+<a name="getTodoStorageDirPath"></a>
 
-## generateFileName(todoData)
+## getTodoStorageDirPath(baseDir)
+
+**Kind**: global function
+
+| Param   | Description                                                        |
+| ------- | ------------------------------------------------------------------ |
+| baseDir | The base directory that contains the .lint-todo storage directory. |
+
+<a name="todoFilePathFor"></a>
+
+## todoFilePathFor(todoData)
+
+Creates a file path from the linting data. Excludes extension.
+
+**Kind**: global function
+
+| Param    | Description                                   |
+| -------- | --------------------------------------------- |
+| todoData | The linting data for an individual violation. |
+
+**Example**
+
+```js
+42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839
+```
+
+<a name="todoDirFor"></a>
+
+## todoDirFor(filePath)
+
+Creates a short hash for the todo's file path.
+
+**Kind**: global function
+
+| Param    | Description                                                 |
+| -------- | ----------------------------------------------------------- |
+| filePath | The filePath from linting data for an individual violation. |
+
+<a name="todoFileNameFor"></a>
+
+## todoFileNameFor(todoData)
 
 Generates a unique filename for a todo lint data.
 
@@ -66,11 +116,11 @@ Generates a unique filename for a todo lint data.
 | -------- | --------------------------------------------- |
 | todoData | The linting data for an individual violation. |
 
-<a name="generateTodoFiles"></a>
+<a name="writeTodos"></a>
 
-## generateTodoFiles(baseDir, lintResults, filePath?)
+## writeTodos(baseDir, lintResults, filePath?)
 
-Generates files for todo lint violations. One file is generated for each violation, using a generated
+Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.
 
 Given a list of todo lint violations, this function will also delete existing files that no longer
@@ -84,18 +134,18 @@ have a todo lint violation.
 | lintResults | The raw linting data.                                              |
 | filePath?   | The absolute file path of the file to update violations for.       |
 
-<a name="readTodoFiles"></a>
+<a name="readTodos"></a>
 
-## readTodoFiles(todoDir, filePath?)
+## readTodos(todoStorageDir, filePath?)
 
 Reads all todo files in the .lint-todo directory.
 
 **Kind**: global function
 
-| Param     | Description                                                  |
-| --------- | ------------------------------------------------------------ |
-| todoDir   | The .lint-todo storage directory.                            |
-| filePath? | The absolute file path of the file to return todo items for. |
+| Param          | Description                                                  |
+| -------------- | ------------------------------------------------------------ |
+| todoStorageDir | The .lint-todo storage directory.                            |
+| filePath?      | The absolute file path of the file to return todo items for. |
 
 <a name="getTodoBatches"></a>
 
