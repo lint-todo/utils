@@ -1,6 +1,15 @@
 import { createHash } from 'crypto';
 import { join, parse, relative } from 'path';
-import { ensureDir, readJSON, unlink, writeJson } from 'fs-extra';
+import {
+  ensureDir,
+  exists,
+  existsSync,
+  promises,
+  readdir,
+  readJSON,
+  unlink,
+  writeJson,
+} from 'fs-extra';
 import * as globby from 'globby';
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData } from './types';
@@ -66,7 +75,7 @@ export function todoFileNameFor(todoData: TodoData): string {
  *
  * @param baseDir The base directory that contains the .lint-todo storage directory.
  * @param lintResults The raw linting data.
- * @param filePath? The absolute file path of the file to update violations for.
+ * @param filePath? The relative file path of the file to update violations for.
  */
 export async function writeTodos(
   baseDir: string,
@@ -74,7 +83,9 @@ export async function writeTodos(
   filePath?: string
 ): Promise<string> {
   const todoStorageDir: string = await ensureTodoDir(baseDir);
-  const existing: Map<FilePath, TodoData> = await readTodos(todoStorageDir, filePath);
+  const existing: Map<FilePath, TodoData> = filePath
+    ? await readTodosForFilePath(todoStorageDir, filePath)
+    : await readTodos(todoStorageDir);
   const [add, remove] = await getTodoBatches(buildTodoData(lintResults), existing);
 
   await _generateFiles(todoStorageDir, add, remove);
@@ -86,26 +97,43 @@ export async function writeTodos(
  * Reads all todo files in the .lint-todo directory.
  *
  * @param todoStorageDir The .lint-todo storage directory.
- * @param filePath? The absolute file path of the file to return todo items for.
  */
-export async function readTodos(
-  todoStorageDir: string,
-  filesDirOrPath?: string
-): Promise<Map<FilePath, TodoData>> {
-  if (filesDirOrPath) {
-    todoStorageDir = join(todoStorageDir, todoDirFor(filesDirOrPath));
+export async function readTodos(todoStorageDir: string): Promise<Map<FilePath, TodoData>> {
+  const map = new Map();
+  const todoFileDirs = await readdir(todoStorageDir);
+
+  for (const todoFileDir of todoFileDirs) {
+    const fileNames = await readdir(join(todoStorageDir, todoFileDir));
+
+    for (const fileName of fileNames) {
+      const todo = await readJSON(join(todoStorageDir, todoFileDir, fileName));
+      const { name } = parse(fileName);
+      map.set(join(todoFileDir, name), todo);
+    }
   }
 
-  const fileNames = await globby(todoStorageDir);
+  return map;
+}
+
+/**
+ * Reads todo files in the .lint-todo directory for a specific filePath.
+ *
+ * @param todoStorageDir The .lint-todo storage directory.
+ * @param filePath The relative file path of the file to return todo items for.
+ */
+export async function readTodosForFilePath(
+  todoStorageDir: string,
+  filesDirOrPath: string
+): Promise<Map<FilePath, TodoData>> {
   const map = new Map();
+  const todoFileDir = todoDirFor(filesDirOrPath);
+  const todoFilePathDir = join(todoStorageDir, todoFileDir);
+  const fileNames = existsSync(todoFilePathDir) ? await readdir(todoFilePathDir) : [];
 
   for (const fileName of fileNames) {
-    const todo = await readJSON(fileName);
-    const { dir, name } = parse(
-      relative(filesDirOrPath ? parse(todoStorageDir).dir : todoStorageDir, fileName)
-    );
-
-    map.set(join(dir, name), todo);
+    const todo = await readJSON(join(todoFilePathDir, fileName));
+    const { name } = parse(fileName);
+    map.set(join(todoFileDir, name), todo);
   }
 
   return map;

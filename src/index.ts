@@ -8,6 +8,7 @@ export {
   todoDirFor,
   todoFileNameFor,
   readTodos,
+  readTodosForFilePath,
 } from './io';
 
 export * from './types';
