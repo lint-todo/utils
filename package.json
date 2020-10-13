@@ -38,7 +38,7 @@
     "typescript": "^3.9.3"
   },
   "engines": {
-    "node": ">= 12"
+    "node": "10.* || 12.* || >= 14"
   },
   "files": [
     "lib/"
