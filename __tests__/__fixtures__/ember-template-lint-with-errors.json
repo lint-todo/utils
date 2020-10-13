@@ -6,7 +6,7 @@
         {
           "rule": "require-input-label",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/add-ssh-key.hbs",
+          "moduleId": "{{path}}/app/templates/components/add-ssh-key.hbs",
           "message": "Input elements require a valid associated label.",
           "line": 3,
           "column": 4,
@@ -15,7 +15,7 @@
         {
           "rule": "require-input-label",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/add-ssh-key.hbs",
+          "moduleId": "{{path}}/app/templates/components/add-ssh-key.hbs",
           "message": "Input elements require a valid associated label.",
           "line": 27,
           "column": 8,
@@ -23,7 +23,7 @@
         }
       ],
       "errorCount": 2,
-      "filePath": "/Users/fake/app/templates/components/add-ssh-key.hbs",
+      "filePath": "{{path}}/app/templates/components/add-ssh-key.hbs",
       "source": ""
     },
     {
@@ -31,7 +31,7 @@
         {
           "rule": "link-href-attributes",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/billing/billing-details.hbs",
+          "moduleId": "{{path}}/app/templates/components/billing/billing-details.hbs",
           "message": "a tags must have an href attribute",
           "line": 96,
           "column": 14,
@@ -40,7 +40,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/billing/billing-details.hbs",
+          "moduleId": "{{path}}/app/templates/components/billing/billing-details.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 96,
           "column": 64,
@@ -48,7 +48,7 @@
         }
       ],
       "errorCount": 2,
-      "filePath": "/Users/fake/app/templates/components/billing/billing-details.hbs",
+      "filePath": "{{path}}/app/templates/components/billing/billing-details.hbs",
       "source": ""
     },
     {
@@ -56,7 +56,7 @@
         {
           "rule": "link-href-attributes",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/billing/contact-details.hbs",
+          "moduleId": "{{path}}/app/templates/components/billing/contact-details.hbs",
           "message": "a tags must have an href attribute",
           "line": 76,
           "column": 14,
@@ -65,7 +65,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/billing/contact-details.hbs",
+          "moduleId": "{{path}}/app/templates/components/billing/contact-details.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 77,
           "column": 16,
@@ -73,13 +73,13 @@
         }
       ],
       "errorCount": 2,
-      "filePath": "/Users/fake/app/templates/components/billing/contact-details.hbs",
+      "filePath": "{{path}}/app/templates/components/billing/contact-details.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/components/billing/education.hbs",
+      "filePath": "{{path}}/app/templates/components/billing/education.hbs",
       "source": ""
     },
     {
@@ -87,7 +87,7 @@
         {
           "rule": "link-href-attributes",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/billing/payment-details.hbs",
+          "moduleId": "{{path}}/app/templates/components/billing/payment-details.hbs",
           "message": "a tags must have an href attribute",
           "line": 22,
           "column": 16,
@@ -96,7 +96,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/billing/payment-details.hbs",
+          "moduleId": "{{path}}/app/templates/components/billing/payment-details.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 22,
           "column": 19,
@@ -104,7 +104,7 @@
         }
       ],
       "errorCount": 2,
-      "filePath": "/Users/fake/app/templates/components/billing/payment-details.hbs",
+      "filePath": "{{path}}/app/templates/components/billing/payment-details.hbs",
       "source": ""
     },
     {
@@ -112,7 +112,7 @@
         {
           "rule": "link-href-attributes",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/billing/select-plan.hbs",
+          "moduleId": "{{path}}/app/templates/components/billing/select-plan.hbs",
           "message": "a tags must have an href attribute",
           "line": 71,
           "column": 12,
@@ -121,7 +121,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/billing/select-plan.hbs",
+          "moduleId": "{{path}}/app/templates/components/billing/select-plan.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 42,
           "column": 14,
@@ -130,7 +130,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/billing/select-plan.hbs",
+          "moduleId": "{{path}}/app/templates/components/billing/select-plan.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 72,
           "column": 14,
@@ -138,7 +138,7 @@
         }
       ],
       "errorCount": 3,
-      "filePath": "/Users/fake/app/templates/components/billing/select-plan.hbs",
+      "filePath": "{{path}}/app/templates/components/billing/select-plan.hbs",
       "source": ""
     },
     {
@@ -146,7 +146,7 @@
         {
           "rule": "link-href-attributes",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/caches-item.hbs",
+          "moduleId": "{{path}}/app/templates/components/caches-item.hbs",
           "message": "a tags must have an href attribute",
           "line": 20,
           "column": 2,
@@ -155,7 +155,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/caches-item.hbs",
+          "moduleId": "{{path}}/app/templates/components/caches-item.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 23,
           "column": 4,
@@ -164,7 +164,7 @@
         {
           "rule": "no-invalid-link-title",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/caches-item.hbs",
+          "moduleId": "{{path}}/app/templates/components/caches-item.hbs",
           "message": "Title attribute values should not be the same as the link text.",
           "line": 20,
           "column": 2,
@@ -172,7 +172,7 @@
         }
       ],
       "errorCount": 3,
-      "filePath": "/Users/fake/app/templates/components/caches-item.hbs",
+      "filePath": "{{path}}/app/templates/components/caches-item.hbs",
       "source": ""
     },
     {
@@ -180,7 +180,7 @@
         {
           "rule": "no-invalid-link-title",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/dashboard-row.hbs",
+          "moduleId": "{{path}}/app/templates/components/dashboard-row.hbs",
           "message": "Title attribute values should not be the same as the link text.",
           "line": 48,
           "column": 12,
@@ -189,7 +189,7 @@
         {
           "rule": "no-invalid-link-title",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/dashboard-row.hbs",
+          "moduleId": "{{path}}/app/templates/components/dashboard-row.hbs",
           "message": "Title attribute values should not be the same as the link text.",
           "line": 74,
           "column": 12,
@@ -198,7 +198,7 @@
         {
           "rule": "no-invalid-link-title",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/dashboard-row.hbs",
+          "moduleId": "{{path}}/app/templates/components/dashboard-row.hbs",
           "message": "Title attribute values should not be the same as the link text.",
           "line": 146,
           "column": 20,
@@ -206,7 +206,7 @@
         }
       ],
       "errorCount": 3,
-      "filePath": "/Users/fake/app/templates/components/dashboard-row.hbs",
+      "filePath": "{{path}}/app/templates/components/dashboard-row.hbs",
       "source": ""
     },
     {
@@ -214,7 +214,7 @@
         {
           "rule": "link-href-attributes",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/dialogs/cancel-subscription-modal.hbs",
+          "moduleId": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
           "message": "a tags must have an href attribute",
           "line": 45,
           "column": 12,
@@ -223,7 +223,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/dialogs/cancel-subscription-modal.hbs",
+          "moduleId": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 19,
           "column": 51,
@@ -232,7 +232,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/dialogs/cancel-subscription-modal.hbs",
+          "moduleId": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 45,
           "column": 28,
@@ -240,7 +240,7 @@
         }
       ],
       "errorCount": 3,
-      "filePath": "/Users/fake/app/templates/components/dialogs/cancel-subscription-modal.hbs",
+      "filePath": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
       "source": ""
     },
     {
@@ -248,7 +248,7 @@
         {
           "rule": "require-input-label",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/env-var.hbs",
+          "moduleId": "{{path}}/app/templates/components/env-var.hbs",
           "message": "Input elements require a valid associated label.",
           "line": 8,
           "column": 2,
@@ -256,7 +256,7 @@
         }
       ],
       "errorCount": 1,
-      "filePath": "/Users/fake/app/templates/components/env-var.hbs",
+      "filePath": "{{path}}/app/templates/components/env-var.hbs",
       "source": ""
     },
     {
@@ -264,7 +264,7 @@
         {
           "rule": "require-input-label",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/forms/form-checkbox.hbs",
+          "moduleId": "{{path}}/app/templates/components/forms/form-checkbox.hbs",
           "message": "Input elements require a valid associated label.",
           "line": 2,
           "column": 2,
@@ -272,7 +272,7 @@
         }
       ],
       "errorCount": 1,
-      "filePath": "/Users/fake/app/templates/components/forms/form-checkbox.hbs",
+      "filePath": "{{path}}/app/templates/components/forms/form-checkbox.hbs",
       "source": ""
     },
     {
@@ -280,7 +280,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/forms/form-field.hbs",
+          "moduleId": "{{path}}/app/templates/components/forms/form-field.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 108,
           "column": 34,
@@ -288,7 +288,7 @@
         }
       ],
       "errorCount": 1,
-      "filePath": "/Users/fake/app/templates/components/forms/form-field.hbs",
+      "filePath": "{{path}}/app/templates/components/forms/form-field.hbs",
       "source": ""
     },
     {
@@ -296,7 +296,7 @@
         {
           "rule": "link-href-attributes",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/github-apps-repository.hbs",
+          "moduleId": "{{path}}/app/templates/components/github-apps-repository.hbs",
           "message": "a tags must have an href attribute",
           "line": 21,
           "column": 2,
@@ -305,7 +305,7 @@
         {
           "rule": "no-invalid-link-title",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/github-apps-repository.hbs",
+          "moduleId": "{{path}}/app/templates/components/github-apps-repository.hbs",
           "message": "Title attribute values should not be the same as the link text.",
           "line": 11,
           "column": 2,
@@ -313,7 +313,7 @@
         }
       ],
       "errorCount": 2,
-      "filePath": "/Users/fake/app/templates/components/github-apps-repository.hbs",
+      "filePath": "{{path}}/app/templates/components/github-apps-repository.hbs",
       "source": ""
     },
     {
@@ -321,7 +321,7 @@
         {
           "rule": "link-href-attributes",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "a tags must have an href attribute",
           "line": 124,
           "column": 8,
@@ -330,7 +330,7 @@
         {
           "rule": "link-href-attributes",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "a tags must have an href attribute",
           "line": 130,
           "column": 10,
@@ -339,7 +339,7 @@
         {
           "rule": "link-href-attributes",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "a tags must have an href attribute",
           "line": 136,
           "column": 12,
@@ -348,7 +348,7 @@
         {
           "rule": "link-href-attributes",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "a tags must have an href attribute",
           "line": 143,
           "column": 12,
@@ -357,7 +357,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 124,
           "column": 58,
@@ -366,7 +366,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 130,
           "column": 73,
@@ -375,7 +375,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 136,
           "column": 77,
@@ -384,7 +384,7 @@
         {
           "rule": "no-invalid-interactive",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "Interaction added to non-interactive element",
           "line": 143,
           "column": 78,
@@ -393,7 +393,7 @@
         {
           "rule": "no-invalid-link-title",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "Title attribute values should not be the same as the link text.",
           "line": 124,
           "column": 8,
@@ -402,7 +402,7 @@
         {
           "rule": "no-invalid-link-title",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "Title attribute values should not be the same as the link text.",
           "line": 130,
           "column": 10,
@@ -411,7 +411,7 @@
         {
           "rule": "no-invalid-link-title",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "Title attribute values should not be the same as the link text.",
           "line": 136,
           "column": 12,
@@ -420,7 +420,7 @@
         {
           "rule": "no-invalid-link-title",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "Title attribute values should not be the same as the link text.",
           "line": 143,
           "column": 12,
@@ -429,7 +429,7 @@
         {
           "rule": "no-invalid-link-title",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "Title attribute values should not be the same as the link text.",
           "line": 231,
           "column": 10,
@@ -438,7 +438,7 @@
         {
           "rule": "no-invalid-link-title",
           "severity": 2,
-          "moduleId": "/Users/fake/app/templates/components/header-links.hbs",
+          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
           "message": "Title attribute values should not be the same as the link text.",
           "line": 242,
           "column": 10,
@@ -446,43 +446,43 @@
         }
       ],
       "errorCount": 14,
-      "filePath": "/Users/fake/app/templates/components/header-links.hbs",
+      "filePath": "{{path}}/app/templates/components/header-links.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/search.hbs",
+      "filePath": "{{path}}/app/templates/search.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/settings.hbs",
+      "filePath": "{{path}}/app/templates/settings.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/signin.hbs",
+      "filePath": "{{path}}/app/templates/signin.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/travisci-vs-jenkins/index.hbs",
+      "filePath": "{{path}}/app/templates/travisci-vs-jenkins/index.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/travisci-vs-jenkins/thank-you.hbs",
+      "filePath": "{{path}}/app/templates/travisci-vs-jenkins/thank-you.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/unsubscribe.hbs",
+      "filePath": "{{path}}/app/templates/unsubscribe.hbs",
       "source": ""
     }
   ]

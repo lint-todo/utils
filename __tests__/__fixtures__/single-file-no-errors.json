@@ -1,6 +1,6 @@
 [
   {
-    "filePath": "/Users/fake/app/controllers/settings.js",
+    "filePath": "{{path}}/app/controllers/settings.js",
     "messages": [],
     "errorCount": 0,
     "warningCount": 0,

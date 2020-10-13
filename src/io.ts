@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { join, parse } from 'path';
+import { join, parse, relative } from 'path';
 import { ensureDir, readdir, readJSON, unlink, writeJson } from 'fs-extra';
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData } from './types';
@@ -30,6 +30,7 @@ export function getTodoStorageDirPath(baseDir: string): string {
  * @example
  * 42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839
  *
+ * @param baseDir The base directory that contains the .lint-todo storage directory.
  * @param todoData The linting data for an individual violation.
  */
 export function todoFilePathFor(todoData: TodoData): string {
@@ -76,7 +77,7 @@ export async function writeTodos(
   const existing: Map<FilePath, TodoData> = filePath
     ? await readTodosForFilePath(todoStorageDir, filePath)
     : await readTodos(todoStorageDir);
-  const [add, remove] = await getTodoBatches(buildTodoData(lintResults), existing);
+  const [add, remove] = await getTodoBatches(buildTodoData(baseDir, lintResults), existing);
 
   await _generateFiles(todoStorageDir, add, remove);
 
@@ -112,10 +113,10 @@ export async function readTodos(todoStorageDir: string): Promise<Map<FilePath, T
  */
 export async function readTodosForFilePath(
   todoStorageDir: string,
-  filesDirOrPath: string
+  filePath: string
 ): Promise<Map<FilePath, TodoData>> {
   const map = new Map();
-  const todoFileDir = todoDirFor(filesDirOrPath);
+  const todoFileDir = todoDirFor(filePath);
   const todoFilePathDir = join(todoStorageDir, todoFileDir);
 
   try {

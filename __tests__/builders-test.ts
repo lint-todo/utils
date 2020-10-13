@@ -2,12 +2,20 @@ import { ESLint, Linter } from 'eslint';
 import { _buildTodoDatum, buildTodoData } from '../src';
 import { TemplateLintMessage, TemplateLintResult } from '../src/types';
 import fixtures from './__fixtures__/fixtures';
+import { createTmpDir } from './__utils__/tmp-dir';
+import { updatePath } from './__utils__/update-path';
 
 describe('builders', () => {
+  let tmp: string;
+
+  beforeEach(() => {
+    tmp = createTmpDir();
+  });
+
   describe('eslint', () => {
     it('builds a todo from eslint result', () => {
-      const eslintResult: ESLint.LintResult = {
-        filePath: '/Users/fake/app/controllers/settings.js',
+      const eslintResult: ESLint.LintResult = updatePath(tmp, {
+        filePath: '{{path}}/app/controllers/settings.js',
         messages: [
           {
             ruleId: 'no-prototype-builtins',
@@ -27,7 +35,7 @@ describe('builders', () => {
         fixableWarningCount: 0,
         source: '',
         usedDeprecatedRules: [],
-      };
+      });
 
       const eslintMessage: Linter.LintMessage = {
         ruleId: 'no-prototype-builtins',
@@ -41,12 +49,12 @@ describe('builders', () => {
         endColumn: 35,
       };
 
-      const todoDatum = _buildTodoDatum(eslintResult, eslintMessage);
+      const todoDatum = _buildTodoDatum(tmp, eslintResult, eslintMessage);
 
       expect(todoDatum).toEqual(
         expect.objectContaining({
           engine: 'eslint',
-          filePath: '/Users/fake/app/controllers/settings.js',
+          filePath: 'app/controllers/settings.js',
           ruleId: 'no-prototype-builtins',
           line: 25,
           column: 21,
@@ -55,19 +63,19 @@ describe('builders', () => {
     });
 
     it('can build todo data from results', () => {
-      const todoData = buildTodoData(fixtures.eslintWithErrors);
+      const todoData = buildTodoData(tmp, fixtures.eslintWithErrors(tmp));
 
       expect(todoData.size).toEqual(18);
     });
 
     it('can returns empty array with only warnings', () => {
-      const todoData = buildTodoData(fixtures.eslintWithWarnings);
+      const todoData = buildTodoData(tmp, fixtures.eslintWithWarnings(tmp));
 
       expect(todoData.size).toEqual(0);
     });
 
     it('can returns empty array with no results', () => {
-      const todoData = buildTodoData(fixtures.eslintNoResults);
+      const todoData = buildTodoData(tmp, fixtures.eslintNoResults(tmp));
 
       expect(todoData.size).toEqual(0);
     });
@@ -75,7 +83,7 @@ describe('builders', () => {
 
   describe('ember-template-lint', () => {
     it('builds a todo from eslint result', () => {
-      const emberTemplateLintResult: TemplateLintResult = {
+      const emberTemplateLintResult: TemplateLintResult = updatePath(tmp, {
         messages: [
           {
             rule: 'require-input-label',
@@ -88,9 +96,9 @@ describe('builders', () => {
           },
         ],
         errorCount: 2,
-        filePath: '/Users/fake/app/templates/components/add-ssh-key.hbs',
+        filePath: '{{path}}/app/templates/components/add-ssh-key.hbs',
         source: '',
-      };
+      });
 
       const emberTemplateLintMessage: TemplateLintMessage = {
         rule: 'require-input-label',
@@ -102,12 +110,12 @@ describe('builders', () => {
         source: '',
       };
 
-      const todoDatum = _buildTodoDatum(emberTemplateLintResult, emberTemplateLintMessage);
+      const todoDatum = _buildTodoDatum(tmp, emberTemplateLintResult, emberTemplateLintMessage);
 
       expect(todoDatum).toEqual(
         expect.objectContaining({
           engine: 'ember-template-lint',
-          filePath: '/Users/fake/app/templates/components/add-ssh-key.hbs',
+          filePath: 'app/templates/components/add-ssh-key.hbs',
           ruleId: 'require-input-label',
           line: 3,
           column: 4,
@@ -116,19 +124,19 @@ describe('builders', () => {
     });
 
     it('can build todo data from results', () => {
-      const todoData = buildTodoData(fixtures.emberTemplateLintWithErrors);
+      const todoData = buildTodoData(tmp, fixtures.emberTemplateLintWithErrors(tmp));
 
       expect(todoData.size).toEqual(39);
     });
 
     it('can returns empty array with only warnings', () => {
-      const todoData = buildTodoData(fixtures.emberTemplateLintWithWarnings);
+      const todoData = buildTodoData(tmp, fixtures.emberTemplateLintWithWarnings(tmp));
 
       expect(todoData.size).toEqual(0);
     });
 
     it('can returns empty array with no results', () => {
-      const todoData = buildTodoData(fixtures.emberTemplateLintNoResults);
+      const todoData = buildTodoData(tmp, fixtures.emberTemplateLintNoResults(tmp));
 
       expect(todoData.size).toEqual(0);
     });

@@ -1,7 +1,7 @@
 {
   "results": [
     {
-      "filePath": "/Users/fake/tests/unit/utils/job-config-language-test.js",
+      "filePath": "{{path}}/tests/unit/utils/job-config-language-test.js",
       "messages": [],
       "errorCount": 0,
       "warningCount": 0,
@@ -9,7 +9,7 @@
       "fixableWarningCount": 0
     },
     {
-      "filePath": "/Users/fake/tests/unit/utils/paginated-collection-test.js",
+      "filePath": "{{path}}/tests/unit/utils/paginated-collection-test.js",
       "messages": [],
       "errorCount": 0,
       "warningCount": 0,
@@ -17,7 +17,7 @@
       "fixableWarningCount": 0
     },
     {
-      "filePath": "/Users/fake/tests/unit/utils/time-in-words-test.js",
+      "filePath": "{{path}}/tests/unit/utils/time-in-words-test.js",
       "messages": [],
       "errorCount": 0,
       "warningCount": 0,
@@ -25,7 +25,7 @@
       "fixableWarningCount": 0
     },
     {
-      "filePath": "/Users/fake/tests/unit/utils/ui-kit/assertions-test.js",
+      "filePath": "{{path}}/tests/unit/utils/ui-kit/assertions-test.js",
       "messages": [],
       "errorCount": 0,
       "warningCount": 0,
@@ -33,7 +33,7 @@
       "fixableWarningCount": 0
     },
     {
-      "filePath": "/Users/fake/tests/unit/utils/ui-kit/responsive-test.js",
+      "filePath": "{{path}}/tests/unit/utils/ui-kit/responsive-test.js",
       "messages": [],
       "errorCount": 0,
       "warningCount": 0,
@@ -41,7 +41,7 @@
       "fixableWarningCount": 0
     },
     {
-      "filePath": "/Users/fake/tests/unit/utils/vcs-test.js",
+      "filePath": "{{path}}/tests/unit/utils/vcs-test.js",
       "messages": [],
       "errorCount": 0,
       "warningCount": 0,

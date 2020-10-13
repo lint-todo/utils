@@ -1,6 +1,6 @@
 [
   {
-    "filePath": "/Users/fake/app/controllers/settings.js",
+    "filePath": "{{path}}/app/controllers/settings.js",
     "messages": [
       {
         "ruleId": "no-prototype-builtins",
