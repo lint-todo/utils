@@ -97,8 +97,7 @@ export async function readTodos(todoStorageDir: string): Promise<Map<FilePath, T
 
     for (const fileName of fileNames) {
       const todo = await readJSON(join(todoStorageDir, todoFileDir, fileName));
-      const { name } = parse(fileName);
-      map.set(join(todoFileDir, name), todo);
+      map.set(join(todoFileDir, parse(fileName).name), todo);
     }
   }
 
@@ -124,8 +123,7 @@ export async function readTodosForFilePath(
 
     for (const fileName of fileNames) {
       const todo = await readJSON(join(todoFilePathDir, fileName));
-      const { name } = parse(fileName);
-      map.set(join(todoFileDir, name), todo);
+      map.set(join(todoFileDir, parse(fileName).name), todo);
     }
   } catch (error) {
     if (error.code === 'ENOENT') {

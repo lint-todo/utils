@@ -1,6 +1,5 @@
-import { existsSync, statSync } from 'fs-extra';
-import { join, relative } from 'path';
-import * as globby from 'globby';
+import { existsSync, readdir, statSync } from 'fs-extra';
+import { join } from 'path';
 import {
   buildTodoData,
   writeTodos,
@@ -22,9 +21,19 @@ const TODO_DATA: TodoData = {
   createdDate: 1601324202150,
 };
 
-async function readFiles(todoDir: string) {
-  const files = await globby(todoDir);
-  return files.map((path) => relative(todoDir, path));
+async function readFiles(todoStorageDir: string) {
+  const fileNames = [];
+  const todoFileDirs = await readdir(todoStorageDir);
+  debugger;
+  for (const todoFileDir of todoFileDirs) {
+    const files = (await readdir(join(todoStorageDir, todoFileDir))).map((file) =>
+      join(todoFileDir, file)
+    );
+
+    fileNames.push(...files);
+  }
+
+  return fileNames;
 }
 
 describe('io', () => {
