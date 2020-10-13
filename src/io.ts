@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { join, parse, relative } from 'path';
+import { join, parse } from 'path';
 import { ensureDir, readdir, readJSON, unlink, writeJson } from 'fs-extra';
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData } from './types';
