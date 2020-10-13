@@ -1,12 +1,13 @@
-import { generateFileName } from './io';
-import { LintMessage, LintResult, TodoData } from './types';
+import { todoFilePathFor } from './io';
+import { FilePath, LintMessage, LintResult, TodoData } from './types';
 
 /**
- * Adapts a list of {ESLint.LintResult} or {TemplateLintResult} to a map of fileHash, todoDatum.
+ * Adapts a list of {@link https://github.com/DefinitelyTyped/DefinitelyTyped/blob/160f43ae6852c4eefec2641e54cff96dd7b63488/types/eslint/index.d.ts#L640 ESLint.LintResult}
+ * or {@link TemplateLintResult} to a map of {@link FilePath}, {@link TodoData}.
  *
  * @param lintResults A list of {LintResult} objects to convert to {TodoData} objects.
  */
-export function buildTodoData(lintResults: LintResult[]): Map<string, TodoData> {
+export function buildTodoData(lintResults: LintResult[]): Map<FilePath, TodoData> {
   const results = lintResults.filter((result) => result.messages.length > 0);
 
   const todoData = results.reduce((converted, lintResult) => {
@@ -14,12 +15,12 @@ export function buildTodoData(lintResults: LintResult[]): Map<string, TodoData> 
       if (message.severity === 2) {
         const todoDatum = _buildTodoDatum(lintResult, message);
 
-        converted.set(generateFileName(todoDatum), todoDatum);
+        converted.set(todoFilePathFor(todoDatum), todoDatum);
       }
     });
 
     return converted;
-  }, new Map<string, TodoData>());
+  }, new Map<FilePath, TodoData>());
 
   return todoData;
 }
