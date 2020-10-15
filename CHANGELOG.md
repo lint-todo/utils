@@ -1,3 +1,13 @@
+## v2.2.0 (2020-10-15)
+
+#### :boom: Breaking Change
+* [#16](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/16) Changes storage mechanism to use filePath based directories to store todo files. ([@scalvert](https://github.com/scalvert))
+* [#13](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/13) Simplify builder API. Change generatePendingFiles to take lint results ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v2.1.0 (2020-10-02)
 
 #### :rocket: Enhancement
