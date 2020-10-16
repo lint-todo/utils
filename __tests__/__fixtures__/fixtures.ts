@@ -10,6 +10,8 @@ import * as emberTemplateLintNoResults from './ember-template-lint-no-results.js
 import * as singleFileTodo from './single-file-todo.json';
 import * as singleFileNoErrors from './single-file-no-errors.json';
 import * as singleFileTodoUpdated from './single-file-todo-updated.json';
+import * as newBatches from './new-batches.json';
+import * as existingBatches from './existing-batches.json';
 import { updatePaths } from '../__utils__';
 
 const fixtures = {
@@ -34,6 +36,8 @@ const fixtures = {
   singleFileTodo: <ESLint.LintResult[]>singleFileTodo,
   singleFileNoErrors: <ESLint.LintResult[]>singleFileNoErrors,
   singleFileTodoUpdated: <ESLint.LintResult[]>singleFileTodoUpdated,
+  newBatches: <ESLint.LintResult[]>newBatches,
+  existingBatches: <ESLint.LintResult[]>existingBatches,
 };
 
 function deepCopy<T>(data: T): T {
@@ -75,5 +79,13 @@ export default {
 
   singleFileTodoUpdated(tmp: string): ESLint.LintResult[] {
     return updatePaths(tmp, deepCopy(fixtures.singleFileTodoUpdated));
+  },
+
+  newBatches(tmp: string): ESLint.LintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.newBatches));
+  },
+
+  existingBatches(tmp: string): ESLint.LintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.existingBatches));
   },
 };

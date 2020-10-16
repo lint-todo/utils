@@ -259,162 +259,8 @@ describe('io', () => {
   });
 
   describe('getTodoBatches', () => {
-    let fromLintResults: LintResult[] = [
-      {
-        filePath: '{{path}}/app/controllers/settings.js',
-        messages: [
-          {
-            ruleId: 'no-prototype-builtins',
-            severity: 2,
-            message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
-            line: 25,
-            column: 21,
-            nodeType: 'CallExpression',
-            messageId: 'prototypeBuildIn',
-            endLine: 25,
-            endColumn: 35,
-          },
-          {
-            ruleId: 'no-prototype-builtins',
-            severity: 2,
-            message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
-            line: 26,
-            column: 19,
-            nodeType: 'CallExpression',
-            messageId: 'prototypeBuildIn',
-            endLine: 26,
-            endColumn: 33,
-          },
-          {
-            ruleId: 'no-prototype-builtins',
-            severity: 2,
-            message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
-            line: 32,
-            column: 34,
-            nodeType: 'CallExpression',
-            messageId: 'prototypeBuildIn',
-            endLine: 32,
-            endColumn: 48,
-          },
-        ],
-        errorCount: 3,
-        warningCount: 0,
-        fixableErrorCount: 0,
-        fixableWarningCount: 0,
-        source: '',
-        usedDeprecatedRules: [],
-      },
-      {
-        filePath: '{{path}}/app/initializers/tracer.js',
-        messages: [
-          {
-            ruleId: 'no-redeclare',
-            severity: 2,
-            message: "'window' is already defined as a built-in global variable.",
-            line: 1,
-            column: 11,
-            nodeType: 'Block',
-            messageId: 'redeclaredAsBuiltin',
-            endLine: 1,
-            endColumn: 17,
-          },
-          {
-            ruleId: 'no-redeclare',
-            severity: 2,
-            message: "'XMLHttpRequest' is already defined as a built-in global variable.",
-            line: 1,
-            column: 19,
-            nodeType: 'Block',
-            messageId: 'redeclaredAsBuiltin',
-            endLine: 1,
-            endColumn: 33,
-          },
-        ],
-        errorCount: 2,
-        warningCount: 0,
-        fixableErrorCount: 0,
-        fixableWarningCount: 0,
-        source: '',
-        usedDeprecatedRules: [],
-      },
-    ];
-
-    let existing: LintResult[] = [
-      {
-        filePath: '{{path}}/app/initializers/tracer.js',
-        messages: [
-          {
-            ruleId: 'no-redeclare',
-            severity: 2,
-            message: "'window' is already defined as a built-in global variable.",
-            line: 1,
-            column: 11,
-            nodeType: 'Block',
-            messageId: 'redeclaredAsBuiltin',
-            endLine: 1,
-            endColumn: 17,
-          },
-          {
-            ruleId: 'no-redeclare',
-            severity: 2,
-            message: "'XMLHttpRequest' is already defined as a built-in global variable.",
-            line: 1,
-            column: 19,
-            nodeType: 'Block',
-            messageId: 'redeclaredAsBuiltin',
-            endLine: 1,
-            endColumn: 33,
-          },
-        ],
-        errorCount: 2,
-        warningCount: 0,
-        fixableErrorCount: 0,
-        fixableWarningCount: 0,
-        source: '',
-        usedDeprecatedRules: [],
-      },
-      {
-        filePath: '{{path}}/app/models/build.js',
-        messages: [
-          {
-            ruleId: 'no-prototype-builtins',
-            severity: 2,
-            message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
-            line: 108,
-            column: 50,
-            nodeType: 'CallExpression',
-            messageId: 'prototypeBuildIn',
-            endLine: 108,
-            endColumn: 64,
-          },
-          {
-            ruleId: 'no-prototype-builtins',
-            severity: 2,
-            message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
-            line: 120,
-            column: 25,
-            nodeType: 'CallExpression',
-            messageId: 'prototypeBuildIn',
-            endLine: 120,
-            endColumn: 39,
-          },
-        ],
-        errorCount: 2,
-        warningCount: 0,
-        fixableErrorCount: 0,
-        fixableWarningCount: 0,
-        source: '',
-        usedDeprecatedRules: [],
-      },
-    ];
-
-    beforeEach(() => {
-      fromLintResults = updatePaths(tmp, fromLintResults);
-      existing = updatePaths(tmp, existing);
-    });
-
     it('creates items to add', async () => {
-      const [add] = await getTodoBatches(buildTodoData(tmp, fromLintResults), new Map());
+      const [add] = await getTodoBatches(buildTodoData(tmp, fixtures.newBatches(tmp)), new Map());
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
         Array [
@@ -428,42 +274,45 @@ describe('io', () => {
     });
 
     it('creates items to delete', async () => {
-      const [, remove] = await getTodoBatches(new Map(), buildTodoData(tmp, fromLintResults));
+      const [, remove] = await getTodoBatches(
+        new Map(),
+        buildTodoData(tmp, fixtures.newBatches(tmp))
+      );
 
       expect([...remove.keys()]).toMatchInlineSnapshot(`
         Array [
-          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/6e3be839",
-          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/aad8bc25",
-          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/53e7a9a0",
-          "6b12ece7df9d1ae1be51f826307bd2a184841363/b9046d34",
-          "6b12ece7df9d1ae1be51f826307bd2a184841363/092271fa",
+          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839",
+          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25",
+          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0",
+          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
+          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
         ]
       `);
     });
 
     it('creates all batches', async () => {
       const [add, remove, stable] = await getTodoBatches(
-        buildTodoData(tmp, fromLintResults),
-        buildTodoData(tmp, existing)
+        buildTodoData(tmp, fixtures.newBatches(tmp)),
+        buildTodoData(tmp, fixtures.existingBatches(tmp))
       );
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
         Array [
-          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/6e3be839",
-          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/aad8bc25",
-          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/53e7a9a0",
+          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839",
+          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25",
+          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0",
         ]
       `);
       expect([...remove.keys()]).toMatchInlineSnapshot(`
         Array [
-          "cb6b583ddb4037f45158ae37df377b38a98a241e/66256fb7",
-          "cb6b583ddb4037f45158ae37df377b38a98a241e/8fd35486",
+          "07d3818b8afefcdd7db6d52743309fdbb85313f0/66256fb7",
+          "07d3818b8afefcdd7db6d52743309fdbb85313f0/8fd35486",
         ]
       `);
       expect([...stable.keys()]).toMatchInlineSnapshot(`
         Array [
-          "6b12ece7df9d1ae1be51f826307bd2a184841363/b9046d34",
-          "6b12ece7df9d1ae1be51f826307bd2a184841363/092271fa",
+          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
+          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
         ]
       `);
     });
