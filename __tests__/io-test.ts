@@ -48,12 +48,10 @@ describe('io', () => {
 
   describe('todoDirExists', () => {
     it('returns false when directory does not exist', async () => {
-      expect(await todoDirExists(createTmpDir())).toEqual(false);
+      expect(await todoDirExists(tmp)).toEqual(false);
     });
 
     it('returns true when directory exists', async () => {
-      const tmp = createTmpDir();
-
       await ensureTodoDir(tmp);
 
       expect(await todoDirExists(tmp)).toEqual(true);
