@@ -1,8 +1,25 @@
 import { createHash } from 'crypto';
 import { join, parse } from 'path';
+import { promisify } from 'util';
+import { access } from 'fs';
 import { ensureDir, readdir, readJSON, unlink, writeJson } from 'fs-extra';
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData } from './types';
+
+const exists = promisify(access);
+
+export async function todoDirExists(baseDir: string): Promise<boolean> {
+  try {
+    await exists(getTodoStorageDirPath(baseDir));
+    return true;
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return false;
+    }
+
+    throw error;
+  }
+}
 
 /**
  * Creates, or ensures the creation of, the .lint-todo directory.

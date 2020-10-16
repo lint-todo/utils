@@ -7,6 +7,8 @@ import {
   todoDirFor,
   todoFileNameFor,
   todoFilePathFor,
+  todoDirExists,
+  ensureTodoDir,
 } from '../src';
 import { LintResult, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
@@ -42,6 +44,20 @@ describe('io', () => {
 
   beforeEach(() => {
     tmp = createTmpDir();
+  });
+
+  describe('todoDirExists', () => {
+    it('returns false when directory does not exist', async () => {
+      expect(await todoDirExists(createTmpDir())).toEqual(false);
+    });
+
+    it('returns true when directory exists', async () => {
+      const tmp = createTmpDir();
+
+      await ensureTodoDir(tmp);
+
+      expect(await todoDirExists(tmp)).toEqual(true);
+    });
   });
 
   describe('todoFileNameFor', () => {
