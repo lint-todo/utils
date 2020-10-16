@@ -4,37 +4,37 @@
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/search.hbs",
+      "filePath": "{{path}}/app/templates/search.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/settings.hbs",
+      "filePath": "{{path}}/app/templates/settings.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/signin.hbs",
+      "filePath": "{{path}}/app/templates/signin.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/travisci-vs-jenkins/index.hbs",
+      "filePath": "{{path}}/app/templates/travisci-vs-jenkins/index.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/travisci-vs-jenkins/thank-you.hbs",
+      "filePath": "{{path}}/app/templates/travisci-vs-jenkins/thank-you.hbs",
       "source": ""
     },
     {
       "messages": [],
       "errorCount": 0,
-      "filePath": "/Users/fake/app/templates/unsubscribe.hbs",
+      "filePath": "{{path}}/app/templates/unsubscribe.hbs",
       "source": ""
     }
   ]

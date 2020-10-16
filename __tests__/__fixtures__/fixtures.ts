@@ -10,8 +10,11 @@ import * as emberTemplateLintNoResults from './ember-template-lint-no-results.js
 import * as singleFileTodo from './single-file-todo.json';
 import * as singleFileNoErrors from './single-file-no-errors.json';
 import * as singleFileTodoUpdated from './single-file-todo-updated.json';
+import * as newBatches from './new-batches.json';
+import * as existingBatches from './existing-batches.json';
+import { updatePaths } from '../__utils__';
 
-export default {
+const fixtures = {
   eslintWithErrors: <ESLint.LintResult[]>(
     (<CLIEngine.LintReport>(eslintWithErrors as unknown)).results
   ),
@@ -33,4 +36,56 @@ export default {
   singleFileTodo: <ESLint.LintResult[]>singleFileTodo,
   singleFileNoErrors: <ESLint.LintResult[]>singleFileNoErrors,
   singleFileTodoUpdated: <ESLint.LintResult[]>singleFileTodoUpdated,
+  newBatches: <ESLint.LintResult[]>newBatches,
+  existingBatches: <ESLint.LintResult[]>existingBatches,
+};
+
+function deepCopy<T>(data: T): T {
+  return JSON.parse(JSON.stringify(data));
+}
+
+export default {
+  eslintWithErrors(tmp: string): ESLint.LintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.eslintWithErrors));
+  },
+
+  eslintWithWarnings(tmp: string): ESLint.LintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.eslintWithWarnings));
+  },
+
+  eslintNoResults(tmp: string): ESLint.LintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.eslintNoResults));
+  },
+
+  emberTemplateLintWithErrors(tmp: string): TemplateLintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.emberTemplateLintWithErrors));
+  },
+
+  emberTemplateLintWithWarnings(tmp: string): TemplateLintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.emberTemplateLintWithWarnings));
+  },
+
+  emberTemplateLintNoResults(tmp: string): TemplateLintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.emberTemplateLintNoResults));
+  },
+
+  singleFileTodo(tmp: string): ESLint.LintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.singleFileTodo));
+  },
+
+  singleFileNoErrors(tmp: string): ESLint.LintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.singleFileNoErrors));
+  },
+
+  singleFileTodoUpdated(tmp: string): ESLint.LintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.singleFileTodoUpdated));
+  },
+
+  newBatches(tmp: string): ESLint.LintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.newBatches));
+  },
+
+  existingBatches(tmp: string): ESLint.LintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.existingBatches));
+  },
 };
