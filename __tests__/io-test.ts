@@ -259,7 +259,7 @@ describe('io', () => {
   });
 
   describe('getTodoBatches', () => {
-    const fromLintResults: LintResult[] = updatePaths(tmp, [
+    let fromLintResults: LintResult[] = [
       {
         filePath: '{{path}}/app/controllers/settings.js',
         messages: [
@@ -337,9 +337,9 @@ describe('io', () => {
         source: '',
         usedDeprecatedRules: [],
       },
-    ]);
+    ];
 
-    const existing: LintResult[] = updatePaths(tmp, [
+    let existing: LintResult[] = [
       {
         filePath: '{{path}}/app/initializers/tracer.js',
         messages: [
@@ -406,18 +406,23 @@ describe('io', () => {
         source: '',
         usedDeprecatedRules: [],
       },
-    ]);
+    ];
+
+    beforeEach(() => {
+      fromLintResults = updatePaths(tmp, fromLintResults);
+      existing = updatePaths(tmp, existing);
+    });
 
     it('creates items to add', async () => {
       const [add] = await getTodoBatches(buildTodoData(tmp, fromLintResults), new Map());
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
         Array [
-          "81309a57ca1cdac030492a81c1cece31113117e1/6e3be839",
-          "81309a57ca1cdac030492a81c1cece31113117e1/aad8bc25",
-          "81309a57ca1cdac030492a81c1cece31113117e1/53e7a9a0",
-          "faf339f75c23ae67324db8bf2e4ce5bbaa8128f0/b9046d34",
-          "faf339f75c23ae67324db8bf2e4ce5bbaa8128f0/092271fa",
+          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839",
+          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25",
+          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0",
+          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
+          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
         ]
       `);
     });
@@ -427,11 +432,11 @@ describe('io', () => {
 
       expect([...remove.keys()]).toMatchInlineSnapshot(`
         Array [
-          "81309a57ca1cdac030492a81c1cece31113117e1/6e3be839",
-          "81309a57ca1cdac030492a81c1cece31113117e1/aad8bc25",
-          "81309a57ca1cdac030492a81c1cece31113117e1/53e7a9a0",
-          "faf339f75c23ae67324db8bf2e4ce5bbaa8128f0/b9046d34",
-          "faf339f75c23ae67324db8bf2e4ce5bbaa8128f0/092271fa",
+          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/6e3be839",
+          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/aad8bc25",
+          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/53e7a9a0",
+          "6b12ece7df9d1ae1be51f826307bd2a184841363/b9046d34",
+          "6b12ece7df9d1ae1be51f826307bd2a184841363/092271fa",
         ]
       `);
     });
@@ -444,21 +449,21 @@ describe('io', () => {
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
         Array [
-          "81309a57ca1cdac030492a81c1cece31113117e1/6e3be839",
-          "81309a57ca1cdac030492a81c1cece31113117e1/aad8bc25",
-          "81309a57ca1cdac030492a81c1cece31113117e1/53e7a9a0",
+          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/6e3be839",
+          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/aad8bc25",
+          "dd0e5ad04d85be2e4cb19b2a934bd41a122db843/53e7a9a0",
         ]
       `);
       expect([...remove.keys()]).toMatchInlineSnapshot(`
         Array [
-          "854da59dc2788ca1f8754f5e00528102427a155f/66256fb7",
-          "854da59dc2788ca1f8754f5e00528102427a155f/8fd35486",
+          "cb6b583ddb4037f45158ae37df377b38a98a241e/66256fb7",
+          "cb6b583ddb4037f45158ae37df377b38a98a241e/8fd35486",
         ]
       `);
       expect([...stable.keys()]).toMatchInlineSnapshot(`
         Array [
-          "faf339f75c23ae67324db8bf2e4ce5bbaa8128f0/b9046d34",
-          "faf339f75c23ae67324db8bf2e4ce5bbaa8128f0/092271fa",
+          "6b12ece7df9d1ae1be51f826307bd2a184841363/b9046d34",
+          "6b12ece7df9d1ae1be51f826307bd2a184841363/092271fa",
         ]
       `);
     });
