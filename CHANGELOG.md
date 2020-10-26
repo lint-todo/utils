@@ -1,3 +1,15 @@
+## v2.3.0 (2020-10-26)
+
+#### :rocket: Enhancement
+* [#20](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/20) Adding API to determine if storage directory exists ([@scalvert](https://github.com/scalvert))
+
+#### :bug: Bug Fix
+* [#17](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/17) Ensure we're operating on relative paths vs. absolute ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v2.2.0 (2020-10-15)
 
 #### :boom: Breaking Change
