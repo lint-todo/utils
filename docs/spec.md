@@ -81,7 +81,7 @@ Upon first generation of the list of todo lint rules, any existing lint violatio
 - run with custom formatter, eg. `eslint . --format json-with-todo`
 - passes results back to custom formatter
 - formatter mutates [results array](https://eslint.org/docs/developer-guide/working-with-custom-formatters#the-results-object)
-  - swaps severity to 1 (warn) from 2 (error) for all rules identfied as `todo`
+  - swaps severity to -1 (todo) from 2 (error) for all rules identified as `todo`
 
 **Update todo workflow:**
 
@@ -89,8 +89,8 @@ Upon first generation of the list of todo lint rules, any existing lint violatio
 - lint runs, any errors generated are considered todo
 - passes results back to custom formatter
 - formatter mutates [results array](https://eslint.org/docs/developer-guide/working-with-custom-formatters#the-results-object)
-  - swaps severity to 1 (warning) from 2 (error) for all rules that error
-  - decrements `errorCount` and increments `warningCount` for each `todo` violation
+  - swaps severity to -1 (todo) from 2 (error) for all rules that error
+  - decrements `errorCount` and adds/increments `todoCount` for each `todo` violation
   - stores `todo` violation in array
   - writes `todo` violations to disc, one file per violation
   - ensures old `todo` violation files are removed
@@ -106,7 +106,7 @@ Upon first generation of the list of todo lint rules, any existing lint violatio
 
 - run `yarn ember-template-lint * --update-todo`
 - any errors generated are considered todo, generate results
-  - sets `error` violations to `warning`
+  - swaps severity to -1 (todo) from 2 (error) for all rules that error
   - stores `todo` violation in array
   - writes `todo` violations to disc, one file per violation
   - ensures old `todo` violation files are removed
