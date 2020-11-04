@@ -1,3 +1,12 @@
+## v3.0.0 (2020-11-04)
+
+#### :boom: Breaking Change
+* [#24](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/24) Aligning APIs for consistency ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v2.3.0 (2020-10-26)
 
 #### :rocket: Enhancement
