@@ -1,24 +1,11 @@
 import { createHash } from 'crypto';
 import { join, parse } from 'path';
-import { promisify } from 'util';
-import { access } from 'fs';
-import { ensureDir, readdir, readJSON, unlink, writeJson } from 'fs-extra';
+import { ensureDir, existsSync, readdir, readJSON, unlink, writeJson } from 'fs-extra';
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData } from './types';
 
-const exists = promisify(access);
-
-export async function todoDirExists(baseDir: string): Promise<boolean> {
-  try {
-    await exists(getTodoStorageDirPath(baseDir));
-    return true;
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return false;
-    }
-
-    throw error;
-  }
+export function todoStorageDirExists(baseDir: string): boolean {
+  return existsSync(getTodoStorageDirPath(baseDir));
 }
 
 /**
@@ -26,7 +13,7 @@ export async function todoDirExists(baseDir: string): Promise<boolean> {
  *
  * @param baseDir The base directory that contains the .lint-todo storage directory.
  */
-export async function ensureTodoDir(baseDir: string): Promise<string> {
+export async function ensureTodoStorageDir(baseDir: string): Promise<string> {
   const path = getTodoStorageDirPath(baseDir);
 
   await ensureDir(path);
@@ -90,7 +77,7 @@ export async function writeTodos(
   lintResults: LintResult[],
   filePath?: string
 ): Promise<string> {
-  const todoStorageDir: string = await ensureTodoDir(baseDir);
+  const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const existing: Map<FilePath, TodoData> = filePath
     ? await readTodosForFilePath(todoStorageDir, filePath)
     : await readTodos(todoStorageDir);

@@ -12,7 +12,7 @@
     "clean": "tsc --build --clean",
     "lint": "eslint . --ext .ts",
     "prepare": "yarn build",
-    "test": "jest --passWithNoTests --no-cache"
+    "test": "jest --no-cache"
   },
   "dependencies": {
     "fs-extra": "^9.0.1"
