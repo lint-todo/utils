@@ -4,6 +4,11 @@ import { ensureDir, existsSync, readdir, readJSON, unlink, writeJson } from 'fs-
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData } from './types';
 
+/**
+ * Determines if the .lint-todo storage directory exists.
+ *
+ * @param baseDir The base directory that contains the .lint-todo storage directory.
+ */
 export function todoStorageDirExists(baseDir: string): boolean {
   return existsSync(getTodoStorageDirPath(baseDir));
 }
@@ -91,7 +96,7 @@ export async function writeTodos(
 /**
  * Reads all todo files in the .lint-todo directory.
  *
- * @param todoStorageDir The .lint-todo storage directory.
+ * @param baseDir The base directory that contains the .lint-todo storage directory.
  */
 export async function readTodos(baseDir: string): Promise<Map<FilePath, TodoData>> {
   const map = new Map();
