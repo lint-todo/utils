@@ -79,8 +79,8 @@ export async function writeTodos(
 ): Promise<string> {
   const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const existing: Map<FilePath, TodoData> = filePath
-    ? await readTodosForFilePath(todoStorageDir, filePath)
-    : await readTodos(todoStorageDir);
+    ? await readTodosForFilePath(baseDir, filePath)
+    : await readTodos(baseDir);
   const [add, remove] = await getTodoBatches(buildTodoData(baseDir, lintResults), existing);
 
   await _generateFiles(todoStorageDir, add, remove);
@@ -93,8 +93,9 @@ export async function writeTodos(
  *
  * @param todoStorageDir The .lint-todo storage directory.
  */
-export async function readTodos(todoStorageDir: string): Promise<Map<FilePath, TodoData>> {
+export async function readTodos(baseDir: string): Promise<Map<FilePath, TodoData>> {
   const map = new Map();
+  const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const todoFileDirs = await readdir(todoStorageDir);
 
   for (const todoFileDir of todoFileDirs) {
@@ -116,10 +117,11 @@ export async function readTodos(todoStorageDir: string): Promise<Map<FilePath, T
  * @param filePath The relative file path of the file to return todo items for.
  */
 export async function readTodosForFilePath(
-  todoStorageDir: string,
+  baseDir: string,
   filePath: string
 ): Promise<Map<FilePath, TodoData>> {
   const map = new Map();
+  const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const todoFileDir = todoDirFor(filePath);
   const todoFilePathDir = join(todoStorageDir, todoFileDir);
 
