@@ -1,9 +1,9 @@
 export { _buildTodoDatum, buildTodoData } from './builders';
 export {
-  ensureTodoDir,
+  ensureTodoStorageDir,
   getTodoStorageDirPath,
   getTodoBatches,
-  todoDirExists,
+  todoStorageDirExists,
   todoDirFor,
   todoFileNameFor,
   todoFilePathFor,
