@@ -24,33 +24,33 @@ By adding a time threshold to the todo items, developers will now have a commitm
 - There will be documentation on how to configure when todo items are due to be fixed.
 - There will be a config and/or CLI argument to specify the number of days an item's severity changes, either to `warn` or to `error`.
 
-# Details
+# Requirements
 
-[details]: #details
-
-## Requirements
+[requirements]: #requirements
 
 - By default, todos are added with no due dates.
 - Authors can specify the number of days the todos become errors after its creation date.
 - Author can also specify the number of days the todos become warnings after its creation date. The error threshold must also be passed and must be greater than this threshold.
 - Configuration can be specified in a common file or overriden via CLI arguments.
 
-## Implementation
+# Implementation
 
-### High Level Flow
+[requirements]: #implementation
+
+## High Level Flow
 
 When an author runs a linter with the todo functionality, all errors are converted to todos with no due dates unless one is present in `package.json` or passed as a command line argument.
 
 - `daysToError` number of days after its creation date that a todo transitions into an `error`.
 - `daysToWarn` - number of days after its creation date that a todo transitions into a `warn`. If used, `daysToError` must also be passed and be greater than `daysToWarn`.
 
-### Workflows
+## Workflows
 
-#### Normal todo workflow
+### Normal todo workflow
 
 - No due date is expected when adding todo items with no config or the CLI arguments `daysToError` or `daysToWarn`.
 
-#### Todos that are past-due become errors
+### Todos that are past-due become errors
 
 Use case: 20 days for todos to be considered errors since its creation date.
 
@@ -80,7 +80,7 @@ UPDATE_TODO=1 DAYS_TO_ERROR_TODO=20 yarn eslint . --format eslint-formatter-todo
 yarn ember-template-lint . --update-todo --days-to-error-todo 20
 ```
 
-#### Todos that are past-due become warnings, then errors
+### Todos that are past-due become warnings, then errors
 
 Use case: give 20 days for todos to be considered `warning`s, then 5 additional days until they are considered `error`s.
 
@@ -109,7 +109,7 @@ UPDATE_TODO=1 DAYS_TO_WARN_TODO=20 DAYS_TO_ERROR_TODO=25 yarn eslint . --format 
 yarn ember-template-lint . --update-todo --days-to-warn-todo 20 --days-to-error-todo 25
 ```
 
-#### Invalid option: only `daysToWarn` is present
+### Invalid option: only `daysToWarn` is present
 
 If `daysToWarn` is passed without `daysToError` an error must be produced.
 
@@ -150,7 +150,7 @@ Error: `--days-to-warn-todo` value must be less than `--days-to-error-todo`.
 ```
 
 
-### Proposed changes to the schema to include due date
+## Proposed changes to the schema to include due date
 
 ```ts
 interface TodoData {
