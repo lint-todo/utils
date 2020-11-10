@@ -1,4 +1,4 @@
-- Feature Name: `due_dates`
+- Feature Name: `todo-due-dates`
 - Start Date: `2020-11-09`
 - RFC PR: (leave this empty)
 - Checkup Issue: (leave this empty)
