@@ -31,9 +31,8 @@ By adding a time threshold to the todo items, developers will now have a commitm
 ## Requirements
 
 - By default, todos are added with no due dates.
-- Authors can specify the number of days the todos must be fixed after its creation date.
-- Authors can specify the number of days the todos are flagged as `error`s after they are past-due. The default value is `0`.
-- Todos that are past-due are flagged as `warning`s until the number of days to error is reached.
+- Authors can specify the number of days the todos become errors after its creation date.
+- Author can also specify the number of days the todos become warnings after its creation date. The error threshold must also be passed and must be greater than this threshold.
 - Configuration can be specified in a common file or overriden via CLI arguments.
 
 ## Implementation
@@ -42,15 +41,14 @@ By adding a time threshold to the todo items, developers will now have a commitm
 
 When an author runs a linter with the todo functionality, all errors are converted to todos with no due dates unless one is present in `package.json` or passed as a command line argument.
 
-- `daysToWarn` - number of days after its creation date that a todo transitions into a warn
-- `daysToError` number of days after its creation date that a todo transitions into an error _or_ if used with `daysToWarn`, the number of days after a todo transitions into a warn that it becomes an error
+- `daysToError` number of days after its creation date that a todo transitions into an `error`.
+- `daysToWarn` - number of days after its creation date that a todo transitions into a `warn`. If used, `daysToError` must also be passed and be greater than `daysToWarn`.
 
 ### Workflows
 
 #### Normal todo workflow
 
-- No due date is expected when adding todo items with no config.
-- No due date is expected when adding todo items with no CLI param.
+- No due date is expected when adding todo items with no config or the CLI arguments `daysToError` or `daysToWarn`.
 
 #### Todos that are past-due become errors
 
@@ -71,9 +69,6 @@ In `package.json`:
 **Via `eslint` CLI:**
 
 ```
-# to configure todos to transition to warnings 20 days after creation
-UPDATE_TODO=1 DAYS_TO_WARN_TODO=20 yarn eslint . --format eslint-formatter-todo
-
 # to configure todos to transition to errors 20 days after creation
 UPDATE_TODO=1 DAYS_TO_ERROR_TODO=20 yarn eslint . --format eslint-formatter-todo
 ```
@@ -81,9 +76,6 @@ UPDATE_TODO=1 DAYS_TO_ERROR_TODO=20 yarn eslint . --format eslint-formatter-todo
 **Via `ember-template-lint` CLI:**
 
 ```
-# to configure todos to transition to warnings 20 days after creation
-yarn ember-template-lint . --update-todo --days-to-warn-todo 20
-
 # to configure todos to transition to errors 20 days after creation
 yarn ember-template-lint . --update-todo --days-to-error-todo 20
 ```
@@ -98,7 +90,7 @@ Use case: give 20 days for todos to be considered `warning`s, then 5 additional 
 {
   "lint-todo": {
     "daysToWarn": 20,
-    "daysToError": 5
+    "daysToError": 25
   }
 }
 ```
@@ -106,14 +98,57 @@ Use case: give 20 days for todos to be considered `warning`s, then 5 additional 
 **Via `eslint` CLI:**
 
 ```
-UPDATE_TODO=1 DAYS_TO_WARN_TODO=20 DAYS_TO_ERROR_TODO=5 yarn eslint . --format eslint-formatter-todo
+# to configure todos to transition to warnings 20 days after creation and to errors 25 days after creation
+UPDATE_TODO=1 DAYS_TO_WARN_TODO=20 DAYS_TO_ERROR_TODO=25 yarn eslint . --format eslint-formatter-todo
 ```
 
 **Via `ember-template-lint` CLI:**
 
 ```
-yarn ember-template-lint . --update-todo --days-to-warn-todo 20 --days-to-error-todo 5
+# to configure todos to transition to warnings 20 days after creation and to errors 25 days after creation
+yarn ember-template-lint . --update-todo --days-to-warn-todo 20 --days-to-error-todo 25
 ```
+
+#### Invalid option: only `daysToWarn` is present
+
+If `daysToWarn` is passed without `daysToError` an error must be produced.
+
+**Via `eslint` CLI:**
+
+```
+$ UPDATE_TODO=1 DAYS_TO_WARN_TODO=20 yarn eslint . --format eslint-formatter-todo
+
+Error: `DAYS_TO_WARN_TODO` must be used with `DAYS_TO_ERROR_TODO`.
+```
+
+**Via `ember-template-lint` CLI:**
+
+```
+$ yarn ember-template-lint . --update-todo --days-to-warn-todo 20
+
+Error: `--days-to-warn-todo` must be used with `--days-to-error-todo`.
+```
+
+#### Invalid option: `daysToWarn` is greater or equal than `daysToError`
+
+If `daysToWarn` is greater or equal than `daysToError` an error must be produced:
+
+**Via `eslint` CLI:**
+
+```
+$ UPDATE_TODO=1 DAYS_TO_WARN_TODO=20 DAYS_TO_ERROR_TODO=5 yarn eslint . --format eslint-formatter-todo
+
+Error: `DAYS_TO_WARN_TODO` value must be less than `DAYS_TO_ERROR_TODO`.
+```
+
+**Via `ember-template-lint` CLI:**
+
+```
+$ yarn ember-template-lint . --update-todo --days-to-warn-todo 20 --days-to-error-todo=5
+
+Error: `--days-to-warn-todo` value must be less than `--days-to-error-todo`.
+```
+
 
 ### Proposed changes to the schema to include due date
 
@@ -139,3 +174,5 @@ A few other options were considered:
 # Unresolved questions
 
 [unresolved]: #unresolved-questions
+
+- How will we ensure that if todos are completely regenerated (we run UPDATE_TODO=1 or --update-todo`) we don't lose this data?
