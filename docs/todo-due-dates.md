@@ -13,17 +13,16 @@ This RFC proposes enhancing the todo functionality with due days, allowing autho
 
 [motivation]: #motivation
 
-The lint todo functionality is intended to seamlessly integrate with existing linting tools, allowing the incremental fixing of linting errors on very large projects. However, one undesirable side effect of this is that developers may forget about fixing the todo items leading to the accumulation of technical debts.
+The lint todo functionality is intended to seamlessly integrate with existing linting tools, allowing the incremental fixing of linting errors on very large projects. However, one undesirable side effect of this is that developers may forget about fixing the todo items leading to the accumulation of technical debt.
 
-By adding a due date to the todo items, developers will now have a commitment to fix the linting problems because todo items that are past-due will once again be considered errors.
+By adding a time threshold to the todo items, developers will now have a commitment to fix the linting problems because todo items that are past this threshold will have their severity increased accordingly.
 
 # Pedagogy
 
 [pedagogy]: #pedagogy
 
 - There will be documentation on how to configure when todo items are due to be fixed.
-- There will be a common config and CLI argument to specify the number of days todo items are due to be fixed.
-- There will be a common config and CLI argument to specify the number of days an item becomes an error after its due date.
+- There will be a config and/or CLI argument to specify the number of days an item's severity changes, either to `warn` or to `error`.
 
 # Details
 
@@ -43,8 +42,8 @@ By adding a due date to the todo items, developers will now have a commitment to
 
 When an author runs a linter with the todo functionality, all errors are converted to todos with no due dates unless one is present in `package.json` or passed as a command line argument.
 
-- `daysToFix` is the number of days that the todo item needs to be fixed.
-- `daysToError` is the number of additional days past the `daysToFix` that the todo items are cosidered errors. Default is `0`.
+- `daysToWarn` - number of days after its creation date that a todo transitions into a warn
+- `daysToError` number of days after its creation date that a todo transitions into an error _or_ if used with `daysToWarn`, the number of days after a todo transitions into a warn that it becomes an error
 
 ### Workflows
 
@@ -64,7 +63,7 @@ In `package.json`:
  ```json
 {
   "lint-todo": {
-    "daysToFix": 20,
+    "daysToError": 20,
   }
 }
 ```
@@ -72,13 +71,21 @@ In `package.json`:
 **Via `eslint` CLI:**
 
 ```
-UPDATE_TODO=1 DAYS_TO_FIX_TODO=20 yarn eslint . --format eslint-formatter-todo
+# to configure todos to transition to warnings 20 days after creation
+UPDATE_TODO=1 DAYS_TO_WARN_TODO=20 yarn eslint . --format eslint-formatter-todo
+
+# to configure todos to transition to errors 20 days after creation
+UPDATE_TODO=1 DAYS_TO_ERROR_TODO=20 yarn eslint . --format eslint-formatter-todo
 ```
 
 **Via `ember-template-lint` CLI:**
 
 ```
-yarn ember-template-lint . --update-todo --days-to-fix-todo 20
+# to configure todos to transition to warnings 20 days after creation
+yarn ember-template-lint . --update-todo --days-to-warn-todo 20
+
+# to configure todos to transition to errors 20 days after creation
+yarn ember-template-lint . --update-todo --days-to-error-todo 20
 ```
 
 #### Todos that are past-due become warnings, then errors
@@ -90,7 +97,7 @@ Use case: give 20 days for todos to be considered `warning`s, then 5 additional 
 ```json
 {
   "lint-todo": {
-    "daysToFix": 20,
+    "daysToWarn": 20,
     "daysToError": 5
   }
 }
@@ -99,13 +106,13 @@ Use case: give 20 days for todos to be considered `warning`s, then 5 additional 
 **Via `eslint` CLI:**
 
 ```
-UPDATE_TODO=1 DAYS_TO_FIX_TODO=20 DAYS_TO_ERROR_TODO=5 yarn eslint . --format eslint-formatter-todo
+UPDATE_TODO=1 DAYS_TO_WARN_TODO=20 DAYS_TO_ERROR_TODO=5 yarn eslint . --format eslint-formatter-todo
 ```
 
 **Via `ember-template-lint` CLI:**
 
 ```
-yarn ember-template-lint . --update-todo --days-to-fix-todo 20 --days-to-error-todo 5
+yarn ember-template-lint . --update-todo --days-to-warn-todo 20 --days-to-error-todo 5
 ```
 
 ### Proposed changes to the schema to include due date
@@ -114,7 +121,7 @@ yarn ember-template-lint . --update-todo --days-to-fix-todo 20 --days-to-error-t
 interface TodoData {
   ...
   created: Date;
-  daysToFix?: int;
+  daysToWarn?: int;
   daysToError?: int;
 }
 ```
