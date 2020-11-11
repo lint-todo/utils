@@ -17,7 +17,7 @@ The lint todo functionality is intended to seamlessly integrate with existing li
 
 By adding a time threshold to the todo items, developers will now have a commitment to fix the linting problems because todo items that are past this threshold will have their severity increased accordingly.
 
-# Pedagogy
+# How We Will Teach This
 
 [pedagogy]: #pedagogy
 
