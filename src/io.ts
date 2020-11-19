@@ -1,6 +1,14 @@
 import { createHash } from 'crypto';
+import {
+  ensureDir,
+  existsSync,
+  readdir,
+  readJSON,
+  remove as fsRemove,
+  unlink,
+  writeJson,
+} from 'fs-extra';
 import { join, parse } from 'path';
-import { ensureDir, existsSync, readdir, readJSON, unlink, writeJson } from 'fs-extra';
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData } from './types';
 
@@ -76,19 +84,31 @@ export function todoFileNameFor(todoData: TodoData): string {
  * @param baseDir The base directory that contains the .lint-todo storage directory.
  * @param lintResults The raw linting data.
  * @param filePath? The relative file path of the file to update violations for.
+ * @returns todoStorageDir The storage directory or empty if not created
  */
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
   filePath?: string
 ): Promise<string> {
-  const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const existing: Map<FilePath, TodoData> = filePath
     ? await readTodosForFilePath(baseDir, filePath)
     : await readTodos(baseDir);
+
   const [add, remove] = await getTodoBatches(buildTodoData(baseDir, lintResults), existing);
 
-  await _generateFiles(todoStorageDir, add, remove);
+  let todoStorageDir = '';
+
+  if (add.size > 0 || remove.size > 0) {
+    todoStorageDir = await ensureTodoStorageDir(baseDir);
+    await _generateFiles(todoStorageDir, add, remove);
+  }
+
+  const remaining = await readTodos(baseDir);
+
+  if (remaining.size === 0) {
+    await fsRemove(getTodoStorageDirPath(baseDir));
+  }
 
   return todoStorageDir;
 }
@@ -100,6 +120,11 @@ export async function writeTodos(
  */
 export async function readTodos(baseDir: string): Promise<Map<FilePath, TodoData>> {
   const map = new Map();
+
+  if (!todoStorageDirExists(baseDir)) {
+    return map;
+  }
+
   const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const todoFileDirs = await readdir(todoStorageDir);
 
@@ -126,6 +151,11 @@ export async function readTodosForFilePath(
   filePath: string
 ): Promise<Map<FilePath, TodoData>> {
   const map = new Map();
+
+  if (!todoStorageDirExists(baseDir)) {
+    return map;
+  }
+
   const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const todoFileDir = todoDirFor(filePath);
   const todoFilePathDir = join(todoStorageDir, todoFileDir);

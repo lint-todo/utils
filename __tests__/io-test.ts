@@ -2,18 +2,18 @@ import { existsSync, readdir, statSync } from 'fs-extra';
 import { join } from 'path';
 import {
   buildTodoData,
-  writeTodos,
+  ensureTodoStorageDir,
   getTodoBatches,
   todoDirFor,
   todoFileNameFor,
   todoFilePathFor,
   todoStorageDirExists,
-  ensureTodoStorageDir,
+  writeTodos,
 } from '../src';
 import { LintResult, TodoData } from '../src/types';
-import { createTmpDir } from './__utils__/tmp-dir';
 import fixtures from './__fixtures__/fixtures';
 import { updatePaths } from './__utils__';
+import { createTmpDir } from './__utils__/tmp-dir';
 
 const TODO_DATA: TodoData = {
   engine: 'eslint',
@@ -105,16 +105,26 @@ describe('io', () => {
   });
 
   describe('writeTodos', () => {
-    it("creates .lint-todo directory if one doesn't exist", async () => {
+    it('does not create .lint-todo directory if no errors are present in the results', async () => {
       const todoDir = await writeTodos(tmp, []);
 
-      expect(existsSync(todoDir)).toEqual(true);
+      expect(existsSync(todoDir)).toEqual(false);
     });
 
-    it("doesn't write files when no todos provided", async () => {
+    it('deletes .lint-todo directory if directory ends up empty', async () => {
+      // create
+      await writeTodos(tmp, fixtures.eslintWithErrors(tmp));
+
+      // run again with empty results
       const todoDir = await writeTodos(tmp, []);
 
-      expect(await readFiles(todoDir)).toHaveLength(0);
+      expect(existsSync(todoDir)).toEqual(false);
+    });
+
+    it("creates .lint-todo directory if one doesn't exist given results with errors", async () => {
+      const todoDir = await writeTodos(tmp, fixtures.eslintWithErrors(tmp));
+
+      expect(existsSync(todoDir)).toEqual(true);
     });
 
     it('generates todos when todos provided', async () => {
@@ -268,7 +278,7 @@ describe('io', () => {
 
       await writeTodos(tmp, fixtures.singleFileNoErrors(tmp), 'app/controllers/settings.js');
 
-      expect(await readFiles(todoDir)).toHaveLength(0);
+      expect(existsSync(todoDir)).toEqual(false);
     });
   });
 
