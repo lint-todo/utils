@@ -1,4 +1,4 @@
-import { relative } from 'path';
+import { posix } from 'path';
 import { todoFilePathFor } from './io';
 import { FilePath, LintMessage, LintResult, TodoData } from './types';
 
@@ -42,7 +42,7 @@ export function _buildTodoDatum(
 ): TodoData {
   return {
     engine: getEngine(lintResult),
-    filePath: relative(baseDir, lintResult.filePath),
+    filePath: posix.relative(baseDir, lintResult.filePath),
     ruleId: getRuleId(lintMessage),
     line: lintMessage.line,
     column: lintMessage.column,

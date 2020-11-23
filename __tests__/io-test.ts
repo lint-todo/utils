@@ -1,5 +1,5 @@
 import { existsSync, readdir, statSync } from 'fs-extra';
-import { join } from 'path';
+import { posix } from 'path';
 import {
   buildTodoData,
   writeTodos,
@@ -29,8 +29,8 @@ async function readFiles(todoStorageDir: string) {
   const todoFileDirs = await readdir(todoStorageDir);
 
   for (const todoFileDir of todoFileDirs) {
-    const files = (await readdir(join(todoStorageDir, todoFileDir))).map((file) =>
-      join(todoFileDir, file)
+    const files = (await readdir(posix.join(todoStorageDir, todoFileDir))).map((file) =>
+      posix.join(todoFileDir, file)
     );
 
     fileNames.push(...files);
@@ -169,7 +169,7 @@ describe('io', () => {
       const initialFileStats = initialFiles.map((file) => {
         return {
           fileName: file,
-          ctime: statSync(join(todoDir, file)).ctime,
+          ctime: statSync(posix.join(todoDir, file)).ctime,
         };
       });
 
@@ -180,7 +180,7 @@ describe('io', () => {
       expect(subsequentFiles).toHaveLength(18);
 
       initialFileStats.forEach((initialFileStat) => {
-        const subsequentFile = statSync(join(todoDir, initialFileStat.fileName));
+        const subsequentFile = statSync(posix.join(todoDir, initialFileStat.fileName));
 
         expect(subsequentFile.ctime).toEqual(initialFileStat.ctime);
       });
@@ -203,7 +203,7 @@ describe('io', () => {
       expect(subsequentFiles).toHaveLength(7);
 
       buildTodoData(tmp, secondHalf).forEach((todoDatum) => {
-        expect(!existsSync(join(todoDir, `${todoFilePathFor(todoDatum)}.json`))).toEqual(true);
+        expect(!existsSync(posix.join(todoDir, `${todoFilePathFor(todoDatum)}.json`))).toEqual(true);
       });
     });
   });
