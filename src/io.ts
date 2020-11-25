@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { join, parse } from 'path';
+import { posix } from 'path';
 import { ensureDir, existsSync, readdir, readJSON, unlink, writeJson } from 'fs-extra';
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData } from './types';
@@ -30,7 +30,7 @@ export async function ensureTodoStorageDir(baseDir: string): Promise<string> {
  * @param baseDir The base directory that contains the .lint-todo storage directory.
  */
 export function getTodoStorageDirPath(baseDir: string): string {
-  return join(baseDir, '.lint-todo');
+  return posix.join(baseDir, '.lint-todo');
 }
 
 /**
@@ -43,7 +43,7 @@ export function getTodoStorageDirPath(baseDir: string): string {
  * @param todoData The linting data for an individual violation.
  */
 export function todoFilePathFor(todoData: TodoData): string {
-  return join(todoDirFor(todoData.filePath), todoFileNameFor(todoData));
+  return posix.join(todoDirFor(todoData.filePath), todoFileNameFor(todoData));
 }
 
 /**
@@ -104,11 +104,11 @@ export async function readTodos(baseDir: string): Promise<Map<FilePath, TodoData
   const todoFileDirs = await readdir(todoStorageDir);
 
   for (const todoFileDir of todoFileDirs) {
-    const fileNames = await readdir(join(todoStorageDir, todoFileDir));
+    const fileNames = await readdir(posix.join(todoStorageDir, todoFileDir));
 
     for (const fileName of fileNames) {
-      const todo = await readJSON(join(todoStorageDir, todoFileDir, fileName));
-      map.set(join(todoFileDir, parse(fileName).name), todo);
+      const todo = await readJSON(posix.join(todoStorageDir, todoFileDir, fileName));
+      map.set(posix.join(todoFileDir, posix.parse(fileName).name), todo);
     }
   }
 
@@ -128,14 +128,14 @@ export async function readTodosForFilePath(
   const map = new Map();
   const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const todoFileDir = todoDirFor(filePath);
-  const todoFilePathDir = join(todoStorageDir, todoFileDir);
+  const todoFilePathDir = posix.join(todoStorageDir, todoFileDir);
 
   try {
     const fileNames = await readdir(todoFilePathDir);
 
     for (const fileName of fileNames) {
-      const todo = await readJSON(join(todoFilePathDir, fileName));
-      map.set(join(todoFileDir, parse(fileName).name), todo);
+      const todo = await readJSON(posix.join(todoFilePathDir, fileName));
+      map.set(posix.join(todoFileDir, posix.parse(fileName).name), todo);
     }
   } catch (error) {
     if (error.code === 'ENOENT') {
@@ -187,13 +187,13 @@ async function _generateFiles(
   remove: Map<FilePath, TodoData>
 ) {
   for (const [fileHash, todoDatum] of add) {
-    const { dir } = parse(fileHash);
+    const { dir } = posix.parse(fileHash);
 
-    await ensureDir(join(todoStorageDir, dir));
-    await writeJson(join(todoStorageDir, `${fileHash}.json`), todoDatum);
+    await ensureDir(posix.join(todoStorageDir, dir));
+    await writeJson(posix.join(todoStorageDir, `${fileHash}.json`), todoDatum);
   }
 
   for (const [fileHash] of remove) {
-    await unlink(join(todoStorageDir, `${fileHash}.json`));
+    await unlink(posix.join(todoStorageDir, `${fileHash}.json`));
   }
 }
