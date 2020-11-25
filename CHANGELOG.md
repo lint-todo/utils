@@ -1,3 +1,12 @@
+## v3.0.1 (2020-11-25)
+
+#### :bug: Bug Fix
+* [#29](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/29) Closes [#28](https://github.com/ember-template-lint/ember-template-lint-todo-utils/issues/28): file path consistency ([@renatoi](https://github.com/renatoi))
+
+#### Committers: 1
+- Renato Iwashima ([@renatoi](https://github.com/renatoi))
+
+
 ## v3.0.0 (2020-11-04)
 
 #### :boom: Breaking Change
