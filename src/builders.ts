@@ -1,4 +1,5 @@
-import { posix } from 'path';
+import { isAbsolute, relative } from 'path';
+import slash = require('slash');
 import { todoFilePathFor } from './io';
 import { FilePath, LintMessage, LintResult, TodoData } from './types';
 
@@ -40,9 +41,14 @@ export function _buildTodoDatum(
   lintResult: LintResult,
   lintMessage: LintMessage
 ): TodoData {
+  /**
+   * Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
+   * provided that the fix is landed on the supported node versions of this lib
+   */
+  const filePath = isAbsolute(lintResult.filePath) ? relative(baseDir, lintResult.filePath) : lintResult.filePath;
   return {
     engine: getEngine(lintResult),
-    filePath: posix.relative(baseDir, lintResult.filePath),
+    filePath: slash(filePath),
     ruleId: getRuleId(lintMessage),
     line: lintMessage.line,
     column: lintMessage.column,
