@@ -1,3 +1,12 @@
+## v3.0.2 (2020-12-01)
+
+#### :bug: Bug Fix
+* [#30](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/30) Fix path for todo data so it's consistent on posix and win32 ([@renatoi](https://github.com/renatoi))
+
+#### Committers: 1
+- Renato Iwashima ([@renatoi](https://github.com/renatoi))
+
+
 ## v3.0.1 (2020-11-25)
 
 #### :bug: Bug Fix
