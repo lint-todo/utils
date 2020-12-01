@@ -15,11 +15,13 @@
     "test": "jest --no-cache"
   },
   "dependencies": {
-    "fs-extra": "^9.0.1"
+    "fs-extra": "^9.0.1",
+    "slash": "^3.0.0"
   },
   "devDependencies": {
     "@types/eslint": "^7.2.3",
     "@types/fs-extra": "^9.0.1",
+    "@types/slash": "^3.0.0",
     "@types/tmp": "^0.2.0",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",

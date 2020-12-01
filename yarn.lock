@@ -799,6 +799,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/slash@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/slash/-/slash-3.0.0.tgz#87e9373e5ae6df7732f86a4548b8b2eb280a6c4f"
+  integrity sha512-bmUaw0IUPUVldtj4YwU7tbzxllQQgsWdnB45bwTI0f1Lq2Yg8lT2yxV4OGZrMTrP/G9v8eVIhX130xPe/RfPfw==
+  dependencies:
+    slash "*"
+
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
@@ -5094,7 +5101,7 @@ sisteransi@^1.0.4:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
-slash@^3.0.0:
+slash@*, slash@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
