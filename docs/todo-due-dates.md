@@ -60,7 +60,7 @@ In `package.json`:
 
  ```json
 {
-  "lint-todo": {
+  "lintTodo": {
     "daysToError": 20,
   }
 }
