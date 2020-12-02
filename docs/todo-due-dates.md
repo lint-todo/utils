@@ -39,7 +39,7 @@ By adding a day threshold to the todo items, developers will now have a commitme
 
 ## High Level Flow
 
-When an author runs a linter with the todo functionality, all errors are converted to todos with no due dates unless one is present in `package.json` or passed as a command line argument.
+When an author runs a linter with the todo functionality, all errors are converted to todos with no due date threshold unless one is present in `package.json` _or_ passed as a command line argument.
 
 - `daysToError` number of days after its creation date that a todo transitions into an `error`.
 - `daysToWarn` - number of days after its creation date that a todo transitions into a `warn`. If used, `daysToError` must also be passed and be greater than `daysToWarn`.
