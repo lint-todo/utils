@@ -155,7 +155,7 @@ Error: `--days-to-warn-todo` value must be less than `--days-to-error-todo`.
 ```ts
 interface TodoData {
   ...
-  created: Date;
+  createdDate: Date;
   daysToWarn?: int;
   daysToError?: int;
 }
