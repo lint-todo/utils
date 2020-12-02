@@ -13,7 +13,7 @@ This RFC proposes enhancing the todo functionality with due days, allowing autho
 
 [motivation]: #motivation
 
-The lint todo functionality is intended to seamlessly integrate with existing linting tools, allowing the incremental fixing of linting errors on very large projects. However, one undesirable side effect of this is that developers may forget about fixing the todo items leading to the accumulation of technical debt.
+The lint todo functionality is intended to seamlessly integrate with existing linting tools, allowing the incremental fixing of linting errors on very large projects. However, one undesirable side effect of this is that developers may forget about fixing the todo items, leading to the accumulation of technical debt.
 
 By adding a time threshold to the todo items, developers will now have a commitment to fix the linting problems because todo items that are past this threshold will have their severity increased accordingly.
 
