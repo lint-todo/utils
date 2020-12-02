@@ -48,7 +48,7 @@ When an author runs a linter with the todo functionality, all errors are convert
 
 ### Normal todo workflow
 
-- No due date is expected when adding todo items with no config or the CLI arguments `daysToError` or `daysToWarn`.
+- No due date is expected when adding todo items with no threshold provided in the `package.json` or the CLI arguments `daysToError` or `daysToWarn`.
 
 ### Todos that are past-due become errors
 
