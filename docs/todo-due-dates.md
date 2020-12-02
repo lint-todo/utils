@@ -52,7 +52,7 @@ When an author runs a linter with the todo functionality, all errors are convert
 
 ### Todos that are past-due become errors
 
-Use case: 20 days for todos to be considered errors since its creation date.
+Example use case: 20 days for todos to be considered errors since its creation date.
 
 **Via config:**
 
