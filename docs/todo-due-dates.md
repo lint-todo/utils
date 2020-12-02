@@ -169,7 +169,7 @@ A few other options were considered:
 
 - Instead of due days, another option considered was passing a specific due date. Passing days is preferable because if we want to expose a config/CLI param for this, passing a date would make the config or command to run stale.
 - Allow the option to pass rule id with due date associated to them. The extra rule id config is not necessary since both `ember-template-lint` and `eslint` already have options to filter by rule id.
-- If devs needs extra functionality, we could provide a different npx tool to do that. For now, the goal is to keep the todo functionality simple with a simple due date mechanism.
+- If extra functionality is needed we could provide a different CLI for that specific purpose. For now, the goal is to keep the todo functionality simple with a simple due date mechanism.
 
 # Unresolved questions
 
