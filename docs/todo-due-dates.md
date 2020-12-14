@@ -62,7 +62,10 @@ In `package.json`:
 ```json
 {
   "lintTodo": {
-    "daysToError": 20
+    "daysToDecay": {
+      "warn": 30,
+      "error": 90
+    }
   }
 }
 ```
@@ -89,7 +92,7 @@ Use case: give 20 days for todos to be considered `warning`s, then 5 additional 
 
 ```json
 {
-  "lint-todo": {
+  "lintTodo": {
     "daysToWarn": 20,
     "daysToError": 25
   }
@@ -156,8 +159,8 @@ Error: `--todo-days-to-warn` value must be less than `--todo-days-to-error`.
 interface TodoData {
   ...
   createdDate: Date;
-  daysToWarn?: int;
-  daysToError?: int;
+  warnDate?: Date;
+  errorDate?: Date;
 }
 ```
 
