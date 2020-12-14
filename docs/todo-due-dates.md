@@ -61,7 +61,10 @@ In `package.json`:
  ```json
 {
   "lintTodo": {
-    "daysToError": 20,
+    "daysToDecay": {
+      "warn": 30,
+      "error": 90
+    }
   }
 }
 ```
