@@ -80,7 +80,7 @@ UPDATE_TODO=1 DAYS_TO_ERROR_TODO=20 yarn eslint . --format eslint-formatter-todo
 
 ```
 # to configure todos to transition to errors 20 days after creation
-yarn ember-template-lint . --update-todo --days-to-error-todo 20
+yarn ember-template-lint . --update-todo --todo-days-to-error 20
 ```
 
 ### Todos that are past-due become warnings, then errors
