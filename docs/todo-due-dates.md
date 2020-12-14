@@ -91,7 +91,7 @@ Use case: give 20 days for todos to be considered `warning`s, then 5 additional 
 
 ```json
 {
-  "lint-todo": {
+  "lintTodo": {
     "daysToWarn": 20,
     "daysToError": 25
   }
