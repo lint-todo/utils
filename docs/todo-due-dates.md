@@ -159,8 +159,8 @@ Error: `--days-to-warn-todo` value must be less than `--days-to-error-todo`.
 interface TodoData {
   ...
   createdDate: Date;
-  daysToWarn?: int;
-  daysToError?: int;
+  warnDate?: Date;
+  errorDate?: Date;
 }
 ```
 
