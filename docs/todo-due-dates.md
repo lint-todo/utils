@@ -72,14 +72,14 @@ In `package.json`:
 
 **Via `eslint` CLI:**
 
-```
+```shell
 # to configure todos to transition to errors 20 days after creation
-UPDATE_TODO=1 DAYS_TO_ERROR_TODO=20 yarn eslint . --format eslint-formatter-todo
+UPDATE_TODO=1 TODO_DAYS_TO_ERROR=20 yarn eslint . --format eslint-formatter-todo
 ```
 
 **Via `ember-template-lint` CLI:**
 
-```
+```shell
 # to configure todos to transition to errors 20 days after creation
 yarn ember-template-lint . --update-todo --todo-days-to-error 20
 ```
@@ -101,14 +101,14 @@ Use case: give 20 days for todos to be considered `warning`s, then 5 additional 
 
 **Via `eslint` CLI:**
 
-```
+```shell
 # to configure todos to transition to warnings 20 days after creation and to errors 25 days after creation
-UPDATE_TODO=1 DAYS_TO_WARN_TODO=20 DAYS_TO_ERROR_TODO=25 yarn eslint . --format eslint-formatter-todo
+UPDATE_TODO=1 TODO_DAYS_TO_WARN=20 TODO_DAYS_TO_ERROR=25 yarn eslint . --format eslint-formatter-todo
 ```
 
 **Via `ember-template-lint` CLI:**
 
-```
+```shell
 # to configure todos to transition to warnings 20 days after creation and to errors 25 days after creation
 yarn ember-template-lint . --update-todo --todo-days-to-warn 20 --todo-days-to-error 25
 ```
@@ -120,14 +120,14 @@ If `daysToWarn` is passed without `daysToError` an error must be produced.
 **Via `eslint` CLI:**
 
 ```
-$ UPDATE_TODO=1 DAYS_TO_WARN_TODO=20 yarn eslint . --format eslint-formatter-todo
+$ UPDATE_TODO=1 TODO_DAYS_TO_WARN=20 yarn eslint . --format eslint-formatter-todo
 
-Error: `DAYS_TO_WARN_TODO` must be used with `DAYS_TO_ERROR_TODO`.
+Error: `TODO_DAYS_TO_WARN` must be used with `TODO_DAYS_TO_ERROR`.
 ```
 
 **Via `ember-template-lint` CLI:**
 
-```
+```shell
 $ yarn ember-template-lint . --update-todo --todo-days-to-warn 20
 
 Error: `--todo-days-to-warn` must be used with `--todo-days-to-error`.
@@ -139,15 +139,15 @@ If `daysToWarn` is greater or equal than `daysToError` an error must be produced
 
 **Via `eslint` CLI:**
 
-```
-$ UPDATE_TODO=1 DAYS_TO_WARN_TODO=20 DAYS_TO_ERROR_TODO=5 yarn eslint . --format eslint-formatter-todo
+```shell
+$ UPDATE_TODO=1 TODO_DAYS_TO_WARN=20 TODO_DAYS_TO_ERROR=5 yarn eslint . --format eslint-formatter-todo
 
-Error: `DAYS_TO_WARN_TODO` value must be less than `DAYS_TO_ERROR_TODO`.
+Error: `TODO_DAYS_TO_WARN` value must be less than `TODO_DAYS_TO_ERROR`.
 ```
 
 **Via `ember-template-lint` CLI:**
 
-```
+```shell
 $ yarn ember-template-lint . --update-todo --todo-days-to-warn 20 --todo-days-to-error=5
 
 Error: `--todo-days-to-warn` value must be less than `--todo-days-to-error`.
@@ -174,8 +174,8 @@ A few other options were considered:
 - Allow the option to pass rule id with due date associated to them. The extra rule id config is not necessary since both `ember-template-lint` and `eslint` already have options to filter by rule id.
 - If extra functionality is needed we could provide a different CLI for that specific purpose. For now, the goal is to keep the todo functionality simple with a simple due date mechanism.
 
-# Unresolved questions
+# Important Notes
 
-[unresolved]: #unresolved-questions
+[important notes]: #important-notes
 
-- How will we ensure that if todos are completely regenerated (we run UPDATE_TODO=1 or --update-todo`) we don't lose this data?
+- The dates data in todos will be lost if a user re-runs `UPDATE_TODO=1` _or_ `--update-todo`. This is expected, and can be considered a feature.
