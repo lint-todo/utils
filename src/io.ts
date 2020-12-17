@@ -88,7 +88,7 @@ export async function writeTodos(
     : await readTodos(baseDir);
   const [add, remove] = await getTodoBatches(buildTodoData(baseDir, lintResults), existing);
 
-  await generateFiles(todoStorageDir, add, remove);
+  await applyTodoChanges(todoStorageDir, add, remove);
 
   return todoStorageDir;
 }
@@ -182,13 +182,13 @@ export async function getTodoBatches(
 }
 
 /**
- * Generates todo files based on batches from `getTodoBatches`.
+ * Applies todo changes, either adding or removing, based on batches from `getTodoBatches`.
  *
  * @param todoStorageDir The .lint-todo storage directory.
  * @param add Batch of todos to add.
  * @param remove Batch of todos to remove.
  */
-export async function generateFiles(
+export async function applyTodoChanges(
   todoStorageDir: string,
   add: Map<FilePath, TodoData>,
   remove: Map<FilePath, TodoData>
