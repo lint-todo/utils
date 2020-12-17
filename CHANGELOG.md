@@ -1,3 +1,15 @@
+## v3.1.0 (2020-12-17)
+
+#### :rocket: Enhancement
+* [#32](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/32) Expose applyTodoChanges API ([@scalvert](https://github.com/scalvert))
+
+#### :memo: Documentation
+* [#31](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/31) [RFC] Todo due date spec ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v3.0.2 (2020-12-01)
 
 #### :bug: Bug Fix
