@@ -102,6 +102,8 @@ UPDATE_TODO=1 TODO_DAYS_TO_ERROR=20 yarn eslint . --format eslint-formatter-todo
 yarn ember-template-lint . --update-todo --todo-days-to-error 20
 ```
 
+Providing configuration via the command line will override configuration in the package.json.
+
 ### Todos that are past-due become warnings, then errors
 
 Use case: give 20 days for todos to be considered `warning`s, then 5 additional days until they are considered `error`s.
@@ -111,8 +113,10 @@ Use case: give 20 days for todos to be considered `warning`s, then 5 additional 
 ```json
 {
   "lintTodo": {
-    "daysToWarn": 20,
-    "daysToError": 25
+    "daysToDecay": {
+      "warn": 20,
+      "error": 25
+    }
   }
 }
 ```
@@ -131,10 +135,6 @@ UPDATE_TODO=1 TODO_DAYS_TO_WARN=20 TODO_DAYS_TO_ERROR=25 yarn eslint . --format 
 yarn ember-template-lint . --update-todo --todo-days-to-warn 20 --todo-days-to-error 25
 ```
 
-### Invalid option: only `daysToWarn` is present
-
-If `daysToWarn` is passed without `daysToError` an error must be produced.
-
 **Via `eslint` CLI:**
 
 ```
@@ -151,9 +151,9 @@ $ yarn ember-template-lint . --update-todo --todo-days-to-warn 20
 Error: `--todo-days-to-warn` must be used with `--todo-days-to-error`.
 ```
 
-#### Invalid option: `daysToWarn` is greater or equal than `daysToError`
+#### Invalid option: `warn` is greater or equal than `error`
 
-If `daysToWarn` is greater or equal than `daysToError` an error must be produced:
+If days to decay to warn is greater or equal than days to decay to error, an error must be produced:
 
 **Via `eslint` CLI:**
 
