@@ -42,6 +42,9 @@ have a todo lint violation.</p>
 <dt><a href="#getTodoBatches">getTodoBatches(lintResults, existing)</a></dt>
 <dd><p>Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).</p>
 </dd>
+<dt><a href="#applyTodoChanges">applyTodoChanges(todoStorageDir, add, remove)</a></dt>
+<dd><p>Applies todo changes, either adding or removing, based on batches from `getTodoBatches`.</p>
+</dd>
 </dl>
 
 <a name="buildTodoData"></a>
