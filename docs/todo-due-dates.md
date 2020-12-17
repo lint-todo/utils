@@ -41,15 +41,33 @@ By adding a day threshold to the todo items, developers will now have a commitme
 
 When an author runs a linter with the todo functionality, all errors are converted to todos with no due date threshold unless one is present in `package.json` _or_ passed as a command line argument.
 
-- `daysToWarn` - number of days after its creation date that a todo transitions into a `warn`
-- `daysToError` number of days after its creation date that a todo transitions into an `error`.
-- `daysToWarn` _and_ `daysToError` - if used, `daysToError` must be greater than `daysToWarn`.
+- Days to decay to warn - number of days after its creation date that a todo transitions into a `warn`
+  - in package.json:
+    ```js
+    //...
+    "daysToDecay": {
+      "warn": {number}
+    }
+    //...
+    ```
+  - on command line: `--todo-days-to-warn={number}`
+- Days to decay to error - number of days after its creation date that a todo transitions into an `error`
+  - in package.json: 
+    ```js
+    //...
+    "daysToDecay": {
+      "error": {number}
+    }
+    //...
+    ```
+  - on command line: `--todo-days-to-error={number}`
+- Days to decay to warn _and_ error - if used, error must be greater than warn.
 
 ## Workflows
 
 ### Normal todo workflow
 
-- No due date is expected when adding todo items with no threshold provided in the `package.json` or the CLI arguments `daysToError` or `daysToWarn`.
+- No due date is expected when adding todo items with no threshold provided in the `package.json` or the CLI arguments `daysToDecay.error` or `daysToDecay.warn`.
 
 ### Todos that are past-due become errors
 
