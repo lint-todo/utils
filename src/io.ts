@@ -2,7 +2,7 @@ import { createHash } from 'crypto';
 import { posix } from 'path';
 import { ensureDir, existsSync, readdir, readJSON, unlink, writeJson } from 'fs-extra';
 import { buildTodoData } from './builders';
-import { FilePath, LintResult, TodoData } from './types';
+import { DaysToDecay, FilePath, LintResult, TodoData } from './types';
 
 /**
  * Determines if the .lint-todo storage directory exists.
@@ -80,13 +80,14 @@ export function todoFileNameFor(todoData: TodoData): string {
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
-  filePath?: string
+  filePath = '',
+  daysToDecay?: DaysToDecay
 ): Promise<string> {
   const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const existing: Map<FilePath, TodoData> = filePath
     ? await readTodosForFilePath(baseDir, filePath)
     : await readTodos(baseDir);
-  const [add, remove] = await getTodoBatches(buildTodoData(baseDir, lintResults), existing);
+  const [add, remove] = await getTodoBatches(buildTodoData(baseDir, lintResults, daysToDecay), existing);
 
   await applyTodoChanges(todoStorageDir, add, remove);
 

@@ -34,6 +34,12 @@ export interface TodoData {
   ruleId: string;
   line: number;
   column: number;
-  createdDate: number;
-  dueDate?: Date;
+  createdDate: Date;
+  warnDate?: Date;
+  errorDate?: Date;
+}
+
+export interface DaysToDecay {
+  warn?: number,
+  error?: number,
 }

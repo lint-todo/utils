@@ -2,9 +2,11 @@ import { TemplateLintReport, TemplateLintResult } from '../../src/types';
 import { CLIEngine, ESLint } from 'eslint';
 
 import * as eslintWithErrors from './eslint-with-errors.json';
+import * as eslintSingleError from './eslint-single-error.json';
 import * as eslintWithWarnings from './eslint-with-warnings.json';
 import * as eslintNoResults from './eslint-no-results.json';
 import * as emberTemplateLintWithErrors from './ember-template-lint-with-errors.json';
+import * as emberTemplateLintSingleError from './ember-template-lint-single-error.json';
 import * as emberTemplateLintWithWarnings from './ember-template-lint-with-warnings.json';
 import * as emberTemplateLintNoResults from './ember-template-lint-no-results.json';
 import * as singleFileTodo from './single-file-todo.json';
@@ -18,6 +20,9 @@ const fixtures = {
   eslintWithErrors: <ESLint.LintResult[]>(
     (<CLIEngine.LintReport>(eslintWithErrors as unknown)).results
   ),
+  eslintSingleError: <ESLint.LintResult[]>(
+    (<CLIEngine.LintReport>(eslintSingleError as unknown)).results
+  ),
   eslintWithWarnings: <ESLint.LintResult[]>(
     (<CLIEngine.LintReport>(eslintWithWarnings as unknown)).results
   ),
@@ -26,6 +31,9 @@ const fixtures = {
   ),
   emberTemplateLintWithErrors: <TemplateLintResult[]>(
     (<TemplateLintReport>(emberTemplateLintWithErrors as unknown)).results
+  ),
+  emberTemplateLintSingleError: <TemplateLintResult[]>(
+    (<TemplateLintReport>(emberTemplateLintSingleError as unknown)).results
   ),
   emberTemplateLintWithWarnings: <TemplateLintResult[]>(
     (<TemplateLintReport>(emberTemplateLintWithWarnings as unknown)).results
@@ -49,6 +57,10 @@ export default {
     return updatePaths(tmp, deepCopy(fixtures.eslintWithErrors));
   },
 
+  eslintSingleError(tmp: string): ESLint.LintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.eslintSingleError));
+  },
+
   eslintWithWarnings(tmp: string): ESLint.LintResult[] {
     return updatePaths(tmp, deepCopy(fixtures.eslintWithWarnings));
   },
@@ -59,6 +71,10 @@ export default {
 
   emberTemplateLintWithErrors(tmp: string): TemplateLintResult[] {
     return updatePaths(tmp, deepCopy(fixtures.emberTemplateLintWithErrors));
+  },
+
+  emberTemplateLintSingleError(tmp: string): TemplateLintResult[] {
+    return updatePaths(tmp, deepCopy(fixtures.emberTemplateLintSingleError));
   },
 
   emberTemplateLintWithWarnings(tmp: string): TemplateLintResult[] {

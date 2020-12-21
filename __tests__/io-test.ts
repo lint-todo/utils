@@ -21,7 +21,7 @@ const TODO_DATA: TodoData = {
   ruleId: 'no-prototype-builtins',
   line: 25,
   column: 21,
-  createdDate: 1601324202150,
+  createdDate: new Date('12/11/2020'),
 };
 
 async function readFiles(todoStorageDir: string) {
