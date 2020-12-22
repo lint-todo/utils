@@ -16,45 +16,44 @@ Those utilities are:
 ## Functions
 
 <dl>
-<dt><a href="#buildTodoData">buildTodoData(baseDir, lintResults)</a></dt>
-<dd><p>Adapts a list of <a href="https://github.com/DefinitelyTyped/DefinitelyTyped/blob/160f43ae6852c4eefec2641e54cff96dd7b63488/types/eslint/index.d.ts#L640">ESLint.LintResult</a>
-or <a href="TemplateLintResult">TemplateLintResult</a> to a map of <a href="FilePath">FilePath</a>, <a href="TodoData">TodoData</a>.</p>
+<dt><a href="#buildTodoData">buildTodoData(baseDir, lintResults, daysToDecay)</a> ⇒</dt>
+<dd><p>Adapts a list of <a href="LintResult">LintResult</a> to a map of <a href="FilePath">FilePath</a>, <a href="TodoData">TodoData</a>.</p>
 </dd>
-<dt><a href="#_buildTodoDatum">_buildTodoDatum(lintResult, lintMessage)</a></dt>
-<dd><p>Adapts an {ESLint.LintResult} or {TemplateLintResult} to a {TodoData}. FilePaths are absolute
+<dt><a href="#_buildTodoDatum">_buildTodoDatum(lintResult, lintMessage, daysToDecay)</a> ⇒</dt>
+<dd><p>Adapts an <a href="LintResult">LintResult</a> to a <a href="TodoData">TodoData</a>. FilePaths are absolute
 when received from a lint result, so they&#39;re converted to relative paths for stability in
 serializing the contents to disc.</p>
 </dd>
-<dt><a href="#todoStorageDirExists">todoStorageDirExists(baseDir)</a></dt>
+<dt><a href="#todoStorageDirExists">todoStorageDirExists(baseDir)</a> ⇒</dt>
 <dd><p>Determines if the .lint-todo storage directory exists.</p>
 </dd>
-<dt><a href="#ensureTodoStorageDir">ensureTodoStorageDir(baseDir)</a></dt>
+<dt><a href="#ensureTodoStorageDir">ensureTodoStorageDir(baseDir)</a> ⇒</dt>
 <dd><p>Creates, or ensures the creation of, the .lint-todo directory.</p>
 </dd>
-<dt><a href="#getTodoStorageDirPath">getTodoStorageDirPath(baseDir)</a></dt>
+<dt><a href="#getTodoStorageDirPath">getTodoStorageDirPath(baseDir)</a> ⇒</dt>
 <dd></dd>
-<dt><a href="#todoFilePathFor">todoFilePathFor(baseDir, todoData)</a></dt>
+<dt><a href="#todoFilePathFor">todoFilePathFor(baseDir, todoData)</a> ⇒</dt>
 <dd><p>Creates a file path from the linting data. Excludes extension.</p>
 </dd>
-<dt><a href="#todoDirFor">todoDirFor(filePath)</a></dt>
+<dt><a href="#todoDirFor">todoDirFor(filePath)</a> ⇒</dt>
 <dd><p>Creates a short hash for the todo&#39;s file path.</p>
 </dd>
-<dt><a href="#todoFileNameFor">todoFileNameFor(todoData)</a></dt>
+<dt><a href="#todoFileNameFor">todoFileNameFor(todoData)</a> ⇒</dt>
 <dd><p>Generates a unique filename for a todo lint data.</p>
 </dd>
-<dt><a href="#writeTodos">writeTodos(baseDir, lintResults, filePath?)</a></dt>
+<dt><a href="#writeTodos">writeTodos(baseDir, lintResults, filePath, daysToDecay)</a> ⇒</dt>
 <dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
 <p>Given a list of todo lint violations, this function will also delete existing files that no longer
 have a todo lint violation.</p>
 </dd>
-<dt><a href="#readTodos">readTodos(baseDir)</a></dt>
+<dt><a href="#readTodos">readTodos(baseDir)</a> ⇒</dt>
 <dd><p>Reads all todo files in the .lint-todo directory.</p>
 </dd>
-<dt><a href="#readTodosForFilePath">readTodosForFilePath(todoStorageDir, filePath)</a></dt>
+<dt><a href="#readTodosForFilePath">readTodosForFilePath(todoStorageDir, filePath)</a> ⇒</dt>
 <dd><p>Reads todo files in the .lint-todo directory for a specific filePath.</p>
 </dd>
-<dt><a href="#getTodoBatches">getTodoBatches(lintResults, existing)</a></dt>
+<dt><a href="#getTodoBatches">getTodoBatches(lintResults, existing)</a> ⇒</dt>
 <dd><p>Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).</p>
 </dd>
 <dt><a href="#applyTodoChanges">applyTodoChanges(todoStorageDir, add, remove)</a></dt>
@@ -64,37 +63,41 @@ have a todo lint violation.</p>
 
 <a name="buildTodoData"></a>
 
-## buildTodoData(baseDir, lintResults)
-Adapts a list of [ESLint.LintResult](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/160f43ae6852c4eefec2641e54cff96dd7b63488/types/eslint/index.d.ts#L640)
-or [TemplateLintResult](TemplateLintResult) to a map of [FilePath](FilePath), [TodoData](TodoData).
+## buildTodoData(baseDir, lintResults, daysToDecay) ⇒
+Adapts a list of [LintResult](LintResult) to a map of [FilePath](FilePath), [TodoData](TodoData).
 
 **Kind**: global function  
+**Returns**: - A Promise resolving to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| baseDir |  | The base directory that contains the .lint-todo storage directory. |
-| lintResults | <code>LintResult</code> | A list of  objects to convert to {TodoData} objects. |
+| Param | Description |
+| --- | --- |
+| baseDir | The base directory that contains the .lint-todo storage directory. |
+| lintResults | A list of [LintResult](LintResult) objects to convert to [TodoData](TodoData) objects. |
+| daysToDecay | An object containing the warn or error days, in integers. |
 
 <a name="_buildTodoDatum"></a>
 
-## \_buildTodoDatum(lintResult, lintMessage)
-Adapts an {ESLint.LintResult} or {TemplateLintResult} to a {TodoData}. FilePaths are absolute
+## \_buildTodoDatum(lintResult, lintMessage, daysToDecay) ⇒
+Adapts an [LintResult](LintResult) to a [TodoData](TodoData). FilePaths are absolute
 when received from a lint result, so they're converted to relative paths for stability in
 serializing the contents to disc.
 
 **Kind**: global function  
+**Returns**: - A [TodoData](TodoData) object.  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| lintResult | <code>ESLint.LintResult</code> | The lint result object, either an  or a {TemplateLintResult}. |
-| lintMessage |  | A lint message object representing a specific violation for a file. |
+| Param | Description |
+| --- | --- |
+| lintResult | The lint result object. |
+| lintMessage | A lint message object representing a specific violation for a file. |
+| daysToDecay | An object containing the warn or error days, in integers. |
 
 <a name="todoStorageDirExists"></a>
 
-## todoStorageDirExists(baseDir)
+## todoStorageDirExists(baseDir) ⇒
 Determines if the .lint-todo storage directory exists.
 
 **Kind**: global function  
+**Returns**: - true if the todo storage directory exists, otherwise false.  
 
 | Param | Description |
 | --- | --- |
@@ -102,10 +105,11 @@ Determines if the .lint-todo storage directory exists.
 
 <a name="ensureTodoStorageDir"></a>
 
-## ensureTodoStorageDir(baseDir)
+## ensureTodoStorageDir(baseDir) ⇒
 Creates, or ensures the creation of, the .lint-todo directory.
 
 **Kind**: global function  
+**Returns**: - The todo storage directory path.  
 
 | Param | Description |
 | --- | --- |
@@ -113,8 +117,9 @@ Creates, or ensures the creation of, the .lint-todo directory.
 
 <a name="getTodoStorageDirPath"></a>
 
-## getTodoStorageDirPath(baseDir)
+## getTodoStorageDirPath(baseDir) ⇒
 **Kind**: global function  
+**Returns**: - The todo storage directory path.  
 
 | Param | Description |
 | --- | --- |
@@ -122,10 +127,11 @@ Creates, or ensures the creation of, the .lint-todo directory.
 
 <a name="todoFilePathFor"></a>
 
-## todoFilePathFor(baseDir, todoData)
+## todoFilePathFor(baseDir, todoData) ⇒
 Creates a file path from the linting data. Excludes extension.
 
 **Kind**: global function  
+**Returns**: - The todo file path for a [TodoData](TodoData) object.  
 
 | Param | Description |
 | --- | --- |
@@ -138,10 +144,11 @@ Creates a file path from the linting data. Excludes extension.
 ```
 <a name="todoDirFor"></a>
 
-## todoDirFor(filePath)
+## todoDirFor(filePath) ⇒
 Creates a short hash for the todo's file path.
 
 **Kind**: global function  
+**Returns**: - The todo directory for a specific filepath.  
 
 | Param | Description |
 | --- | --- |
@@ -149,10 +156,11 @@ Creates a short hash for the todo's file path.
 
 <a name="todoFileNameFor"></a>
 
-## todoFileNameFor(todoData)
+## todoFileNameFor(todoData) ⇒
 Generates a unique filename for a todo lint data.
 
 **Kind**: global function  
+**Returns**: - The todo file name for a [TodoData](TodoData) object.  
 
 | Param | Description |
 | --- | --- |
@@ -160,7 +168,7 @@ Generates a unique filename for a todo lint data.
 
 <a name="writeTodos"></a>
 
-## writeTodos(baseDir, lintResults, filePath?)
+## writeTodos(baseDir, lintResults, filePath, daysToDecay) ⇒
 Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.
 
@@ -168,19 +176,22 @@ Given a list of todo lint violations, this function will also delete existing fi
 have a todo lint violation.
 
 **Kind**: global function  
+**Returns**: - The todo storage directory path.  
 
 | Param | Description |
 | --- | --- |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 | lintResults | The raw linting data. |
-| filePath? | The relative file path of the file to update violations for. |
+| filePath | The relative file path of the file to update violations for. |
+| daysToDecay | An object containing the warn or error days, in integers. |
 
 <a name="readTodos"></a>
 
-## readTodos(baseDir)
+## readTodos(baseDir) ⇒
 Reads all todo files in the .lint-todo directory.
 
 **Kind**: global function  
+**Returns**: - A Promise resolving to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
 
 | Param | Description |
 | --- | --- |
@@ -188,10 +199,11 @@ Reads all todo files in the .lint-todo directory.
 
 <a name="readTodosForFilePath"></a>
 
-## readTodosForFilePath(todoStorageDir, filePath)
+## readTodosForFilePath(todoStorageDir, filePath) ⇒
 Reads todo files in the .lint-todo directory for a specific filePath.
 
 **Kind**: global function  
+**Returns**: - A Promise resolving to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
 
 | Param | Description |
 | --- | --- |
@@ -200,10 +212,11 @@ Reads todo files in the .lint-todo directory for a specific filePath.
 
 <a name="getTodoBatches"></a>
 
-## getTodoBatches(lintResults, existing)
+## getTodoBatches(lintResults, existing) ⇒
 Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).
 
 **Kind**: global function  
+**Returns**: - A Promise resolving to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
 
 | Param | Description |
 | --- | --- |

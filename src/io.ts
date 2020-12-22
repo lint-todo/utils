@@ -7,7 +7,8 @@ import { DaysToDecay, FilePath, LintResult, TodoData } from './types';
 /**
  * Determines if the .lint-todo storage directory exists.
  *
- * @param baseDir The base directory that contains the .lint-todo storage directory.
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @returns - true if the todo storage directory exists, otherwise false.
  */
 export function todoStorageDirExists(baseDir: string): boolean {
   return existsSync(getTodoStorageDirPath(baseDir));
@@ -16,7 +17,8 @@ export function todoStorageDirExists(baseDir: string): boolean {
 /**
  * Creates, or ensures the creation of, the .lint-todo directory.
  *
- * @param baseDir The base directory that contains the .lint-todo storage directory.
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @returns - The todo storage directory path.
  */
 export async function ensureTodoStorageDir(baseDir: string): Promise<string> {
   const path = getTodoStorageDirPath(baseDir);
@@ -27,7 +29,8 @@ export async function ensureTodoStorageDir(baseDir: string): Promise<string> {
 }
 
 /**
- * @param baseDir The base directory that contains the .lint-todo storage directory.
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @returns - The todo storage directory path.
  */
 export function getTodoStorageDirPath(baseDir: string): string {
   return posix.join(baseDir, '.lint-todo');
@@ -39,8 +42,9 @@ export function getTodoStorageDirPath(baseDir: string): string {
  * @example
  * 42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839
  *
- * @param baseDir The base directory that contains the .lint-todo storage directory.
- * @param todoData The linting data for an individual violation.
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @param todoData - The linting data for an individual violation.
+ * @returns - The todo file path for a {@link TodoData} object.
  */
 export function todoFilePathFor(todoData: TodoData): string {
   return posix.join(todoDirFor(todoData.filePath), todoFileNameFor(todoData));
@@ -49,7 +53,8 @@ export function todoFilePathFor(todoData: TodoData): string {
 /**
  * Creates a short hash for the todo's file path.
  *
- * @param filePath The filePath from linting data for an individual violation.
+ * @param filePath - The filePath from linting data for an individual violation.
+ * @returns - The todo directory for a specific filepath.
  */
 export function todoDirFor(filePath: string): string {
   return createHash('sha1').update(filePath).digest('hex');
@@ -58,7 +63,8 @@ export function todoDirFor(filePath: string): string {
 /**
  * Generates a unique filename for a todo lint data.
  *
- * @param todoData The linting data for an individual violation.
+ * @param todoData - The linting data for an individual violation.
+ * @returns - The todo file name for a {@link TodoData} object.
  */
 export function todoFileNameFor(todoData: TodoData): string {
   const hashParams = `${todoData.engine}${todoData.ruleId}${todoData.line}${todoData.column}`;
@@ -73,9 +79,11 @@ export function todoFileNameFor(todoData: TodoData): string {
  * Given a list of todo lint violations, this function will also delete existing files that no longer
  * have a todo lint violation.
  *
- * @param baseDir The base directory that contains the .lint-todo storage directory.
- * @param lintResults The raw linting data.
- * @param filePath? The relative file path of the file to update violations for.
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @param lintResults - The raw linting data.
+ * @param filePath - The relative file path of the file to update violations for.
+ * @param daysToDecay - An object containing the warn or error days, in integers.
+ * @returns - The todo storage directory path.
  */
 export async function writeTodos(
   baseDir: string,
@@ -97,7 +105,8 @@ export async function writeTodos(
 /**
  * Reads all todo files in the .lint-todo directory.
  *
- * @param baseDir The base directory that contains the .lint-todo storage directory.
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @returns - A Promise resolving to a {@link Map} of {@link FilePath}/{@link TodoData}.
  */
 export async function readTodos(baseDir: string): Promise<Map<FilePath, TodoData>> {
   const map = new Map();
@@ -119,8 +128,9 @@ export async function readTodos(baseDir: string): Promise<Map<FilePath, TodoData
 /**
  * Reads todo files in the .lint-todo directory for a specific filePath.
  *
- * @param todoStorageDir The .lint-todo storage directory.
- * @param filePath The relative file path of the file to return todo items for.
+ * @param todoStorageDir - The .lint-todo storage directory.
+ * @param filePath - The relative file path of the file to return todo items for.
+ * @returns - A Promise resolving to a {@link Map} of {@link FilePath}/{@link TodoData}.
  */
 export async function readTodosForFilePath(
   baseDir: string,
@@ -152,8 +162,9 @@ export async function readTodosForFilePath(
 /**
  * Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).
  *
- * @param lintResults The linting data for all violations.
- * @param existing Existing todo lint data.
+ * @param lintResults - The linting data for all violations.
+ * @param existing - Existing todo lint data.
+ * @returns - A Promise resolving to a {@link Map} of {@link FilePath}/{@link TodoData}.
  */
 export async function getTodoBatches(
   lintResults: Map<FilePath, TodoData>,
@@ -185,9 +196,9 @@ export async function getTodoBatches(
 /**
  * Applies todo changes, either adding or removing, based on batches from `getTodoBatches`.
  *
- * @param todoStorageDir The .lint-todo storage directory.
- * @param add Batch of todos to add.
- * @param remove Batch of todos to remove.
+ * @param todoStorageDir - The .lint-todo storage directory.
+ * @param add - Batch of todos to add.
+ * @param remove - Batch of todos to remove.
  */
 export async function applyTodoChanges(
   todoStorageDir: string,
