@@ -42,10 +42,8 @@ export function _buildTodoDatum(
   lintMessage: LintMessage,
   daysToDecay?: DaysToDecay
 ): TodoData {
-  /**
-   * Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
-   * provided that the fix is landed on the supported node versions of this lib
-   */
+  // Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
+  // provided that the fix is landed on the supported node versions of this lib
   const filePath = isAbsolute(lintResult.filePath) ? relative(baseDir, lintResult.filePath) : lintResult.filePath;
   const todoDatum: TodoData = {
     engine: getEngine(lintResult),

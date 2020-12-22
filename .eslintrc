@@ -50,6 +50,12 @@
       "rules": {
         "node/no-extraneous-import": "off"
       }
+    },
+    {
+      "files": ["scripts/generate-api-docs.js"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
     }
   ]
 }
