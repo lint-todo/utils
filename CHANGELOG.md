@@ -1,3 +1,20 @@
+## v3.2.0 (2020-12-22)
+
+#### :rocket: Enhancement
+* [#34](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/34) Auto-generating API docs ([@scalvert](https://github.com/scalvert))
+* [#33](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/33) Implements todo-due-dates spec ([@scalvert](https://github.com/scalvert))
+
+#### :memo: Documentation
+* [#36](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/36) Adding eslint-plugin-tsdoc and regenerating docs ([@scalvert](https://github.com/scalvert))
+* [#34](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/34) Auto-generating API docs ([@scalvert](https://github.com/scalvert))
+
+#### :house: Internal
+* [#35](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/35) Updating test fixtures to not suck ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v3.1.0 (2020-12-17)
 
 #### :rocket: Enhancement
