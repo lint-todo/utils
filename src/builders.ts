@@ -1,7 +1,7 @@
 import { isAbsolute, relative } from 'path';
 import slash = require('slash');
 import { todoFilePathFor } from './io';
-import { FilePath, LintMessage, LintResult, TodoData } from './types';
+import { DaysToDecay, FilePath, LintMessage, LintResult, TodoData } from './types';
 
 /**
  * Adapts a list of {@link https://github.com/DefinitelyTyped/DefinitelyTyped/blob/160f43ae6852c4eefec2641e54cff96dd7b63488/types/eslint/index.d.ts#L640 ESLint.LintResult}
@@ -10,13 +10,13 @@ import { FilePath, LintMessage, LintResult, TodoData } from './types';
  * @param baseDir The base directory that contains the .lint-todo storage directory.
  * @param lintResults A list of {LintResult} objects to convert to {TodoData} objects.
  */
-export function buildTodoData(baseDir: string, lintResults: LintResult[]): Map<FilePath, TodoData> {
+export function buildTodoData(baseDir: string, lintResults: LintResult[], daysToDecay?: DaysToDecay): Map<FilePath, TodoData> {
   const results = lintResults.filter((result) => result.messages.length > 0);
 
   const todoData = results.reduce((converted, lintResult) => {
     lintResult.messages.forEach((message: LintMessage) => {
       if (message.severity === 2) {
-        const todoDatum = _buildTodoDatum(baseDir, lintResult, message);
+        const todoDatum = _buildTodoDatum(baseDir, lintResult, message, daysToDecay);
 
         converted.set(todoFilePathFor(todoDatum), todoDatum);
       }
@@ -39,21 +39,32 @@ export function buildTodoData(baseDir: string, lintResults: LintResult[]): Map<F
 export function _buildTodoDatum(
   baseDir: string,
   lintResult: LintResult,
-  lintMessage: LintMessage
+  lintMessage: LintMessage,
+  daysToDecay?: DaysToDecay
 ): TodoData {
   /**
    * Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
    * provided that the fix is landed on the supported node versions of this lib
    */
   const filePath = isAbsolute(lintResult.filePath) ? relative(baseDir, lintResult.filePath) : lintResult.filePath;
-  return {
+  const todoDatum: TodoData = {
     engine: getEngine(lintResult),
     filePath: slash(filePath),
     ruleId: getRuleId(lintMessage),
     line: lintMessage.line,
     column: lintMessage.column,
-    createdDate: Date.now(),
+    createdDate: new Date(),
   };
+
+  if (daysToDecay?.warn) {
+    todoDatum.warnDate = addDays(todoDatum.createdDate, daysToDecay.warn);
+  }
+
+  if (daysToDecay?.error) {
+    todoDatum.errorDate = addDays(todoDatum.createdDate, daysToDecay.error);
+  }
+
+  return todoDatum;
 }
 
 function getEngine(result: LintResult) {
@@ -67,4 +78,12 @@ function getRuleId(message: any) {
     return message.rule;
   }
   return '';
+}
+
+function addDays(createdDate: Date, days: number): Date {
+  const datePlusDays = new Date(createdDate.valueOf());
+
+  datePlusDays.setDate(datePlusDays.getDate() + days);
+
+  return datePlusDays;
 }
