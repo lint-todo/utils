@@ -1,6 +1,6 @@
 {
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "jest", "prettier"],
+  "plugins": ["@typescript-eslint", "jest", "prettier", "tsdoc"],
   "extends": [
     "prettier",
     "prettier/@typescript-eslint",
@@ -39,7 +39,8 @@
         "ignores": ["modules"]
       }
     ],
-    "node/no-extraneous-import": ["error"]
+    "node/no-extraneous-import": ["error"],
+    "tsdoc/syntax": "warn"
   },
   "overrides": [
     {
