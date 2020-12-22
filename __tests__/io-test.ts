@@ -12,8 +12,8 @@ import {
 } from '../src';
 import { LintResult, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
-import fixtures from './__fixtures__/fixtures';
 import { updatePaths } from './__utils__';
+import { getFixture } from './__utils__/get-fixture';
 
 const TODO_DATA: TodoData = {
   engine: 'eslint',
@@ -118,7 +118,7 @@ describe('io', () => {
     });
 
     it('generates todos when todos provided', async () => {
-      const todoDir = await writeTodos(tmp, fixtures.eslintWithErrors(tmp));
+      const todoDir = await writeTodos(tmp, getFixture('eslint-with-errors', tmp));
 
       expect(await readFiles(todoDir)).toHaveLength(18);
     });
@@ -173,7 +173,7 @@ describe('io', () => {
         };
       });
 
-      await writeTodos(tmp, fixtures.eslintWithErrors(tmp));
+      await writeTodos(tmp, getFixture('eslint-with-errors', tmp));
 
       const subsequentFiles = await readFiles(todoDir);
 
@@ -187,7 +187,7 @@ describe('io', () => {
     });
 
     it('removes old todos if todos no longer contains violations', async () => {
-      const fixture = fixtures.eslintWithErrors(tmp);
+      const fixture = getFixture('eslint-with-errors', tmp);
       const todoDir = await writeTodos(tmp, fixture);
       const initialFiles = await readFiles(todoDir);
 
@@ -212,7 +212,7 @@ describe('io', () => {
     it('generates todos for a specific filePath', async () => {
       const todoDir = await writeTodos(
         tmp,
-        fixtures.singleFileTodo(tmp),
+        getFixture('single-file-todo', tmp),
         'app/controllers/settings.js'
       );
 
@@ -228,7 +228,7 @@ describe('io', () => {
     it('updates todos for a specific filePath', async () => {
       const todoDir = await writeTodos(
         tmp,
-        fixtures.singleFileTodo(tmp),
+        getFixture('single-file-todo', tmp),
         'app/controllers/settings.js'
       );
 
@@ -240,7 +240,7 @@ describe('io', () => {
         ]
       `);
 
-      await writeTodos(tmp, fixtures.singleFileTodoUpdated(tmp), 'app/controllers/settings.js');
+      await writeTodos(tmp, getFixture('single-file-todo-updated', tmp), 'app/controllers/settings.js');
 
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
@@ -254,7 +254,7 @@ describe('io', () => {
     it('deletes todos for a specific filePath', async () => {
       const todoDir = await writeTodos(
         tmp,
-        fixtures.singleFileTodo(tmp),
+        getFixture('single-file-todo', tmp),
         'app/controllers/settings.js'
       );
 
@@ -266,7 +266,7 @@ describe('io', () => {
         ]
       `);
 
-      await writeTodos(tmp, fixtures.singleFileNoErrors(tmp), 'app/controllers/settings.js');
+      await writeTodos(tmp, getFixture('single-file-no-errors', tmp), 'app/controllers/settings.js');
 
       expect(await readFiles(todoDir)).toHaveLength(0);
     });
@@ -274,7 +274,7 @@ describe('io', () => {
 
   describe('getTodoBatches', () => {
     it('creates items to add', async () => {
-      const [add] = await getTodoBatches(buildTodoData(tmp, fixtures.newBatches(tmp)), new Map());
+      const [add] = await getTodoBatches(buildTodoData(tmp, getFixture('new-batches', tmp)), new Map());
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
         Array [
@@ -290,7 +290,7 @@ describe('io', () => {
     it('creates items to delete', async () => {
       const [, remove] = await getTodoBatches(
         new Map(),
-        buildTodoData(tmp, fixtures.newBatches(tmp))
+        buildTodoData(tmp, getFixture('new-batches', tmp))
       );
 
       expect([...remove.keys()]).toMatchInlineSnapshot(`
@@ -306,8 +306,8 @@ describe('io', () => {
 
     it('creates all batches', async () => {
       const [add, remove, stable] = await getTodoBatches(
-        buildTodoData(tmp, fixtures.newBatches(tmp)),
-        buildTodoData(tmp, fixtures.existingBatches(tmp))
+        buildTodoData(tmp, getFixture('new-batches', tmp)),
+        buildTodoData(tmp, getFixture('existing-batches', tmp))
       );
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
