@@ -1,3 +1,12 @@
+## v3.3.0 (2020-12-23)
+
+#### :rocket: Enhancement
+* [#37](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/37) Adding sync APIs and tests ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v3.2.0 (2020-12-22)
 
 #### :rocket: Enhancement
