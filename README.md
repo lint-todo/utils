@@ -27,6 +27,9 @@ serializing the contents to disc.</p>
 <dt><a href="#todoStorageDirExists">todoStorageDirExists(baseDir)</a> ⇒</dt>
 <dd><p>Determines if the .lint-todo storage directory exists.</p>
 </dd>
+<dt><a href="#ensureTodoStorageDirSync">ensureTodoStorageDirSync(baseDir)</a> ⇒</dt>
+<dd><p>Creates, or ensures the creation of, the .lint-todo directory.</p>
+</dd>
 <dt><a href="#ensureTodoStorageDir">ensureTodoStorageDir(baseDir)</a> ⇒</dt>
 <dd><p>Creates, or ensures the creation of, the .lint-todo directory.</p>
 </dd>
@@ -41,20 +44,38 @@ serializing the contents to disc.</p>
 <dt><a href="#todoFileNameFor">todoFileNameFor(todoData)</a> ⇒</dt>
 <dd><p>Generates a unique filename for a todo lint data.</p>
 </dd>
+<dt><a href="#writeTodosSync">writeTodosSync(baseDir, lintResults, filePath, daysToDecay)</a> ⇒</dt>
+<dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
+hash to identify each.</p>
+<p>Given a list of todo lint violations, this function will also delete existing files that no longer
+have a todo lint violation.</p>
+</dd>
 <dt><a href="#writeTodos">writeTodos(baseDir, lintResults, filePath, daysToDecay)</a> ⇒</dt>
 <dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
 <p>Given a list of todo lint violations, this function will also delete existing files that no longer
 have a todo lint violation.</p>
 </dd>
+<dt><a href="#readTodosSync">readTodosSync(baseDir)</a> ⇒</dt>
+<dd><p>Reads all todo files in the .lint-todo directory.</p>
+</dd>
 <dt><a href="#readTodos">readTodos(baseDir)</a> ⇒</dt>
 <dd><p>Reads all todo files in the .lint-todo directory.</p>
+</dd>
+<dt><a href="#readTodosForFilePathSync">readTodosForFilePathSync(todoStorageDir, filePath)</a> ⇒</dt>
+<dd><p>Reads todo files in the .lint-todo directory for a specific filePath.</p>
 </dd>
 <dt><a href="#readTodosForFilePath">readTodosForFilePath(todoStorageDir, filePath)</a> ⇒</dt>
 <dd><p>Reads todo files in the .lint-todo directory for a specific filePath.</p>
 </dd>
+<dt><a href="#getTodoBatchesSync">getTodoBatchesSync(lintResults, existing)</a> ⇒</dt>
+<dd><p>Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).</p>
+</dd>
 <dt><a href="#getTodoBatches">getTodoBatches(lintResults, existing)</a> ⇒</dt>
 <dd><p>Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).</p>
+</dd>
+<dt><a href="#applyTodoChangesSync">applyTodoChangesSync(todoStorageDir, add, remove)</a></dt>
+<dd><p>Applies todo changes, either adding or removing, based on batches from <code>getTodoBatches</code>.</p>
 </dd>
 <dt><a href="#applyTodoChanges">applyTodoChanges(todoStorageDir, add, remove)</a></dt>
 <dd><p>Applies todo changes, either adding or removing, based on batches from <code>getTodoBatches</code>.</p>
@@ -103,13 +124,25 @@ Determines if the .lint-todo storage directory exists.
 | --- | --- |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 
+<a name="ensureTodoStorageDirSync"></a>
+
+## ensureTodoStorageDirSync(baseDir) ⇒
+Creates, or ensures the creation of, the .lint-todo directory.
+
+**Kind**: global function  
+**Returns**: - The todo storage directory path.  
+
+| Param | Description |
+| --- | --- |
+| baseDir | The base directory that contains the .lint-todo storage directory. |
+
 <a name="ensureTodoStorageDir"></a>
 
 ## ensureTodoStorageDir(baseDir) ⇒
 Creates, or ensures the creation of, the .lint-todo directory.
 
 **Kind**: global function  
-**Returns**: - The todo storage directory path.  
+**Returns**: - A promise that resolves to the todo storage directory path.  
 
 | Param | Description |
 | --- | --- |
@@ -166,9 +199,9 @@ Generates a unique filename for a todo lint data.
 | --- | --- |
 | todoData | The linting data for an individual violation. |
 
-<a name="writeTodos"></a>
+<a name="writeTodosSync"></a>
 
-## writeTodos(baseDir, lintResults, filePath, daysToDecay) ⇒
+## writeTodosSync(baseDir, lintResults, filePath, daysToDecay) ⇒
 Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.
 
@@ -185,17 +218,61 @@ have a todo lint violation.
 | filePath | The relative file path of the file to update violations for. |
 | daysToDecay | An object containing the warn or error days, in integers. |
 
+<a name="writeTodos"></a>
+
+## writeTodos(baseDir, lintResults, filePath, daysToDecay) ⇒
+Writes files for todo lint violations. One file is generated for each violation, using a generated
+hash to identify each.
+
+Given a list of todo lint violations, this function will also delete existing files that no longer
+have a todo lint violation.
+
+**Kind**: global function  
+**Returns**: - A promise that resolves to the todo storage directory path.  
+
+| Param | Description |
+| --- | --- |
+| baseDir | The base directory that contains the .lint-todo storage directory. |
+| lintResults | The raw linting data. |
+| filePath | The relative file path of the file to update violations for. |
+| daysToDecay | An object containing the warn or error days, in integers. |
+
+<a name="readTodosSync"></a>
+
+## readTodosSync(baseDir) ⇒
+Reads all todo files in the .lint-todo directory.
+
+**Kind**: global function  
+**Returns**: - A [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+
+| Param | Description |
+| --- | --- |
+| baseDir | The base directory that contains the .lint-todo storage directory. |
+
 <a name="readTodos"></a>
 
 ## readTodos(baseDir) ⇒
 Reads all todo files in the .lint-todo directory.
 
 **Kind**: global function  
-**Returns**: - A Promise resolving to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+**Returns**: - A Promise that resolves to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
 
 | Param | Description |
 | --- | --- |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
+
+<a name="readTodosForFilePathSync"></a>
+
+## readTodosForFilePathSync(todoStorageDir, filePath) ⇒
+Reads todo files in the .lint-todo directory for a specific filePath.
+
+**Kind**: global function  
+**Returns**: - A [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+
+| Param | Description |
+| --- | --- |
+| todoStorageDir | The .lint-todo storage directory. |
+| filePath | The relative file path of the file to return todo items for. |
 
 <a name="readTodosForFilePath"></a>
 
@@ -203,12 +280,25 @@ Reads all todo files in the .lint-todo directory.
 Reads todo files in the .lint-todo directory for a specific filePath.
 
 **Kind**: global function  
-**Returns**: - A Promise resolving to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+**Returns**: - A Promise that resolves to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
 
 | Param | Description |
 | --- | --- |
 | todoStorageDir | The .lint-todo storage directory. |
 | filePath | The relative file path of the file to return todo items for. |
+
+<a name="getTodoBatchesSync"></a>
+
+## getTodoBatchesSync(lintResults, existing) ⇒
+Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).
+
+**Kind**: global function  
+**Returns**: - A [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+
+| Param | Description |
+| --- | --- |
+| lintResults | The linting data for all violations. |
+| existing | Existing todo lint data. |
 
 <a name="getTodoBatches"></a>
 
@@ -216,12 +306,25 @@ Reads todo files in the .lint-todo directory for a specific filePath.
 Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).
 
 **Kind**: global function  
-**Returns**: - A Promise resolving to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+**Returns**: - A Promise that resolves to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
 
 | Param | Description |
 | --- | --- |
 | lintResults | The linting data for all violations. |
 | existing | Existing todo lint data. |
+
+<a name="applyTodoChangesSync"></a>
+
+## applyTodoChangesSync(todoStorageDir, add, remove)
+Applies todo changes, either adding or removing, based on batches from `getTodoBatches`.
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| todoStorageDir | The .lint-todo storage directory. |
+| add | Batch of todos to add. |
+| remove | Batch of todos to remove. |
 
 <a name="applyTodoChanges"></a>
 

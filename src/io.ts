@@ -142,7 +142,7 @@ export function writeTodosSync(
  * @param lintResults - The raw linting data.
  * @param filePath - The relative file path of the file to update violations for.
  * @param daysToDecay - An object containing the warn or error days, in integers.
- * @returns - The todo storage directory path.
+ * @returns - A promise that resolves to the todo storage directory path.
  */
 export async function writeTodos(
   baseDir: string,
@@ -191,7 +191,7 @@ export function readTodosSync(baseDir: string): Map<FilePath, TodoData> {
  * Reads all todo files in the .lint-todo directory.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns - A Promise resolving to a {@link Map} of {@link FilePath}/{@link TodoData}.
+ * @returns - A Promise that resolves to a {@link Map} of {@link FilePath}/{@link TodoData}.
  */
 export async function readTodos(baseDir: string): Promise<Map<FilePath, TodoData>> {
   const map = new Map();
@@ -249,7 +249,7 @@ export function readTodosForFilePathSync(
  *
  * @param todoStorageDir - The .lint-todo storage directory.
  * @param filePath - The relative file path of the file to return todo items for.
- * @returns - A Promise resolving to a {@link Map} of {@link FilePath}/{@link TodoData}.
+ * @returns - A Promise that resolves to a {@link Map} of {@link FilePath}/{@link TodoData}.
  */
 export async function readTodosForFilePath(
   baseDir: string,
@@ -317,7 +317,7 @@ export function getTodoBatchesSync(
  *
  * @param lintResults - The linting data for all violations.
  * @param existing - Existing todo lint data.
- * @returns - A Promise resolving to a {@link Map} of {@link FilePath}/{@link TodoData}.
+ * @returns - A Promise that resolves to a {@link Map} of {@link FilePath}/{@link TodoData}.
  */
 export async function getTodoBatches(
   lintResults: Map<FilePath, TodoData>,
