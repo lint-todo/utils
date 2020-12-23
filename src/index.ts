@@ -1,7 +1,7 @@
 export { _buildTodoDatum, buildTodoData } from './builders';
 export {
-  ensureTodoStorageDir,
   applyTodoChanges,
+  ensureTodoStorageDir,
   getTodoStorageDirPath,
   getTodoBatches,
   todoStorageDirExists,
@@ -11,6 +11,12 @@ export {
   readTodos,
   readTodosForFilePath,
   writeTodos,
+  applyTodoChangesSync,
+  ensureTodoStorageDirSync,
+  getTodoBatchesSync,
+  readTodosSync,
+  readTodosForFilePathSync,
+  writeTodosSync,
 } from './io';
 
 export * from './types';
