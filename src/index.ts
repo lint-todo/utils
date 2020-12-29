@@ -1,4 +1,4 @@
-export { _buildTodoDatum, buildTodoData } from './builders';
+export { _buildTodoDatum, buildTodoData, _setCreatedDate } from './builders';
 export {
   applyTodoChanges,
   ensureTodoStorageDir,
