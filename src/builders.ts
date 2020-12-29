@@ -3,6 +3,8 @@ import slash = require('slash');
 import { todoFilePathFor } from './io';
 import { DaysToDecay, FilePath, LintMessage, LintResult, TodoData } from './types';
 
+let _createdDate: Date | undefined;
+
 /**
  * Adapts a list of {@link LintResult} to a map of {@link FilePath}, {@link TodoData}.
  *
@@ -11,7 +13,11 @@ import { DaysToDecay, FilePath, LintMessage, LintResult, TodoData } from './type
  * @param daysToDecay - An object containing the warn or error days, in integers.
  * @returns - A Promise resolving to a {@link Map} of {@link FilePath}/{@link TodoData}.
  */
-export function buildTodoData(baseDir: string, lintResults: LintResult[], daysToDecay?: DaysToDecay): Map<FilePath, TodoData> {
+export function buildTodoData(
+  baseDir: string,
+  lintResults: LintResult[],
+  daysToDecay?: DaysToDecay
+): Map<FilePath, TodoData> {
   const results = lintResults.filter((result) => result.messages.length > 0);
 
   const todoData = results.reduce((converted, lintResult) => {
@@ -47,14 +53,16 @@ export function _buildTodoDatum(
 ): TodoData {
   // Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
   // provided that the fix is landed on the supported node versions of this lib
-  const filePath = isAbsolute(lintResult.filePath) ? relative(baseDir, lintResult.filePath) : lintResult.filePath;
+  const filePath = isAbsolute(lintResult.filePath)
+    ? relative(baseDir, lintResult.filePath)
+    : lintResult.filePath;
   const todoDatum: TodoData = {
     engine: getEngine(lintResult),
     filePath: slash(filePath),
     ruleId: getRuleId(lintMessage),
     line: lintMessage.line,
     column: lintMessage.column,
-    createdDate: new Date(),
+    createdDate: getCreatedDate(),
   };
 
   if (daysToDecay?.warn) {
@@ -68,6 +76,11 @@ export function _buildTodoDatum(
   return todoDatum;
 }
 
+// eslint-disable-next-line unicorn/no-useless-undefined
+export function _setCreatedDate(createdDate: Date | undefined = undefined): void {
+  _createdDate = createdDate;
+}
+
 function getEngine(result: LintResult) {
   return result.filePath.endsWith('.js') ? 'eslint' : 'ember-template-lint';
 }
@@ -79,6 +92,14 @@ function getRuleId(message: any) {
     return message.rule;
   }
   return '';
+}
+
+function getCreatedDate(): Date {
+  if (_createdDate !== undefined) {
+    return _createdDate;
+  }
+
+  return new Date();
 }
 
 function addDays(createdDate: Date, days: number): Date {
