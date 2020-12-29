@@ -12,6 +12,8 @@ import {
   todoStorageDirExists,
   writeTodos,
   writeTodosSync,
+  readTodosSync,
+  readTodos,
 } from '../src';
 import { LintResult, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
@@ -121,15 +123,16 @@ describe('io', () => {
     });
 
     it("doesn't write files when no todos provided", async () => {
-      const todoDir = writeTodosSync(tmp, []);
+      writeTodosSync(tmp, []);
 
-      expect(await readFiles(todoDir)).toHaveLength(0);
+      expect(readTodosSync(tmp).size).toEqual(0);
     });
 
     it('generates todos when todos provided', async () => {
-      const todoDir = writeTodosSync(tmp, getFixture('eslint-with-errors', tmp));
+      writeTodosSync(tmp, getFixture('eslint-with-errors', tmp));
 
-      expect(await readFiles(todoDir)).toHaveLength(18);
+      const todos = readTodosSync(tmp);
+      expect(todos.size).toEqual(18);
     });
 
     it("generates todos only if previous todo doesn't exist", async () => {
@@ -219,6 +222,23 @@ describe('io', () => {
     });
   });
 
+  describe('readTodosSync', () => {
+    it('deserializes dates back to Date objects', () => {
+      writeTodosSync(tmp, getFixture('eslint-single-error', tmp), undefined, {
+        warn: 5,
+        error: 10,
+      });
+
+      const todos = readTodosSync(tmp);
+      const todo = todos.values().next().value;
+
+      expect(todos.size).toEqual(1);
+      expect(todo.createdDate).toBeInstanceOf(Date);
+      expect(todo.warnDate).toBeInstanceOf(Date);
+      expect(todo.errorDate).toBeInstanceOf(Date);
+    });
+  });
+
   describe('writeTodosSync for single file', () => {
     it('generates todos for a specific filePath', async () => {
       const todoDir = writeTodosSync(
@@ -295,15 +315,15 @@ describe('io', () => {
     });
 
     it("doesn't write files when no todos provided", async () => {
-      const todoDir = await writeTodos(tmp, []);
+      await writeTodos(tmp, []);
 
-      expect(await readFiles(todoDir)).toHaveLength(0);
+      expect((await readTodos(tmp)).size).toEqual(0);
     });
 
     it('generates todos when todos provided', async () => {
-      const todoDir = await writeTodos(tmp, getFixture('eslint-with-errors', tmp));
+      await writeTodos(tmp, getFixture('eslint-with-errors', tmp));
 
-      expect(await readFiles(todoDir)).toHaveLength(18);
+      expect((await readTodos(tmp)).size).toEqual(18);
     });
 
     it("generates todos only if previous todo doesn't exist", async () => {
@@ -390,6 +410,23 @@ describe('io', () => {
           true
         );
       });
+    });
+  });
+
+  describe('readTodos', () => {
+    it('deserializes dates back to Date objects', async () => {
+      await writeTodos(tmp, getFixture('eslint-single-error', tmp), undefined, {
+        warn: 5,
+        error: 10,
+      });
+
+      const todos = await readTodos(tmp);
+      const todo = todos.values().next().value;
+
+      expect(todos.size).toEqual(1);
+      expect(todo.createdDate).toBeInstanceOf(Date);
+      expect(todo.warnDate).toBeInstanceOf(Date);
+      expect(todo.errorDate).toBeInstanceOf(Date);
     });
   });
 
