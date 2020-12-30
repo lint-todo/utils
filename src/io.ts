@@ -112,12 +112,36 @@ export function todoFileNameFor(todoData: TodoData): string {
  * @param daysToDecay - An object containing the warn or error days, in integers.
  * @returns - The todo storage directory path.
  */
+export function writeTodosSync(baseDir: string, lintResults: LintResult[]): string;
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
-  filePath = '',
+  filePath: string | undefined
+): string;
+export function writeTodosSync(
+  baseDir: string,
+  lintResults: LintResult[],
+  daysToDecay: DaysToDecay | undefined
+): string;
+export function writeTodosSync(
+  baseDir: string,
+  lintResults: LintResult[],
+  filePath: string | DaysToDecay | undefined,
+  daysToDecay?: DaysToDecay
+): string;
+export function writeTodosSync(
+  baseDir: string,
+  lintResults: LintResult[],
+  filePath?: string | DaysToDecay,
   daysToDecay?: DaysToDecay
 ): string {
+  if (typeof filePath === 'object') {
+    daysToDecay = filePath;
+    filePath = '';
+  } else if (typeof filePath === 'undefined') {
+    filePath = '';
+  }
+
   const todoStorageDir: string = ensureTodoStorageDirSync(baseDir);
   const existing: Map<FilePath, TodoData> = filePath
     ? readTodosForFilePathSync(baseDir, filePath)
@@ -145,12 +169,36 @@ export function writeTodosSync(
  * @param daysToDecay - An object containing the warn or error days, in integers.
  * @returns - A promise that resolves to the todo storage directory path.
  */
+export async function writeTodos(baseDir: string, lintResults: LintResult[]): Promise<string>;
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
-  filePath = '',
+  filePath: string | undefined
+): Promise<string>;
+export async function writeTodos(
+  baseDir: string,
+  lintResults: LintResult[],
+  daysToDecay: DaysToDecay | undefined
+): Promise<string>;
+export async function writeTodos(
+  baseDir: string,
+  lintResults: LintResult[],
+  filePath: string | DaysToDecay | undefined,
+  daysToDecay?: DaysToDecay
+): Promise<string>;
+export async function writeTodos(
+  baseDir: string,
+  lintResults: LintResult[],
+  filePath?: string | DaysToDecay,
   daysToDecay?: DaysToDecay
 ): Promise<string> {
+  if (typeof filePath === 'object') {
+    daysToDecay = filePath;
+    filePath = '';
+  } else if (typeof filePath === 'undefined') {
+    filePath = '';
+  }
+
   const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const existing: Map<FilePath, TodoData> = filePath
     ? await readTodosForFilePath(baseDir, filePath)

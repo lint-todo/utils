@@ -224,7 +224,7 @@ describe('io', () => {
 
   describe('readTodosSync', () => {
     it('deserializes dates back to Date objects', () => {
-      writeTodosSync(tmp, getFixture('eslint-single-error', tmp), undefined, {
+      writeTodosSync(tmp, getFixture('eslint-single-error', tmp), {
         warn: 5,
         error: 10,
       });
@@ -415,7 +415,7 @@ describe('io', () => {
 
   describe('readTodos', () => {
     it('deserializes dates back to Date objects', async () => {
-      await writeTodos(tmp, getFixture('eslint-single-error', tmp), undefined, {
+      await writeTodos(tmp, getFixture('eslint-single-error', tmp), {
         warn: 5,
         error: 10,
       });
