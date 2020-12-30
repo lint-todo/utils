@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ESLint, Linter } from 'eslint';
 import { differenceInDays } from 'date-fns';
-import { _buildTodoDatum, buildTodoData, _setCreatedDate } from '../src';
+import { _buildTodoDatum, buildTodoData } from '../src';
 import { TemplateLintMessage, TemplateLintResult, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePath } from './__utils__/update-path';
@@ -108,14 +108,14 @@ describe('builders', () => {
     });
 
     it('can build todo data with a custom createdDate', () => {
-      _setCreatedDate(new Date(2015, 1, 23));
+      process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
 
       const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), { warn: 30 });
       const todoDatum: TodoData = todoData.values().next().value;
 
       expect(todoDatum.createdDate).toEqual(new Date(2015, 1, 23));
 
-      _setCreatedDate();
+      process.env.TODO_CREATED_DATE = '';
     });
   });
 
