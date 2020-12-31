@@ -1,3 +1,19 @@
+## v4.0.0 (2020-12-31)
+
+#### :boom: Breaking Change
+* [#39](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/39) Adding JSON date reviver to deserialize dates ([@scalvert](https://github.com/scalvert))
+
+#### :rocket: Enhancement
+* [#40](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/40) Adding overloads for writeTodos[Sync] ([@scalvert](https://github.com/scalvert))
+* [#38](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/38) Adds ability to set due dates created dates for testing ([@scalvert](https://github.com/scalvert))
+
+#### :bug: Bug Fix
+* [#41](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/41) Changes the way consumers can provide createdDate ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v3.3.0 (2020-12-23)
 
 #### :rocket: Enhancement
