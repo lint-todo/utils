@@ -3,8 +3,6 @@ import slash = require('slash');
 import { todoFilePathFor } from './io';
 import { DaysToDecay, FilePath, LintMessage, LintResult, TodoData } from './types';
 
-let _createdDate: Date | undefined;
-
 /**
  * Adapts a list of {@link LintResult} to a map of {@link FilePath}, {@link TodoData}.
  *
@@ -76,11 +74,6 @@ export function _buildTodoDatum(
   return todoDatum;
 }
 
-// eslint-disable-next-line unicorn/no-useless-undefined
-export function _setCreatedDate(createdDate: Date | undefined = undefined): void {
-  _createdDate = createdDate;
-}
-
 function getEngine(result: LintResult) {
   return result.filePath.endsWith('.js') ? 'eslint' : 'ember-template-lint';
 }
@@ -95,8 +88,8 @@ function getRuleId(message: any) {
 }
 
 function getCreatedDate(): Date {
-  if (_createdDate !== undefined) {
-    return _createdDate;
+  if (process.env.TODO_CREATED_DATE) {
+    return new Date(process.env.TODO_CREATED_DATE);
   }
 
   return new Date();
