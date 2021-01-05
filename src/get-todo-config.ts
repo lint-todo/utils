@@ -3,28 +3,23 @@ import { TodoConfig } from './types';
 
 export function getTodoConfig(
   baseDir: string,
-  daysToDecayOptions: TodoConfig = {}
+  todoConfig: TodoConfig = {}
 ): TodoConfig | undefined {
   const daysToDecayPackageConfig = getFromPackageJson(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
-  const todoConfig = Object.assign(
-    {},
-    daysToDecayPackageConfig,
-    daysToDecayEnvVars,
-    daysToDecayOptions
-  );
+  const mergedConfig = Object.assign({}, daysToDecayPackageConfig, daysToDecayEnvVars, todoConfig);
 
   if (
-    typeof todoConfig.warn === 'number' &&
-    typeof todoConfig.error === 'number' &&
-    todoConfig.warn >= todoConfig.error
+    typeof mergedConfig.warn === 'number' &&
+    typeof mergedConfig.error === 'number' &&
+    mergedConfig.warn >= mergedConfig.error
   ) {
     throw new Error(
       'The `lintTodo` configuration in the package.json contains invalid values. The `warn` value must be less than the `error` value.'
     );
   }
 
-  return todoConfig;
+  return mergedConfig;
 }
 
 function getFromPackageJson(basePath: string): TodoConfig {
