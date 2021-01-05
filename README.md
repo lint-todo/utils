@@ -17,10 +17,10 @@ Those utilities are:
 ## Functions
 
 <dl>
-<dt><a href="#buildTodoData">buildTodoData(baseDir, lintResults, daysToDecay)</a> ⇒</dt>
+<dt><a href="#buildTodoData">buildTodoData(baseDir, lintResults, todoConfig)</a> ⇒</dt>
 <dd><p>Adapts a list of <a href="LintResult">LintResult</a> to a map of <a href="FilePath">FilePath</a>, <a href="TodoData">TodoData</a>.</p>
 </dd>
-<dt><a href="#_buildTodoDatum">_buildTodoDatum(lintResult, lintMessage, daysToDecay)</a> ⇒</dt>
+<dt><a href="#_buildTodoDatum">_buildTodoDatum(lintResult, lintMessage, todoConfig)</a> ⇒</dt>
 <dd><p>Adapts an <a href="LintResult">LintResult</a> to a <a href="TodoData">TodoData</a>. FilePaths are absolute
 when received from a lint result, so they&#39;re converted to relative paths for stability in
 serializing the contents to disc.</p>
@@ -45,13 +45,13 @@ serializing the contents to disc.</p>
 <dt><a href="#todoFileNameFor">todoFileNameFor(todoData)</a> ⇒</dt>
 <dd><p>Generates a unique filename for a todo lint data.</p>
 </dd>
-<dt><a href="#writeTodosSync">writeTodosSync(baseDir, lintResults, filePath, daysToDecay)</a> ⇒</dt>
+<dt><a href="#writeTodosSync">writeTodosSync(baseDir, lintResults, filePath, todoConfig)</a> ⇒</dt>
 <dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
 <p>Given a list of todo lint violations, this function will also delete existing files that no longer
 have a todo lint violation.</p>
 </dd>
-<dt><a href="#writeTodos">writeTodos(baseDir, lintResults, filePath, daysToDecay)</a> ⇒</dt>
+<dt><a href="#writeTodos">writeTodos(baseDir, lintResults, filePath, todoConfig)</a> ⇒</dt>
 <dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
 <p>Given a list of todo lint violations, this function will also delete existing files that no longer
@@ -92,7 +92,7 @@ Config values can be present in</p>
 
 <a name="buildTodoData"></a>
 
-## buildTodoData(baseDir, lintResults, daysToDecay) ⇒
+## buildTodoData(baseDir, lintResults, todoConfig) ⇒
 Adapts a list of [LintResult](LintResult) to a map of [FilePath](FilePath), [TodoData](TodoData).
 
 **Kind**: global function  
@@ -102,11 +102,11 @@ Adapts a list of [LintResult](LintResult) to a map of [FilePath](FilePath), [Tod
 | --- | --- |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 | lintResults | A list of [LintResult](LintResult) objects to convert to [TodoData](TodoData) objects. |
-| daysToDecay | An object containing the warn or error days, in integers. |
+| todoConfig | An object containing the warn or error days, in integers. |
 
 <a name="_buildTodoDatum"></a>
 
-## \_buildTodoDatum(lintResult, lintMessage, daysToDecay) ⇒
+## \_buildTodoDatum(lintResult, lintMessage, todoConfig) ⇒
 Adapts an [LintResult](LintResult) to a [TodoData](TodoData). FilePaths are absolute
 when received from a lint result, so they're converted to relative paths for stability in
 serializing the contents to disc.
@@ -118,7 +118,7 @@ serializing the contents to disc.
 | --- | --- |
 | lintResult | The lint result object. |
 | lintMessage | A lint message object representing a specific violation for a file. |
-| daysToDecay | An object containing the warn or error days, in integers. |
+| todoConfig | An object containing the warn or error days, in integers. |
 
 <a name="todoStorageDirExists"></a>
 
@@ -209,7 +209,7 @@ Generates a unique filename for a todo lint data.
 
 <a name="writeTodosSync"></a>
 
-## writeTodosSync(baseDir, lintResults, filePath, daysToDecay) ⇒
+## writeTodosSync(baseDir, lintResults, filePath, todoConfig) ⇒
 Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.
 
@@ -224,11 +224,11 @@ have a todo lint violation.
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 | lintResults | The raw linting data. |
 | filePath | The relative file path of the file to update violations for. |
-| daysToDecay | An object containing the warn or error days, in integers. |
+| todoConfig | An object containing the warn or error days, in integers. |
 
 <a name="writeTodos"></a>
 
-## writeTodos(baseDir, lintResults, filePath, daysToDecay) ⇒
+## writeTodos(baseDir, lintResults, filePath, todoConfig) ⇒
 Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.
 
@@ -243,7 +243,7 @@ have a todo lint violation.
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 | lintResults | The raw linting data. |
 | filePath | The relative file path of the file to update violations for. |
-| daysToDecay | An object containing the warn or error days, in integers. |
+| todoConfig | An object containing the warn or error days, in integers. |
 
 <a name="readTodosSync"></a>
 
@@ -371,7 +371,7 @@ Config values can be present in
       "warn": 5,
 			 "error": 10
 		 }
-	 }
+  }
 }
 ```
 2. Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
