@@ -17,10 +17,10 @@ describe('get-todo-config', () => {
     delete process.env['TODO_DAYS_TO_ERROR'];
   });
 
-  it('throws when no package.json found', async () => {
+  it('returns empty object when no package.json found', async () => {
     await unlink(join(project.baseDir, 'package.json'));
 
-    expect(() => getTodoConfig(project.baseDir)).toThrow(/Cannot find module.*/);
+    expect(getTodoConfig(project.baseDir)).toEqual({});
   });
 
   it('returns empty object when no lint todo config found', () => {

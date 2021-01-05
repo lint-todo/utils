@@ -13,8 +13,8 @@ import { TodoConfig } from './types';
  *   "lintTodo": {
  *     "daysToDecay": {
  *       "warn": 5,
- * 			 "error": 10
- * 		 }
+ *       "error": 10
+ *     }
  *   }
  * }
  * ```
@@ -51,8 +51,12 @@ export function getTodoConfig(
 }
 
 function getFromPackageJson(basePath: string): TodoConfig {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const pkg = require(join(basePath, 'package.json'));
+  let pkg;
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    pkg = require(join(basePath, 'package.json'));
+  } catch {}
 
   return pkg?.lintTodo?.daysToDecay || {};
 }
