@@ -5,9 +5,10 @@ import { TodoConfig } from './types';
  * Gets the todo configuration.
  * Config values can be present in
  *
- * 1. The package.json
+ * The package.json
+ *
  * @example
- * ```
+ * ```json
  * {
  *   "lintTodo": {
  *     "daysToDecay": {
@@ -17,9 +18,11 @@ import { TodoConfig } from './types';
  *   }
  * }
  * ```
- * 2. Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
+ *
+ * Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
  * 	- Env vars override package.json config
- * 3. Passed in directly, such as from command line options.
+ *
+ * Passed in directly, such as from command line options.
  * 	- Passed in options override both env vars and package.json config
  *
  * @param baseDir - The base directory that contains the project's package.json.

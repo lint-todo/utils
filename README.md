@@ -84,9 +84,7 @@ have a todo lint violation.</p>
 <dt><a href="#getTodoConfig">getTodoConfig(baseDir, todoConfig)</a> ⇒</dt>
 <dd><p>Gets the todo configuration.
 Config values can be present in</p>
-<ol>
-<li>The package.json</li>
-</ol>
+<p>The package.json</p>
 </dd>
 </dl>
 
@@ -353,7 +351,7 @@ Applies todo changes, either adding or removing, based on batches from `getTodoB
 Gets the todo configuration.
 Config values can be present in
 
-1. The package.json
+The package.json
 
 **Kind**: global function  
 **Returns**: - The todo config object.  
@@ -364,7 +362,7 @@ Config values can be present in
 | todoConfig | The optional todo configuration. |
 
 **Example**  
-```
+```json
 {
   "lintTodo": {
     "daysToDecay": {
@@ -374,9 +372,11 @@ Config values can be present in
   }
 }
 ```
-2. Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
+
+Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
 	- Env vars override package.json config
-3. Passed in directly, such as from command line options.
+
+Passed in directly, such as from command line options.
 	- Passed in options override both env vars and package.json config
 
 <!--DOCS_END-->
