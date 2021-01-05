@@ -13,6 +13,8 @@ describe('get-todo-config', () => {
 
   afterEach(() => {
     project.dispose();
+    delete process.env['TODO_DAYS_TO_WARN'];
+    delete process.env['TODO_DAYS_TO_ERROR'];
   });
 
   it('throws when no package.json found', async () => {
@@ -51,8 +53,6 @@ describe('get-todo-config', () => {
       warn: 5,
       error: 10,
     });
-
-    teardownEnvVars();
   });
 
   it('can get lint todo config from options', () => {
@@ -79,8 +79,6 @@ describe('get-todo-config', () => {
       warn: 5,
       error: 10,
     });
-
-    teardownEnvVars();
   });
 
   it('can override lint todo config from package.json with options', () => {
@@ -113,8 +111,6 @@ describe('get-todo-config', () => {
       warn: 5,
       error: 10,
     });
-
-    teardownEnvVars();
   });
 
   it('can override defaults with null values', () => {
@@ -169,9 +165,4 @@ function setupEnvVar(name: string, value?: string): void {
   } else {
     process.env[name] = value;
   }
-}
-
-function teardownEnvVars() {
-  delete process.env['TODO_DAYS_TO_WARN'];
-  delete process.env['TODO_DAYS_TO_ERROR'];
 }
