@@ -99,19 +99,6 @@ export function todoFileNameFor(todoData: TodoData): string {
   return createHash('sha256').update(hashParams).digest('hex').slice(0, 8);
 }
 
-/**
- * Writes files for todo lint violations. One file is generated for each violation, using a generated
- * hash to identify each.
- *
- * Given a list of todo lint violations, this function will also delete existing files that no longer
- * have a todo lint violation.
- *
- * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @param lintResults - The raw linting data.
- * @param filePath - The relative file path of the file to update violations for.
- * @param daysToDecay - An object containing the warn or error days, in integers.
- * @returns - The todo storage directory path.
- */
 export function writeTodosSync(baseDir: string, lintResults: LintResult[]): string;
 export function writeTodosSync(
   baseDir: string,
@@ -129,6 +116,19 @@ export function writeTodosSync(
   filePath: string | TodoConfig | undefined,
   daysToDecay?: TodoConfig
 ): string;
+/**
+ * Writes files for todo lint violations. One file is generated for each violation, using a generated
+ * hash to identify each.
+ *
+ * Given a list of todo lint violations, this function will also delete existing files that no longer
+ * have a todo lint violation.
+ *
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @param lintResults - The raw linting data.
+ * @param filePath - The relative file path of the file to update violations for.
+ * @param daysToDecay - An object containing the warn or error days, in integers.
+ * @returns - The todo storage directory path.
+ */
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
@@ -156,19 +156,6 @@ export function writeTodosSync(
   return todoStorageDir;
 }
 
-/**
- * Writes files for todo lint violations. One file is generated for each violation, using a generated
- * hash to identify each.
- *
- * Given a list of todo lint violations, this function will also delete existing files that no longer
- * have a todo lint violation.
- *
- * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @param lintResults - The raw linting data.
- * @param filePath - The relative file path of the file to update violations for.
- * @param daysToDecay - An object containing the warn or error days, in integers.
- * @returns - A promise that resolves to the todo storage directory path.
- */
 export async function writeTodos(baseDir: string, lintResults: LintResult[]): Promise<string>;
 export async function writeTodos(
   baseDir: string,
@@ -186,6 +173,19 @@ export async function writeTodos(
   filePath: string | TodoConfig | undefined,
   daysToDecay?: TodoConfig
 ): Promise<string>;
+/**
+ * Writes files for todo lint violations. One file is generated for each violation, using a generated
+ * hash to identify each.
+ *
+ * Given a list of todo lint violations, this function will also delete existing files that no longer
+ * have a todo lint violation.
+ *
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @param lintResults - The raw linting data.
+ * @param filePath - The relative file path of the file to update violations for.
+ * @param daysToDecay - An object containing the warn or error days, in integers.
+ * @returns - A promise that resolves to the todo storage directory path.
+ */
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],

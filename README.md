@@ -81,6 +81,13 @@ have a todo lint violation.</p>
 <dt><a href="#applyTodoChanges">applyTodoChanges(todoStorageDir, add, remove)</a></dt>
 <dd><p>Applies todo changes, either adding or removing, based on batches from <code>getTodoBatches</code>.</p>
 </dd>
+<dt><a href="#getTodoConfig">getTodoConfig(baseDir, todoConfig)</a> ⇒</dt>
+<dd><p>Gets the todo configuration.
+Config values can be present in</p>
+<ol>
+<li>The package.json</li>
+</ol>
+</dd>
 </dl>
 
 <a name="buildTodoData"></a>
@@ -340,5 +347,36 @@ Applies todo changes, either adding or removing, based on batches from `getTodoB
 | add | Batch of todos to add. |
 | remove | Batch of todos to remove. |
 
+<a name="getTodoConfig"></a>
+
+## getTodoConfig(baseDir, todoConfig) ⇒
+Gets the todo configuration.
+Config values can be present in
+
+1. The package.json
+
+**Kind**: global function  
+**Returns**: - The todo config object.  
+
+| Param | Description |
+| --- | --- |
+| baseDir | The base directory that contains the project's package.json. |
+| todoConfig | The optional todo configuration. |
+
+**Example**  
+```
+{
+  "lintTodo": {
+    "daysToDecay": {
+      "warn": 5,
+			 "error": 10
+		 }
+	 }
+}
+```
+2. Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
+	- Env vars override package.json config
+3. Passed in directly, such as from command line options.
+	- Passed in options override both env vars and package.json config
 
 <!--DOCS_END-->
