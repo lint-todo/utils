@@ -8,20 +8,20 @@ import { TodoConfig, FilePath, LintMessage, LintResult, TodoData } from './types
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param lintResults - A list of {@link LintResult} objects to convert to {@link TodoData} objects.
- * @param daysToDecay - An object containing the warn or error days, in integers.
+ * @param todoConfig - An object containing the warn or error days, in integers.
  * @returns - A Promise resolving to a {@link Map} of {@link FilePath}/{@link TodoData}.
  */
 export function buildTodoData(
   baseDir: string,
   lintResults: LintResult[],
-  daysToDecay?: TodoConfig
+  todoConfig?: TodoConfig
 ): Map<FilePath, TodoData> {
   const results = lintResults.filter((result) => result.messages.length > 0);
 
   const todoData = results.reduce((converted, lintResult) => {
     lintResult.messages.forEach((message: LintMessage) => {
       if (message.severity === 2) {
-        const todoDatum = _buildTodoDatum(baseDir, lintResult, message, daysToDecay);
+        const todoDatum = _buildTodoDatum(baseDir, lintResult, message, todoConfig);
 
         converted.set(todoFilePathFor(todoDatum), todoDatum);
       }
@@ -40,14 +40,14 @@ export function buildTodoData(
  *
  * @param lintResult - The lint result object.
  * @param lintMessage - A lint message object representing a specific violation for a file.
- * @param daysToDecay - An object containing the warn or error days, in integers.
+ * @param todoConfig - An object containing the warn or error days, in integers.
  * @returns - A {@link TodoData} object.
  */
 export function _buildTodoDatum(
   baseDir: string,
   lintResult: LintResult,
   lintMessage: LintMessage,
-  daysToDecay?: TodoConfig
+  todoConfig?: TodoConfig
 ): TodoData {
   // Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
   // provided that the fix is landed on the supported node versions of this lib
@@ -63,12 +63,12 @@ export function _buildTodoDatum(
     createdDate: getCreatedDate(),
   };
 
-  if (daysToDecay?.warn) {
-    todoDatum.warnDate = addDays(todoDatum.createdDate, daysToDecay.warn);
+  if (todoConfig?.warn) {
+    todoDatum.warnDate = addDays(todoDatum.createdDate, todoConfig.warn);
   }
 
-  if (daysToDecay?.error) {
-    todoDatum.errorDate = addDays(todoDatum.createdDate, daysToDecay.error);
+  if (todoConfig?.error) {
+    todoDatum.errorDate = addDays(todoDatum.createdDate, todoConfig.error);
   }
 
   return todoDatum;

@@ -1,3 +1,5 @@
+import { unlink } from 'fs-extra';
+import { join } from 'path';
 import { getTodoConfig } from '../src';
 import { FakeProject } from './__utils__/fake-project';
 
@@ -11,6 +13,12 @@ describe('get-todo-config', () => {
 
   afterEach(() => {
     project.dispose();
+  });
+
+  it('throws when no package.json found', async () => {
+    await unlink(join(project.baseDir, 'package.json'));
+
+    expect(() => getTodoConfig(project.baseDir)).toThrow(/Cannot find module.*/);
   });
 
   it('returns empty object when no lint todo config found', () => {

@@ -14,7 +14,7 @@ import { TodoConfig } from './types';
  *       "warn": 5,
  * 			 "error": 10
  * 		 }
- * 	 }
+ *   }
  * }
  * ```
  * 2. Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
@@ -48,16 +48,8 @@ export function getTodoConfig(
 }
 
 function getFromPackageJson(basePath: string): TodoConfig {
-  let pkg;
-  const packageJsonPath = join(basePath, 'package.json');
-
-  try {
-    pkg = require(packageJsonPath);
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      throw new Error(`The ${basePath} directory does not contain a package.json file.`);
-    }
-  }
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const pkg = require(join(basePath, 'package.json'));
 
   return pkg?.lintTodo?.daysToDecay || {};
 }
@@ -80,7 +72,7 @@ function getFromEnvVars(): TodoConfig {
 }
 
 function getEnvVar(name: string) {
-  if (typeof process.env[name] !== 'undefined' && process.env[name] !== '') {
+  if (process.env[name]) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return Number.parseInt(process.env[name]!, 10);
   }
