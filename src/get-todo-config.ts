@@ -1,13 +1,13 @@
 import { join } from 'path';
-import { DaysToDecay } from './types';
+import { TodoConfig } from './types';
 
 export function getTodoConfig(
   baseDir: string,
-  daysToDecayOptions: DaysToDecay = {}
-): DaysToDecay | undefined {
+  daysToDecayOptions: TodoConfig = {}
+): TodoConfig | undefined {
   const daysToDecayPackageConfig = getFromPackageJson(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
-  const lintTodoConfig = Object.assign(
+  const todoConfig = Object.assign(
     {},
     daysToDecayPackageConfig,
     daysToDecayEnvVars,
@@ -15,19 +15,19 @@ export function getTodoConfig(
   );
 
   if (
-    typeof lintTodoConfig.warn === 'number' &&
-    typeof lintTodoConfig.error === 'number' &&
-    lintTodoConfig.warn >= lintTodoConfig.error
+    typeof todoConfig.warn === 'number' &&
+    typeof todoConfig.error === 'number' &&
+    todoConfig.warn >= todoConfig.error
   ) {
     throw new Error(
       'The `lintTodo` configuration in the package.json contains invalid values. The `warn` value must be less than the `error` value.'
     );
   }
 
-  return lintTodoConfig;
+  return todoConfig;
 }
 
-function getFromPackageJson(basePath: string): DaysToDecay {
+function getFromPackageJson(basePath: string): TodoConfig {
   let pkg;
   const packageJsonPath = join(basePath, 'package.json');
 
@@ -42,8 +42,8 @@ function getFromPackageJson(basePath: string): DaysToDecay {
   return pkg?.lintTodo?.daysToDecay || {};
 }
 
-function getFromEnvVars(): DaysToDecay {
-  const config: DaysToDecay = {};
+function getFromEnvVars(): TodoConfig {
+  const config: TodoConfig = {};
 
   const warn = getEnvVar('TODO_DAYS_TO_WARN');
   const error = getEnvVar('TODO_DAYS_TO_ERROR');

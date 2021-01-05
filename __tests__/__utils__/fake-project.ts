@@ -1,6 +1,6 @@
 import type { DirJSON } from 'fixturify';
 import Project from 'fixturify-project';
-import { DaysToDecay } from '../../src';
+import { TodoConfig } from '../../src';
 
 export class FakeProject extends Project {
   constructor(name = 'fake-project', ...args: any[]) {
@@ -18,7 +18,7 @@ export class FakeProject extends Project {
     this.writeSync();
   }
 
-  writeTodoConfig(daysToDecay: DaysToDecay): void {
+  writeTodoConfig(daysToDecay: TodoConfig): void {
     this.pkg = Object.assign({}, this.pkg, {
       lintTodo: {
         daysToDecay,

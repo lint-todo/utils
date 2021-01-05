@@ -41,10 +41,10 @@ export interface TodoData {
 }
 
 export type LintTodoPackageJson = PackageJson & {
-  lintTodo?: { daysToDecay: DaysToDecay };
+  lintTodo?: { daysToDecay: TodoConfig };
 };
 
-export interface DaysToDecay {
+export interface TodoConfig {
   warn?: number;
   error?: number;
 }

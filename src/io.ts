@@ -15,7 +15,7 @@ import {
   unlinkSync,
 } from 'fs-extra';
 import { buildTodoData } from './builders';
-import { DaysToDecay, FilePath, LintResult, TodoData } from './types';
+import { TodoConfig, FilePath, LintResult, TodoData } from './types';
 
 /**
  * Determines if the .lint-todo storage directory exists.
@@ -121,19 +121,19 @@ export function writeTodosSync(
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
-  daysToDecay: DaysToDecay | undefined
+  daysToDecay: TodoConfig | undefined
 ): string;
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
-  filePath: string | DaysToDecay | undefined,
-  daysToDecay?: DaysToDecay
+  filePath: string | TodoConfig | undefined,
+  daysToDecay?: TodoConfig
 ): string;
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
-  filePath?: string | DaysToDecay,
-  daysToDecay?: DaysToDecay
+  filePath?: string | TodoConfig,
+  daysToDecay?: TodoConfig
 ): string {
   if (typeof filePath === 'object') {
     daysToDecay = filePath;
@@ -178,19 +178,19 @@ export async function writeTodos(
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
-  daysToDecay: DaysToDecay | undefined
+  daysToDecay: TodoConfig | undefined
 ): Promise<string>;
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
-  filePath: string | DaysToDecay | undefined,
-  daysToDecay?: DaysToDecay
+  filePath: string | TodoConfig | undefined,
+  daysToDecay?: TodoConfig
 ): Promise<string>;
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
-  filePath?: string | DaysToDecay,
-  daysToDecay?: DaysToDecay
+  filePath?: string | TodoConfig,
+  daysToDecay?: TodoConfig
 ): Promise<string> {
   if (typeof filePath === 'object') {
     daysToDecay = filePath;

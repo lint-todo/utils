@@ -1,7 +1,7 @@
 import { getTodoConfig } from '../src';
 import { FakeProject } from './__utils__/fake-project';
 
-describe('get-lint-todo-config', () => {
+describe('get-todo-config', () => {
   let project: FakeProject;
 
   beforeEach(() => {
