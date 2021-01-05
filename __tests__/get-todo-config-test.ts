@@ -52,8 +52,7 @@ describe('get-todo-config', () => {
       error: 10,
     });
 
-    setupEnvVar('TODO_DAYS_TO_WARN');
-    setupEnvVar('TODO_DAYS_TO_ERROR');
+    teardownEnvVars();
   });
 
   it('can get lint todo config from options', () => {
@@ -81,8 +80,7 @@ describe('get-todo-config', () => {
       error: 10,
     });
 
-    setupEnvVar('TODO_DAYS_TO_WARN');
-    setupEnvVar('TODO_DAYS_TO_ERROR');
+    teardownEnvVars();
   });
 
   it('can override lint todo config from package.json with options', () => {
@@ -116,8 +114,7 @@ describe('get-todo-config', () => {
       error: 10,
     });
 
-    setupEnvVar('TODO_DAYS_TO_WARN');
-    setupEnvVar('TODO_DAYS_TO_ERROR');
+    teardownEnvVars();
   });
 
   it('can override defaults with null values', () => {
@@ -172,4 +169,9 @@ function setupEnvVar(name: string, value?: string): void {
   } else {
     process.env[name] = value;
   }
+}
+
+function teardownEnvVars() {
+  delete process.env['TODO_DAYS_TO_WARN'];
+  delete process.env['TODO_DAYS_TO_ERROR'];
 }
