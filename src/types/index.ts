@@ -1,4 +1,5 @@
 import { ESLint, Linter } from 'eslint';
+import { PackageJson } from 'type-fest';
 
 type Severity = 0 | 1 | 2;
 
@@ -39,7 +40,11 @@ export interface TodoData {
   errorDate?: Date;
 }
 
+export type LintTodoPackageJson = PackageJson & {
+  lintTodo?: { daysToDecay: DaysToDecay };
+};
+
 export interface DaysToDecay {
-  warn?: number,
-  error?: number,
+  warn?: number;
+  error?: number;
 }

@@ -18,5 +18,6 @@ export {
   readTodosForFilePathSync,
   writeTodosSync,
 } from './io';
+export { getTodoConfig } from './get-lint-todo-config';
 
 export * from './types';
