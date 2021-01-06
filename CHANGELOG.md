@@ -1,3 +1,15 @@
+## v4.1.0 (2021-01-06)
+
+#### :rocket: Enhancement
+* [#43](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/43) Adding todo config util ([@scalvert](https://github.com/scalvert))
+
+#### :bug: Bug Fix
+* [#42](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/42) Moves @types/eslint to deps from devDeps ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v4.0.0 (2020-12-31)
 
 #### :boom: Breaking Change
