@@ -17,10 +17,10 @@ Those utilities are:
 ## Functions
 
 <dl>
-<dt><a href="#buildTodoData">buildTodoData(baseDir, lintResults, daysToDecay)</a> ⇒</dt>
+<dt><a href="#buildTodoData">buildTodoData(baseDir, lintResults, todoConfig)</a> ⇒</dt>
 <dd><p>Adapts a list of <a href="LintResult">LintResult</a> to a map of <a href="FilePath">FilePath</a>, <a href="TodoData">TodoData</a>.</p>
 </dd>
-<dt><a href="#_buildTodoDatum">_buildTodoDatum(lintResult, lintMessage, daysToDecay)</a> ⇒</dt>
+<dt><a href="#_buildTodoDatum">_buildTodoDatum(lintResult, lintMessage, todoConfig)</a> ⇒</dt>
 <dd><p>Adapts an <a href="LintResult">LintResult</a> to a <a href="TodoData">TodoData</a>. FilePaths are absolute
 when received from a lint result, so they&#39;re converted to relative paths for stability in
 serializing the contents to disc.</p>
@@ -45,13 +45,13 @@ serializing the contents to disc.</p>
 <dt><a href="#todoFileNameFor">todoFileNameFor(todoData)</a> ⇒</dt>
 <dd><p>Generates a unique filename for a todo lint data.</p>
 </dd>
-<dt><a href="#writeTodosSync">writeTodosSync(baseDir, lintResults, filePath, daysToDecay)</a> ⇒</dt>
+<dt><a href="#writeTodosSync">writeTodosSync(baseDir, lintResults, filePath, todoConfig)</a> ⇒</dt>
 <dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
 <p>Given a list of todo lint violations, this function will also delete existing files that no longer
 have a todo lint violation.</p>
 </dd>
-<dt><a href="#writeTodos">writeTodos(baseDir, lintResults, filePath, daysToDecay)</a> ⇒</dt>
+<dt><a href="#writeTodos">writeTodos(baseDir, lintResults, filePath, todoConfig)</a> ⇒</dt>
 <dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
 <p>Given a list of todo lint violations, this function will also delete existing files that no longer
@@ -81,264 +81,321 @@ have a todo lint violation.</p>
 <dt><a href="#applyTodoChanges">applyTodoChanges(todoStorageDir, add, remove)</a></dt>
 <dd><p>Applies todo changes, either adding or removing, based on batches from <code>getTodoBatches</code>.</p>
 </dd>
+<dt><a href="#getTodoConfig">getTodoConfig(baseDir, todoConfig)</a> ⇒</dt>
+<dd><p>Gets the todo configuration.
+</dd>
 </dl>
 
 <a name="buildTodoData"></a>
 
-## buildTodoData(baseDir, lintResults, daysToDecay) ⇒
+## buildTodoData(baseDir, lintResults, todoConfig) ⇒
+
 Adapts a list of [LintResult](LintResult) to a map of [FilePath](FilePath), [TodoData](TodoData).
 
-**Kind**: global function  
-**Returns**: - A Promise resolving to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+**Kind**: global function
+**Returns**: - A Promise resolving to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).
 
-| Param | Description |
-| --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
+| Param       | Description                                                                            |
+| ----------- | -------------------------------------------------------------------------------------- |
+| baseDir     | The base directory that contains the .lint-todo storage directory.                     |
 | lintResults | A list of [LintResult](LintResult) objects to convert to [TodoData](TodoData) objects. |
-| daysToDecay | An object containing the warn or error days, in integers. |
+| todoConfig  | An object containing the warn or error days, in integers.                              |
 
 <a name="_buildTodoDatum"></a>
 
-## \_buildTodoDatum(lintResult, lintMessage, daysToDecay) ⇒
+## \_buildTodoDatum(lintResult, lintMessage, todoConfig) ⇒
+
 Adapts an [LintResult](LintResult) to a [TodoData](TodoData). FilePaths are absolute
 when received from a lint result, so they're converted to relative paths for stability in
 serializing the contents to disc.
 
-**Kind**: global function  
-**Returns**: - A [TodoData](TodoData) object.  
+**Kind**: global function
+**Returns**: - A [TodoData](TodoData) object.
 
-| Param | Description |
-| --- | --- |
-| lintResult | The lint result object. |
+| Param       | Description                                                         |
+| ----------- | ------------------------------------------------------------------- |
+| lintResult  | The lint result object.                                             |
 | lintMessage | A lint message object representing a specific violation for a file. |
-| daysToDecay | An object containing the warn or error days, in integers. |
+| todoConfig  | An object containing the warn or error days, in integers.           |
 
 <a name="todoStorageDirExists"></a>
 
 ## todoStorageDirExists(baseDir) ⇒
+
 Determines if the .lint-todo storage directory exists.
 
-**Kind**: global function  
-**Returns**: - true if the todo storage directory exists, otherwise false.  
+**Kind**: global function
+**Returns**: - true if the todo storage directory exists, otherwise false.
 
-| Param | Description |
-| --- | --- |
+| Param   | Description                                                        |
+| ------- | ------------------------------------------------------------------ |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 
 <a name="ensureTodoStorageDirSync"></a>
 
 ## ensureTodoStorageDirSync(baseDir) ⇒
+
 Creates, or ensures the creation of, the .lint-todo directory.
 
-**Kind**: global function  
-**Returns**: - The todo storage directory path.  
+**Kind**: global function
+**Returns**: - The todo storage directory path.
 
-| Param | Description |
-| --- | --- |
+| Param   | Description                                                        |
+| ------- | ------------------------------------------------------------------ |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 
 <a name="ensureTodoStorageDir"></a>
 
 ## ensureTodoStorageDir(baseDir) ⇒
+
 Creates, or ensures the creation of, the .lint-todo directory.
 
-**Kind**: global function  
-**Returns**: - A promise that resolves to the todo storage directory path.  
+**Kind**: global function
+**Returns**: - A promise that resolves to the todo storage directory path.
 
-| Param | Description |
-| --- | --- |
+| Param   | Description                                                        |
+| ------- | ------------------------------------------------------------------ |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 
 <a name="getTodoStorageDirPath"></a>
 
 ## getTodoStorageDirPath(baseDir) ⇒
-**Kind**: global function  
-**Returns**: - The todo storage directory path.  
 
-| Param | Description |
-| --- | --- |
+**Kind**: global function
+**Returns**: - The todo storage directory path.
+
+| Param   | Description                                                        |
+| ------- | ------------------------------------------------------------------ |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 
 <a name="todoFilePathFor"></a>
 
 ## todoFilePathFor(baseDir, todoData) ⇒
+
 Creates a file path from the linting data. Excludes extension.
 
-**Kind**: global function  
-**Returns**: - The todo file path for a [TodoData](TodoData) object.  
+**Kind**: global function
+**Returns**: - The todo file path for a [TodoData](TodoData) object.
 
-| Param | Description |
-| --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
-| todoData | The linting data for an individual violation. |
+| Param    | Description                                                        |
+| -------- | ------------------------------------------------------------------ |
+| baseDir  | The base directory that contains the .lint-todo storage directory. |
+| todoData | The linting data for an individual violation.                      |
 
-**Example**  
+**Example**
+
 ```js
 42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839
 ```
+
 <a name="todoDirFor"></a>
 
 ## todoDirFor(filePath) ⇒
+
 Creates a short hash for the todo's file path.
 
-**Kind**: global function  
-**Returns**: - The todo directory for a specific filepath.  
+**Kind**: global function
+**Returns**: - The todo directory for a specific filepath.
 
-| Param | Description |
-| --- | --- |
+| Param    | Description                                                 |
+| -------- | ----------------------------------------------------------- |
 | filePath | The filePath from linting data for an individual violation. |
 
 <a name="todoFileNameFor"></a>
 
 ## todoFileNameFor(todoData) ⇒
+
 Generates a unique filename for a todo lint data.
 
-**Kind**: global function  
-**Returns**: - The todo file name for a [TodoData](TodoData) object.  
+**Kind**: global function
+**Returns**: - The todo file name for a [TodoData](TodoData) object.
 
-| Param | Description |
-| --- | --- |
+| Param    | Description                                   |
+| -------- | --------------------------------------------- |
 | todoData | The linting data for an individual violation. |
 
 <a name="writeTodosSync"></a>
 
-## writeTodosSync(baseDir, lintResults, filePath, daysToDecay) ⇒
+## writeTodosSync(baseDir, lintResults, filePath, todoConfig) ⇒
+
 Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.
 
 Given a list of todo lint violations, this function will also delete existing files that no longer
 have a todo lint violation.
 
-**Kind**: global function  
-**Returns**: - The todo storage directory path.  
+**Kind**: global function
+**Returns**: - The todo storage directory path.
 
-| Param | Description |
-| --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
-| lintResults | The raw linting data. |
-| filePath | The relative file path of the file to update violations for. |
-| daysToDecay | An object containing the warn or error days, in integers. |
+| Param       | Description                                                        |
+| ----------- | ------------------------------------------------------------------ |
+| baseDir     | The base directory that contains the .lint-todo storage directory. |
+| lintResults | The raw linting data.                                              |
+| filePath    | The relative file path of the file to update violations for.       |
+| todoConfig  | An object containing the warn or error days, in integers.          |
 
 <a name="writeTodos"></a>
 
-## writeTodos(baseDir, lintResults, filePath, daysToDecay) ⇒
+## writeTodos(baseDir, lintResults, filePath, todoConfig) ⇒
+
 Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.
 
 Given a list of todo lint violations, this function will also delete existing files that no longer
 have a todo lint violation.
 
-**Kind**: global function  
-**Returns**: - A promise that resolves to the todo storage directory path.  
+**Kind**: global function
+**Returns**: - A promise that resolves to the todo storage directory path.
 
-| Param | Description |
-| --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
-| lintResults | The raw linting data. |
-| filePath | The relative file path of the file to update violations for. |
-| daysToDecay | An object containing the warn or error days, in integers. |
+| Param       | Description                                                        |
+| ----------- | ------------------------------------------------------------------ |
+| baseDir     | The base directory that contains the .lint-todo storage directory. |
+| lintResults | The raw linting data.                                              |
+| filePath    | The relative file path of the file to update violations for.       |
+| todoConfig  | An object containing the warn or error days, in integers.          |
 
 <a name="readTodosSync"></a>
 
 ## readTodosSync(baseDir) ⇒
+
 Reads all todo files in the .lint-todo directory.
 
-**Kind**: global function  
-**Returns**: - A [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+**Kind**: global function
+**Returns**: - A [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).
 
-| Param | Description |
-| --- | --- |
+| Param   | Description                                                        |
+| ------- | ------------------------------------------------------------------ |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 
 <a name="readTodos"></a>
 
 ## readTodos(baseDir) ⇒
+
 Reads all todo files in the .lint-todo directory.
 
-**Kind**: global function  
-**Returns**: - A Promise that resolves to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+**Kind**: global function
+**Returns**: - A Promise that resolves to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).
 
-| Param | Description |
-| --- | --- |
+| Param   | Description                                                        |
+| ------- | ------------------------------------------------------------------ |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 
 <a name="readTodosForFilePathSync"></a>
 
 ## readTodosForFilePathSync(todoStorageDir, filePath) ⇒
+
 Reads todo files in the .lint-todo directory for a specific filePath.
 
-**Kind**: global function  
-**Returns**: - A [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+**Kind**: global function
+**Returns**: - A [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).
 
-| Param | Description |
-| --- | --- |
-| todoStorageDir | The .lint-todo storage directory. |
-| filePath | The relative file path of the file to return todo items for. |
+| Param          | Description                                                  |
+| -------------- | ------------------------------------------------------------ |
+| todoStorageDir | The .lint-todo storage directory.                            |
+| filePath       | The relative file path of the file to return todo items for. |
 
 <a name="readTodosForFilePath"></a>
 
 ## readTodosForFilePath(todoStorageDir, filePath) ⇒
+
 Reads todo files in the .lint-todo directory for a specific filePath.
 
-**Kind**: global function  
-**Returns**: - A Promise that resolves to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+**Kind**: global function
+**Returns**: - A Promise that resolves to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).
 
-| Param | Description |
-| --- | --- |
-| todoStorageDir | The .lint-todo storage directory. |
-| filePath | The relative file path of the file to return todo items for. |
+| Param          | Description                                                  |
+| -------------- | ------------------------------------------------------------ |
+| todoStorageDir | The .lint-todo storage directory.                            |
+| filePath       | The relative file path of the file to return todo items for. |
 
 <a name="getTodoBatchesSync"></a>
 
 ## getTodoBatchesSync(lintResults, existing) ⇒
+
 Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).
 
-**Kind**: global function  
-**Returns**: - A [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+**Kind**: global function
+**Returns**: - A [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).
 
-| Param | Description |
-| --- | --- |
+| Param       | Description                          |
+| ----------- | ------------------------------------ |
 | lintResults | The linting data for all violations. |
-| existing | Existing todo lint data. |
+| existing    | Existing todo lint data.             |
 
 <a name="getTodoBatches"></a>
 
 ## getTodoBatches(lintResults, existing) ⇒
+
 Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).
 
-**Kind**: global function  
-**Returns**: - A Promise that resolves to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).  
+**Kind**: global function
+**Returns**: - A Promise that resolves to a [Map](Map) of [FilePath](FilePath)/[TodoData](TodoData).
 
-| Param | Description |
-| --- | --- |
+| Param       | Description                          |
+| ----------- | ------------------------------------ |
 | lintResults | The linting data for all violations. |
-| existing | Existing todo lint data. |
+| existing    | Existing todo lint data.             |
 
 <a name="applyTodoChangesSync"></a>
 
 ## applyTodoChangesSync(todoStorageDir, add, remove)
+
 Applies todo changes, either adding or removing, based on batches from `getTodoBatches`.
 
-**Kind**: global function  
+**Kind**: global function
 
-| Param | Description |
-| --- | --- |
+| Param          | Description                       |
+| -------------- | --------------------------------- |
 | todoStorageDir | The .lint-todo storage directory. |
-| add | Batch of todos to add. |
-| remove | Batch of todos to remove. |
+| add            | Batch of todos to add.            |
+| remove         | Batch of todos to remove.         |
 
 <a name="applyTodoChanges"></a>
 
 ## applyTodoChanges(todoStorageDir, add, remove)
+
 Applies todo changes, either adding or removing, based on batches from `getTodoBatches`.
 
-**Kind**: global function  
+**Kind**: global function
 
-| Param | Description |
-| --- | --- |
+| Param          | Description                       |
+| -------------- | --------------------------------- |
 | todoStorageDir | The .lint-todo storage directory. |
-| add | Batch of todos to add. |
-| remove | Batch of todos to remove. |
+| add            | Batch of todos to add.            |
+| remove         | Batch of todos to remove.         |
 
+<a name="getTodoConfig"></a>
+
+## getTodoConfig(baseDir, todoConfig) ⇒
+
+Gets the todo configuration.
+Config values can be present in
+
+The package.json
+
+**Kind**: global function
+**Returns**: - The todo config object.
+
+| Param      | Description                                                  |
+| ---------- | ------------------------------------------------------------ |
+| baseDir    | The base directory that contains the project's package.json. |
+| todoConfig | The optional todo configuration.                             |
+
+**Example**
+
+```json
+{
+  "lintTodo": {
+    "daysToDecay": {
+      "warn": 5,
+      "error": 10
+    }
+  }
+}
+```
+
+Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`) - Env vars override package.json config
+
+Passed in directly, such as from command line options. - Passed in options override both env vars and package.json config
 
 <!--DOCS_END-->

@@ -15,7 +15,7 @@ import {
   unlinkSync,
 } from 'fs-extra';
 import { buildTodoData } from './builders';
-import { DaysToDecay, FilePath, LintResult, TodoData } from './types';
+import { TodoConfig, FilePath, LintResult, TodoData } from './types';
 
 /**
  * Determines if the .lint-todo storage directory exists.
@@ -99,6 +99,23 @@ export function todoFileNameFor(todoData: TodoData): string {
   return createHash('sha256').update(hashParams).digest('hex').slice(0, 8);
 }
 
+export function writeTodosSync(baseDir: string, lintResults: LintResult[]): string;
+export function writeTodosSync(
+  baseDir: string,
+  lintResults: LintResult[],
+  filePath: string | undefined
+): string;
+export function writeTodosSync(
+  baseDir: string,
+  lintResults: LintResult[],
+  todoConfig: TodoConfig | undefined
+): string;
+export function writeTodosSync(
+  baseDir: string,
+  lintResults: LintResult[],
+  filePath: string | TodoConfig | undefined,
+  todoConfig?: TodoConfig
+): string;
 /**
  * Writes files for todo lint violations. One file is generated for each violation, using a generated
  * hash to identify each.
@@ -109,34 +126,17 @@ export function todoFileNameFor(todoData: TodoData): string {
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param lintResults - The raw linting data.
  * @param filePath - The relative file path of the file to update violations for.
- * @param daysToDecay - An object containing the warn or error days, in integers.
+ * @param todoConfig - An object containing the warn or error days, in integers.
  * @returns - The todo storage directory path.
  */
-export function writeTodosSync(baseDir: string, lintResults: LintResult[]): string;
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
-  filePath: string | undefined
-): string;
-export function writeTodosSync(
-  baseDir: string,
-  lintResults: LintResult[],
-  daysToDecay: DaysToDecay | undefined
-): string;
-export function writeTodosSync(
-  baseDir: string,
-  lintResults: LintResult[],
-  filePath: string | DaysToDecay | undefined,
-  daysToDecay?: DaysToDecay
-): string;
-export function writeTodosSync(
-  baseDir: string,
-  lintResults: LintResult[],
-  filePath?: string | DaysToDecay,
-  daysToDecay?: DaysToDecay
+  filePath?: string | TodoConfig,
+  todoConfig?: TodoConfig
 ): string {
   if (typeof filePath === 'object') {
-    daysToDecay = filePath;
+    todoConfig = filePath;
     filePath = '';
   } else if (typeof filePath === 'undefined') {
     filePath = '';
@@ -147,7 +147,7 @@ export function writeTodosSync(
     ? readTodosForFilePathSync(baseDir, filePath)
     : readTodosSync(baseDir);
   const [add, remove] = getTodoBatchesSync(
-    buildTodoData(baseDir, lintResults, daysToDecay),
+    buildTodoData(baseDir, lintResults, todoConfig),
     existing
   );
 
@@ -156,6 +156,23 @@ export function writeTodosSync(
   return todoStorageDir;
 }
 
+export async function writeTodos(baseDir: string, lintResults: LintResult[]): Promise<string>;
+export async function writeTodos(
+  baseDir: string,
+  lintResults: LintResult[],
+  filePath: string | undefined
+): Promise<string>;
+export async function writeTodos(
+  baseDir: string,
+  lintResults: LintResult[],
+  todoConfig: TodoConfig | undefined
+): Promise<string>;
+export async function writeTodos(
+  baseDir: string,
+  lintResults: LintResult[],
+  filePath: string | TodoConfig | undefined,
+  todoConfig?: TodoConfig
+): Promise<string>;
 /**
  * Writes files for todo lint violations. One file is generated for each violation, using a generated
  * hash to identify each.
@@ -166,34 +183,17 @@ export function writeTodosSync(
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param lintResults - The raw linting data.
  * @param filePath - The relative file path of the file to update violations for.
- * @param daysToDecay - An object containing the warn or error days, in integers.
+ * @param todoConfig - An object containing the warn or error days, in integers.
  * @returns - A promise that resolves to the todo storage directory path.
  */
-export async function writeTodos(baseDir: string, lintResults: LintResult[]): Promise<string>;
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
-  filePath: string | undefined
-): Promise<string>;
-export async function writeTodos(
-  baseDir: string,
-  lintResults: LintResult[],
-  daysToDecay: DaysToDecay | undefined
-): Promise<string>;
-export async function writeTodos(
-  baseDir: string,
-  lintResults: LintResult[],
-  filePath: string | DaysToDecay | undefined,
-  daysToDecay?: DaysToDecay
-): Promise<string>;
-export async function writeTodos(
-  baseDir: string,
-  lintResults: LintResult[],
-  filePath?: string | DaysToDecay,
-  daysToDecay?: DaysToDecay
+  filePath?: string | TodoConfig,
+  todoConfig?: TodoConfig
 ): Promise<string> {
   if (typeof filePath === 'object') {
-    daysToDecay = filePath;
+    todoConfig = filePath;
     filePath = '';
   } else if (typeof filePath === 'undefined') {
     filePath = '';
@@ -204,7 +204,7 @@ export async function writeTodos(
     ? await readTodosForFilePath(baseDir, filePath)
     : await readTodos(baseDir);
   const [add, remove] = await getTodoBatches(
-    buildTodoData(baseDir, lintResults, daysToDecay),
+    buildTodoData(baseDir, lintResults, todoConfig),
     existing
   );
 
