@@ -14,6 +14,7 @@ import {
   writeTodosSync,
   readTodosSync,
   readTodos,
+  getDatePart,
 } from '../src';
 import { LintResult, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
@@ -26,7 +27,7 @@ const TODO_DATA: TodoData = {
   ruleId: 'no-prototype-builtins',
   line: 25,
   column: 21,
-  createdDate: new Date('12/11/2020'),
+  createdDate: getDatePart(new Date('12/11/2020')).getTime(),
 };
 
 async function readFiles(todoStorageDir: string) {
@@ -222,23 +223,6 @@ describe('io', () => {
     });
   });
 
-  describe('readTodosSync', () => {
-    it('deserializes dates back to Date objects', () => {
-      writeTodosSync(tmp, getFixture('eslint-single-error', tmp), {
-        warn: 5,
-        error: 10,
-      });
-
-      const todos = readTodosSync(tmp);
-      const todo = todos.values().next().value;
-
-      expect(todos.size).toEqual(1);
-      expect(todo.createdDate).toBeInstanceOf(Date);
-      expect(todo.warnDate).toBeInstanceOf(Date);
-      expect(todo.errorDate).toBeInstanceOf(Date);
-    });
-  });
-
   describe('writeTodosSync for single file', () => {
     it('generates todos for a specific filePath', async () => {
       const todoDir = writeTodosSync(
@@ -410,23 +394,6 @@ describe('io', () => {
           true
         );
       });
-    });
-  });
-
-  describe('readTodos', () => {
-    it('deserializes dates back to Date objects', async () => {
-      await writeTodos(tmp, getFixture('eslint-single-error', tmp), {
-        warn: 5,
-        error: 10,
-      });
-
-      const todos = await readTodos(tmp);
-      const todo = todos.values().next().value;
-
-      expect(todos.size).toEqual(1);
-      expect(todo.createdDate).toBeInstanceOf(Date);
-      expect(todo.warnDate).toBeInstanceOf(Date);
-      expect(todo.errorDate).toBeInstanceOf(Date);
     });
   });
 
