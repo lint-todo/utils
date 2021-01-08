@@ -2,6 +2,7 @@ import { isAbsolute, relative } from 'path';
 import slash = require('slash');
 import { todoFilePathFor } from './io';
 import { TodoConfig, FilePath, LintMessage, LintResult, TodoData } from './types';
+import { getDatePart } from './get-severity';
 
 /**
  * Adapts a list of {@link LintResult} to a map of {@link FilePath}, {@link TodoData}.
@@ -51,6 +52,7 @@ export function _buildTodoDatum(
 ): TodoData {
   // Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
   // provided that the fix is landed on the supported node versions of this lib
+  const createdDate = getCreatedDate();
   const filePath = isAbsolute(lintResult.filePath)
     ? relative(baseDir, lintResult.filePath)
     : lintResult.filePath;
@@ -60,15 +62,15 @@ export function _buildTodoDatum(
     ruleId: getRuleId(lintMessage),
     line: lintMessage.line,
     column: lintMessage.column,
-    createdDate: getCreatedDate(),
+    createdDate: createdDate.getTime(),
   };
 
   if (todoConfig?.warn) {
-    todoDatum.warnDate = addDays(todoDatum.createdDate, todoConfig.warn);
+    todoDatum.warnDate = addDays(createdDate, todoConfig.warn).getTime();
   }
 
   if (todoConfig?.error) {
-    todoDatum.errorDate = addDays(todoDatum.createdDate, todoConfig.error);
+    todoDatum.errorDate = addDays(createdDate, todoConfig.error).getTime();
   }
 
   return todoDatum;
@@ -88,11 +90,9 @@ function getRuleId(message: any) {
 }
 
 function getCreatedDate(): Date {
-  if (process.env.TODO_CREATED_DATE) {
-    return new Date(process.env.TODO_CREATED_DATE);
-  }
+  const date = process.env.TODO_CREATED_DATE ? new Date(process.env.TODO_CREATED_DATE) : new Date();
 
-  return new Date();
+  return getDatePart(date);
 }
 
 function addDays(createdDate: Date, days: number): Date {

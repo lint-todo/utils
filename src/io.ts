@@ -1,6 +1,5 @@
 import { createHash } from 'crypto';
 import { posix } from 'path';
-import { jsonDateParser } from 'json-date-parser';
 import {
   ensureDir,
   existsSync,
@@ -228,9 +227,7 @@ export function readTodosSync(baseDir: string): Map<FilePath, TodoData> {
     const fileNames = readdirSync(posix.join(todoStorageDir, todoFileDir));
 
     for (const fileName of fileNames) {
-      const todo = readJSONSync(posix.join(todoStorageDir, todoFileDir, fileName), {
-        reviver: jsonDateParser,
-      });
+      const todo = readJSONSync(posix.join(todoStorageDir, todoFileDir, fileName));
       map.set(posix.join(todoFileDir, posix.parse(fileName).name), todo);
     }
   }
@@ -253,9 +250,7 @@ export async function readTodos(baseDir: string): Promise<Map<FilePath, TodoData
     const fileNames = await readdir(posix.join(todoStorageDir, todoFileDir));
 
     for (const fileName of fileNames) {
-      const todo = await readJSON(posix.join(todoStorageDir, todoFileDir, fileName), {
-        reviver: jsonDateParser,
-      });
+      const todo = await readJSON(posix.join(todoStorageDir, todoFileDir, fileName));
       map.set(posix.join(todoFileDir, posix.parse(fileName).name), todo);
     }
   }
@@ -283,9 +278,7 @@ export function readTodosForFilePathSync(
     const fileNames = readdirSync(todoFilePathDir);
 
     for (const fileName of fileNames) {
-      const todo = readJSONSync(posix.join(todoFilePathDir, fileName), {
-        reviver: jsonDateParser,
-      });
+      const todo = readJSONSync(posix.join(todoFilePathDir, fileName));
       map.set(posix.join(todoFileDir, posix.parse(fileName).name), todo);
     }
   } catch (error) {
@@ -319,9 +312,7 @@ export async function readTodosForFilePath(
     const fileNames = await readdir(todoFilePathDir);
 
     for (const fileName of fileNames) {
-      const todo = await readJSON(posix.join(todoFilePathDir, fileName), {
-        reviver: jsonDateParser,
-      });
+      const todo = await readJSON(posix.join(todoFilePathDir, fileName));
       map.set(posix.join(todoFileDir, posix.parse(fileName).name), todo);
     }
   } catch (error) {

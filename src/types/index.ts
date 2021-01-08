@@ -1,8 +1,12 @@
 import { ESLint, Linter } from 'eslint';
 import { PackageJson } from 'type-fest';
 
-type Severity = 0 | 1 | 2;
-
+export enum Severity {
+  todo = -1,
+  off = 0,
+  warn = 1,
+  error = 2,
+}
 export interface TemplateLintReport {
   results: TemplateLintResult[];
   errorCount: number;
@@ -17,7 +21,7 @@ export interface TemplateLintResult {
 
 export interface TemplateLintMessage {
   rule: string;
-  severity: Severity;
+  severity: 0 | 1 | 2;
   moduleId: string;
   message: string;
   line: number;
@@ -35,9 +39,9 @@ export interface TodoData {
   ruleId: string;
   line: number;
   column: number;
-  createdDate: Date;
-  warnDate?: Date;
-  errorDate?: Date;
+  createdDate: number;
+  warnDate?: number;
+  errorDate?: number;
 }
 
 export type LintTodoPackageJson = PackageJson & {
