@@ -1,3 +1,12 @@
+## v5.0.0 (2021-01-08)
+
+#### :boom: Breaking Change
+* [#44](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/44) Adds new util `getSeverity` ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v4.1.0 (2021-01-06)
 
 #### :rocket: Enhancement
