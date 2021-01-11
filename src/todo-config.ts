@@ -1,5 +1,8 @@
 import { join } from 'path';
 import { TodoConfig } from './types';
+import { readFileSync, writeFileSync } from 'fs-extra';
+
+const DETECT_TRAILING_WHITESPACE = /\s+$/;
 
 /**
  * Gets the todo configuration.
@@ -48,6 +51,37 @@ export function getTodoConfig(
   }
 
   return mergedConfig;
+}
+
+/**
+ * Writes a todo config to the package.json located at the provided baseDir.
+ *
+ * @param baseDir - The base directory that contains the project's package.json.
+ * @param todoConfig - The todo configuration to write to the package.json.
+ */
+export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig): boolean {
+  const packageJsonPath = join(baseDir, 'package.json');
+  const contents = readFileSync(packageJsonPath, { encoding: 'utf8' });
+  const trailingWhitespace = DETECT_TRAILING_WHITESPACE.exec(contents);
+  const pkg = JSON.parse(contents);
+
+  if (pkg.lintTodo) {
+    return false;
+  }
+
+  pkg.lintTodo = {
+    decayDays: todoConfig,
+  };
+
+  let updatedContents = JSON.stringify(pkg, undefined, 2);
+
+  if (trailingWhitespace) {
+    updatedContents += trailingWhitespace[0];
+  }
+
+  writeFileSync(packageJsonPath, updatedContents, { encoding: 'utf8' });
+
+  return true;
 }
 
 function getFromPackageJson(basePath: string): TodoConfig {
