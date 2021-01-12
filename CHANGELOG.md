@@ -1,3 +1,19 @@
+## v6.0.0 (2021-01-12)
+
+#### :boom: Breaking Change
+* [#48](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/48) Changes return value of writeTodos[Sync] to return added and removed todo counts ([@scalvert](https://github.com/scalvert))
+
+#### :rocket: Enhancement
+* [#45](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/45) Adding writeTodoConfig util ([@scalvert](https://github.com/scalvert))
+
+#### :bug: Bug Fix
+* [#47](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/47) Ensures empty todo directories are deleted ([@scalvert](https://github.com/scalvert))
+* [#46](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/46) Fixing error message for invalid config values ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v5.0.0 (2021-01-08)
 
 #### :boom: Breaking Change
