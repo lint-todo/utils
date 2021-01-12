@@ -288,6 +288,7 @@ describe('io', () => {
       writeTodosSync(tmp, getFixture('single-file-no-errors', tmp), 'app/controllers/settings.js');
 
       expect(await readFiles(todoDir)).toHaveLength(0);
+      expect(await readdir(todoDir)).toHaveLength(0);
     });
   });
 
@@ -466,6 +467,7 @@ describe('io', () => {
       );
 
       expect(await readFiles(todoDir)).toHaveLength(0);
+      expect(await readdir(todoDir)).toHaveLength(0);
     });
   });
 

@@ -12,6 +12,8 @@ import {
   readJSONSync,
   writeJsonSync,
   unlinkSync,
+  rmdirSync,
+  rmdir,
 } from 'fs-extra';
 import { buildTodoData } from './builders';
 import { TodoConfig, FilePath, LintResult, TodoData } from './types';
@@ -414,7 +416,14 @@ export function applyTodoChangesSync(
   }
 
   for (const [fileHash] of remove) {
+    const { dir } = posix.parse(fileHash);
+    const todoDir = posix.join(todoStorageDir, dir);
+
     unlinkSync(posix.join(todoStorageDir, `${fileHash}.json`));
+
+    if (readdirSync(todoDir).length === 0) {
+      rmdirSync(todoDir);
+    }
   }
 }
 
@@ -438,6 +447,13 @@ export async function applyTodoChanges(
   }
 
   for (const [fileHash] of remove) {
+    const { dir } = posix.parse(fileHash);
+    const todoDir = posix.join(todoStorageDir, dir);
+
     await unlink(posix.join(todoStorageDir, `${fileHash}.json`));
+
+    if ((await readdir(todoDir)).length === 0) {
+      await rmdir(todoDir);
+    }
   }
 }
