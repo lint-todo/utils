@@ -43,7 +43,7 @@ export function getTodoConfig(
     mergedConfig.warn >= mergedConfig.error
   ) {
     throw new Error(
-      'The `lintTodo` configuration in the package.json contains invalid values. The `warn` value must be less than the `error` value.'
+      `The provided TODO configuration contains invalid values. The \`warn\` value (${mergedConfig.warn}) must be less than the \`error\` value (${mergedConfig.error}).`
     );
   }
 
