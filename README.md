@@ -86,6 +86,9 @@ have a todo lint violation.</p>
 Config values can be present in</p>
 <p>The package.json</p>
 </dd>
+<dt><a href="#writeTodoConfig">writeTodoConfig(baseDir, todoConfig)</a></dt>
+<dd><p>Writes a todo config to the package.json located at the provided baseDir.</p>
+</dd>
 <dt><a href="#getSeverity">getSeverity(todo, today)</a> ⇒</dt>
 <dd><p>Returns the correct severity level based on the todo data&#39;s decay dates.</p>
 </dd>
@@ -384,6 +387,18 @@ Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
 
 Passed in directly, such as from command line options.
 	- Passed in options override both env vars and package.json config
+<a name="writeTodoConfig"></a>
+
+## writeTodoConfig(baseDir, todoConfig)
+Writes a todo config to the package.json located at the provided baseDir.
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| baseDir | The base directory that contains the project's package.json. |
+| todoConfig | The todo configuration to write to the package.json. |
+
 <a name="getSeverity"></a>
 
 ## getSeverity(todo, today) ⇒
