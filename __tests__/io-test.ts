@@ -15,6 +15,7 @@ import {
   readTodosSync,
   readTodos,
   getDatePart,
+  getTodoStorageDirPath,
 } from '../src';
 import { LintResult, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
@@ -118,7 +119,9 @@ describe('io', () => {
 
   describe('writeTodosSync', () => {
     it("creates .lint-todo directory if one doesn't exist", async () => {
-      const todoDir = writeTodosSync(tmp, []);
+      const todoDir = getTodoStorageDirPath(tmp);
+
+      writeTodosSync(tmp, []);
 
       expect(existsSync(todoDir)).toEqual(true);
     });
@@ -130,10 +133,10 @@ describe('io', () => {
     });
 
     it('generates todos when todos provided', async () => {
-      writeTodosSync(tmp, getFixture('eslint-with-errors', tmp));
+      const [added] = writeTodosSync(tmp, getFixture('eslint-with-errors', tmp));
 
-      const todos = readTodosSync(tmp);
-      expect(todos.size).toEqual(18);
+      expect(added).toEqual(18);
+      expect(readTodosSync(tmp).size).toEqual(18);
     });
 
     it("generates todos only if previous todo doesn't exist", async () => {
@@ -173,10 +176,11 @@ describe('io', () => {
         },
       ];
 
-      const todoDir = writeTodosSync(tmp, updatePaths<LintResult>(tmp, initialTodos));
-
+      const todoDir = getTodoStorageDirPath(tmp);
+      const [added] = writeTodosSync(tmp, updatePaths<LintResult>(tmp, initialTodos));
       const initialFiles = await readFiles(todoDir);
 
+      expect(added).toEqual(2);
       expect(initialFiles).toHaveLength(2);
 
       const initialFileStats = initialFiles.map((file) => {
@@ -201,18 +205,23 @@ describe('io', () => {
 
     it('removes old todos if todos no longer contains violations', async () => {
       const fixture = getFixture('eslint-with-errors', tmp);
-      const todoDir = writeTodosSync(tmp, fixture);
+      const todoDir = getTodoStorageDirPath(tmp);
+
+      const [added] = writeTodosSync(tmp, fixture);
+
       const initialFiles = await readFiles(todoDir);
 
+      expect(added).toEqual(18);
       expect(initialFiles).toHaveLength(18);
 
       const firstHalf = fixture.slice(0, 3);
       const secondHalf = fixture.slice(3, fixture.length);
 
-      writeTodosSync(tmp, firstHalf);
+      const [, removed] = writeTodosSync(tmp, firstHalf);
 
       const subsequentFiles = await readFiles(todoDir);
 
+      expect(removed).toEqual(11);
       expect(subsequentFiles).toHaveLength(7);
 
       buildTodoData(tmp, secondHalf).forEach((todoDatum) => {
@@ -225,12 +234,14 @@ describe('io', () => {
 
   describe('writeTodosSync for single file', () => {
     it('generates todos for a specific filePath', async () => {
-      const todoDir = writeTodosSync(
+      const todoDir = getTodoStorageDirPath(tmp);
+      const [added] = writeTodosSync(
         tmp,
         getFixture('single-file-todo', tmp),
         'app/controllers/settings.js'
       );
 
+      expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
@@ -241,12 +252,14 @@ describe('io', () => {
     });
 
     it('updates todos for a specific filePath', async () => {
-      const todoDir = writeTodosSync(
+      const todoDir = getTodoStorageDirPath(tmp);
+      const [added] = writeTodosSync(
         tmp,
         getFixture('single-file-todo', tmp),
         'app/controllers/settings.js'
       );
 
+      expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
@@ -255,12 +268,14 @@ describe('io', () => {
         ]
       `);
 
-      writeTodosSync(
+      const [added2, removed2] = writeTodosSync(
         tmp,
         getFixture('single-file-todo-updated', tmp),
         'app/controllers/settings.js'
       );
 
+      expect(added2).toEqual(1);
+      expect(removed2).toEqual(1);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839.json",
@@ -271,12 +286,14 @@ describe('io', () => {
     });
 
     it('deletes todos for a specific filePath', async () => {
-      const todoDir = writeTodosSync(
+      const todoDir = getTodoStorageDirPath(tmp);
+      const [added] = writeTodosSync(
         tmp,
         getFixture('single-file-todo', tmp),
         'app/controllers/settings.js'
       );
 
+      expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
@@ -285,15 +302,23 @@ describe('io', () => {
         ]
       `);
 
-      writeTodosSync(tmp, getFixture('single-file-no-errors', tmp), 'app/controllers/settings.js');
+      const [added2, removed2] = writeTodosSync(
+        tmp,
+        getFixture('single-file-no-errors', tmp),
+        'app/controllers/settings.js'
+      );
 
+      expect(added2).toEqual(0);
+      expect(removed2).toEqual(3);
       expect(await readFiles(todoDir)).toHaveLength(0);
     });
   });
 
   describe('writeTodos', () => {
     it("creates .lint-todo directory if one doesn't exist", async () => {
-      const todoDir = await writeTodos(tmp, []);
+      const todoDir = getTodoStorageDirPath(tmp);
+
+      await writeTodos(tmp, []);
 
       expect(existsSync(todoDir)).toEqual(true);
     });
@@ -305,8 +330,9 @@ describe('io', () => {
     });
 
     it('generates todos when todos provided', async () => {
-      await writeTodos(tmp, getFixture('eslint-with-errors', tmp));
+      const [added] = await writeTodos(tmp, getFixture('eslint-with-errors', tmp));
 
+      expect(added).toEqual(18);
       expect((await readTodos(tmp)).size).toEqual(18);
     });
 
@@ -347,10 +373,11 @@ describe('io', () => {
         },
       ];
 
-      const todoDir = await writeTodos(tmp, updatePaths<LintResult>(tmp, initialTodos));
-
+      const todoDir = getTodoStorageDirPath(tmp);
+      const [added] = await writeTodos(tmp, updatePaths<LintResult>(tmp, initialTodos));
       const initialFiles = await readFiles(todoDir);
 
+      expect(added).toEqual(2);
       expect(initialFiles).toHaveLength(2);
 
       const initialFileStats = initialFiles.map((file) => {
@@ -375,18 +402,23 @@ describe('io', () => {
 
     it('removes old todos if todos no longer contains violations', async () => {
       const fixture = getFixture('eslint-with-errors', tmp);
-      const todoDir = await writeTodos(tmp, fixture);
+      const todoDir = getTodoStorageDirPath(tmp);
+
+      const [added] = await writeTodos(tmp, fixture);
+
       const initialFiles = await readFiles(todoDir);
 
+      expect(added).toEqual(18);
       expect(initialFiles).toHaveLength(18);
 
       const firstHalf = fixture.slice(0, 3);
       const secondHalf = fixture.slice(3, fixture.length);
 
-      await writeTodos(tmp, firstHalf);
+      const [, removed] = await writeTodos(tmp, firstHalf);
 
       const subsequentFiles = await readFiles(todoDir);
 
+      expect(removed).toEqual(11);
       expect(subsequentFiles).toHaveLength(7);
 
       buildTodoData(tmp, secondHalf).forEach((todoDatum) => {
@@ -399,12 +431,14 @@ describe('io', () => {
 
   describe('writeTodos for single file', () => {
     it('generates todos for a specific filePath', async () => {
-      const todoDir = await writeTodos(
+      const todoDir = getTodoStorageDirPath(tmp);
+      const [added] = await writeTodos(
         tmp,
         getFixture('single-file-todo', tmp),
         'app/controllers/settings.js'
       );
 
+      expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
@@ -415,12 +449,14 @@ describe('io', () => {
     });
 
     it('updates todos for a specific filePath', async () => {
-      const todoDir = await writeTodos(
+      const todoDir = getTodoStorageDirPath(tmp);
+      const [added] = await writeTodos(
         tmp,
         getFixture('single-file-todo', tmp),
         'app/controllers/settings.js'
       );
 
+      expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
@@ -429,12 +465,14 @@ describe('io', () => {
         ]
       `);
 
-      await writeTodos(
+      const [added2, removed2] = await writeTodos(
         tmp,
         getFixture('single-file-todo-updated', tmp),
         'app/controllers/settings.js'
       );
 
+      expect(added2).toEqual(1);
+      expect(removed2).toEqual(1);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839.json",
@@ -445,12 +483,14 @@ describe('io', () => {
     });
 
     it('deletes todos for a specific filePath', async () => {
-      const todoDir = await writeTodos(
+      const todoDir = getTodoStorageDirPath(tmp);
+      const [added] = await writeTodos(
         tmp,
         getFixture('single-file-todo', tmp),
         'app/controllers/settings.js'
       );
 
+      expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
@@ -459,12 +499,14 @@ describe('io', () => {
         ]
       `);
 
-      await writeTodos(
+      const [added2, removed2] = await writeTodos(
         tmp,
         getFixture('single-file-no-errors', tmp),
         'app/controllers/settings.js'
       );
 
+      expect(added2).toEqual(0);
+      expect(removed2).toEqual(3);
       expect(await readFiles(todoDir)).toHaveLength(0);
     });
   });

@@ -48,6 +48,8 @@ export type LintTodoPackageJson = PackageJson & {
   lintTodo?: { daysToDecay: TodoConfig };
 };
 
+export type TodoBatchCounts = [number, number];
+
 export interface TodoConfig {
   warn?: number;
   error?: number;

@@ -221,7 +221,7 @@ Given a list of todo lint violations, this function will also delete existing fi
 have a todo lint violation.
 
 **Kind**: global function  
-**Returns**: - The todo storage directory path.  
+**Returns**: - The counts of added and removed todos.  
 
 | Param | Description |
 | --- | --- |
@@ -240,7 +240,7 @@ Given a list of todo lint violations, this function will also delete existing fi
 have a todo lint violation.
 
 **Kind**: global function  
-**Returns**: - A promise that resolves to the todo storage directory path.  
+**Returns**: - A promise that resolves to the counts of added and removed todos.  
 
 | Param | Description |
 | --- | --- |

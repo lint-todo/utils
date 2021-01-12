@@ -14,7 +14,7 @@ import {
   unlinkSync,
 } from 'fs-extra';
 import { buildTodoData } from './builders';
-import { TodoConfig, FilePath, LintResult, TodoData } from './types';
+import { TodoConfig, FilePath, LintResult, TodoData, TodoBatchCounts } from './types';
 
 /**
  * Determines if the .lint-todo storage directory exists.
@@ -98,23 +98,23 @@ export function todoFileNameFor(todoData: TodoData): string {
   return createHash('sha256').update(hashParams).digest('hex').slice(0, 8);
 }
 
-export function writeTodosSync(baseDir: string, lintResults: LintResult[]): string;
+export function writeTodosSync(baseDir: string, lintResults: LintResult[]): TodoBatchCounts;
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
   filePath: string | undefined
-): string;
+): TodoBatchCounts;
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
   todoConfig: TodoConfig | undefined
-): string;
+): TodoBatchCounts;
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
   filePath: string | TodoConfig | undefined,
   todoConfig?: TodoConfig
-): string;
+): TodoBatchCounts;
 /**
  * Writes files for todo lint violations. One file is generated for each violation, using a generated
  * hash to identify each.
@@ -126,14 +126,14 @@ export function writeTodosSync(
  * @param lintResults - The raw linting data.
  * @param filePath - The relative file path of the file to update violations for.
  * @param todoConfig - An object containing the warn or error days, in integers.
- * @returns - The todo storage directory path.
+ * @returns - The counts of added and removed todos.
  */
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
   filePath?: string | TodoConfig,
   todoConfig?: TodoConfig
-): string {
+): TodoBatchCounts {
   if (typeof filePath === 'object') {
     todoConfig = filePath;
     filePath = '';
@@ -152,26 +152,29 @@ export function writeTodosSync(
 
   applyTodoChangesSync(todoStorageDir, add, remove);
 
-  return todoStorageDir;
+  return [add.size, remove.size];
 }
 
-export async function writeTodos(baseDir: string, lintResults: LintResult[]): Promise<string>;
+export async function writeTodos(
+  baseDir: string,
+  lintResults: LintResult[]
+): Promise<TodoBatchCounts>;
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
   filePath: string | undefined
-): Promise<string>;
+): Promise<TodoBatchCounts>;
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
   todoConfig: TodoConfig | undefined
-): Promise<string>;
+): Promise<TodoBatchCounts>;
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
   filePath: string | TodoConfig | undefined,
   todoConfig?: TodoConfig
-): Promise<string>;
+): Promise<TodoBatchCounts>;
 /**
  * Writes files for todo lint violations. One file is generated for each violation, using a generated
  * hash to identify each.
@@ -183,14 +186,14 @@ export async function writeTodos(
  * @param lintResults - The raw linting data.
  * @param filePath - The relative file path of the file to update violations for.
  * @param todoConfig - An object containing the warn or error days, in integers.
- * @returns - A promise that resolves to the todo storage directory path.
+ * @returns - A promise that resolves to the counts of added and removed todos.
  */
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
   filePath?: string | TodoConfig,
   todoConfig?: TodoConfig
-): Promise<string> {
+): Promise<TodoBatchCounts> {
   if (typeof filePath === 'object') {
     todoConfig = filePath;
     filePath = '';
@@ -209,7 +212,7 @@ export async function writeTodos(
 
   await applyTodoChanges(todoStorageDir, add, remove);
 
-  return todoStorageDir;
+  return [add.size, remove.size];
 }
 
 /**
