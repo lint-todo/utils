@@ -311,6 +311,7 @@ describe('io', () => {
       expect(added2).toEqual(0);
       expect(removed2).toEqual(3);
       expect(await readFiles(todoDir)).toHaveLength(0);
+      expect(await readdir(todoDir)).toHaveLength(0);
     });
   });
 
@@ -508,6 +509,7 @@ describe('io', () => {
       expect(added2).toEqual(0);
       expect(removed2).toEqual(3);
       expect(await readFiles(todoDir)).toHaveLength(0);
+      expect(await readdir(todoDir)).toHaveLength(0);
     });
   });
 
