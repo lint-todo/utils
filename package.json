@@ -21,7 +21,7 @@
     "slash": "^3.0.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.1",
+    "@types/fs-extra": "^9.0.6",
     "@types/slash": "^3.0.0",
     "@types/tmp": "^0.2.0",
     "@typescript-eslint/eslint-plugin": "^4.13.0",
