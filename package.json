@@ -18,7 +18,8 @@
   "dependencies": {
     "@types/eslint": "^7.2.6",
     "fs-extra": "^9.0.1",
-    "slash": "^3.0.0"
+    "slash": "^3.0.0",
+    "tslib": "^2.1.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.6",
