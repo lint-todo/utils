@@ -149,13 +149,13 @@ describe('todo-config', () => {
 
     it('throws if warn is equal to error', () => {
       expect(() => getTodoConfig(project.baseDir, { warn: 5, error: 5 })).toThrow(
-        'The provided TODO configuration contains invalid values. The `warn` value (5) must be less than the `error` value (5).'
+        'The provided todo configuration contains invalid values. The `warn` value (5) must be less than the `error` value (5).'
       );
     });
 
     it('throws if warn is greater than to error', () => {
       expect(() => getTodoConfig(project.baseDir, { warn: 10, error: 5 })).toThrow(
-        'The provided TODO configuration contains invalid values. The `warn` value (10) must be less than the `error` value (5).'
+        'The provided todo configuration contains invalid values. The `warn` value (10) must be less than the `error` value (5).'
       );
     });
   });

@@ -46,7 +46,7 @@ export function getTodoConfig(
     mergedConfig.warn >= mergedConfig.error
   ) {
     throw new Error(
-      `The provided TODO configuration contains invalid values. The \`warn\` value (${mergedConfig.warn}) must be less than the \`error\` value (${mergedConfig.error}).`
+      `The provided todo configuration contains invalid values. The \`warn\` value (${mergedConfig.warn}) must be less than the \`error\` value (${mergedConfig.error}).`
     );
   }
 
