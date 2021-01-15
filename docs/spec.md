@@ -111,7 +111,7 @@ Upon first generation of the list of todo lint rules, any existing lint violatio
   - writes `todo` violations to disc, one file per violation
   - ensures old `todo` violation files are removed
 
-#### Proposed Schema for TODO violation data
+#### Proposed Schema for todo violation data
 
 ```ts
 interface TodoData {
