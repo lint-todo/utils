@@ -1,3 +1,15 @@
+## v6.0.1 (2021-01-15)
+
+#### :bug: Bug Fix
+* [#67](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/67) Adds tslib (needed when using importHelpers) ([@scalvert](https://github.com/scalvert))
+
+#### :house: Internal
+* [#65](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/65) Standardize casing for todos ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v6.0.0 (2021-01-12)
 
 #### :boom: Breaking Change
