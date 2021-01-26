@@ -205,7 +205,7 @@ describe('todo-config', () => {
       expect(pkg).toEqual(originalPkg);
     });
 
-    it('does changes package.json if lintTodo directory not present', () => {
+    it('does change package.json if lintTodo directory not present', () => {
       ensureTodoConfig(project.baseDir);
 
       const pkg = readFileSync(join(project.baseDir, 'package.json'), { encoding: 'utf8' });
