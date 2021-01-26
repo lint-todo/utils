@@ -1,6 +1,7 @@
 import { join } from 'path';
 import { TodoConfig } from './types';
-import { readFileSync, writeFileSync } from 'fs-extra';
+import { readFileSync, writeFileSync, readJsonSync } from 'fs-extra';
+import { todoStorageDirExists } from './io';
 
 const DETECT_TRAILING_WHITESPACE = /\s+$/;
 
@@ -51,6 +52,25 @@ export function getTodoConfig(
   }
 
   return mergedConfig;
+}
+
+/**
+ * Ensures that a valid todo config exists in the project by writing one to the package.json
+ * if we're invoking the todos functionality for the first time (there is no .lint-todo directory).
+ *
+ * @param baseDir - The base directory that contains the project's package.json.
+ */
+export function ensureTodoConfig(baseDir: string): void {
+  if (!todoStorageDirExists(baseDir)) {
+    const pkg = readJsonSync(join(baseDir, 'package.json'));
+
+    if (!pkg.lintTodo) {
+      writeTodoConfig(baseDir, {
+        warn: 30,
+        error: 60,
+      });
+    }
+  }
 }
 
 /**
