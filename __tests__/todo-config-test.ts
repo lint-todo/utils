@@ -191,6 +191,20 @@ describe('todo-config', () => {
       expect(pkg).toEqual(originalPkg);
     });
 
+    it('does not change package.json if todo config is empty object', () => {
+      ensureTodoStorageDirSync(project.baseDir);
+
+      writeTodoConfig(project.baseDir, {});
+
+      const originalPkg = readFileSync(join(project.baseDir, 'package.json'), { encoding: 'utf8' });
+
+      ensureTodoConfig(project.baseDir);
+
+      const pkg = readFileSync(join(project.baseDir, 'package.json'), { encoding: 'utf8' });
+
+      expect(pkg).toEqual(originalPkg);
+    });
+
     it('does changes package.json if lintTodo directory not present', () => {
       ensureTodoConfig(project.baseDir);
 
