@@ -115,8 +115,10 @@ export function todoFileNameFor(todoData: TodoData): string {
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
-  options: WriteTodoOptions = {}
+  options?: Partial<WriteTodoOptions>
 ): TodoBatchCounts {
+  options = Object.assign({ shouldRemove: () => true }, options ?? {});
+
   const todoStorageDir: string = ensureTodoStorageDirSync(baseDir);
   const existing: Map<FilePath, TodoData> = options.filePath
     ? readTodosForFilePathSync(baseDir, options.filePath)
@@ -124,12 +126,9 @@ export function writeTodosSync(
   // eslint-disable-next-line prefer-const
   let [add, remove] = getTodoBatchesSync(
     buildTodoData(baseDir, lintResults, options.todoConfig),
-    existing
+    existing,
+    options
   );
-
-  if (options.skipRemoval) {
-    remove = new Map();
-  }
 
   applyTodoChangesSync(todoStorageDir, add, remove);
 
@@ -151,8 +150,10 @@ export function writeTodosSync(
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
-  options: WriteTodoOptions = {}
+  options?: Partial<WriteTodoOptions>
 ): Promise<TodoBatchCounts> {
+  options = Object.assign({ shouldRemove: () => true }, options ?? {});
+
   const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const existing: Map<FilePath, TodoData> = options.filePath
     ? await readTodosForFilePath(baseDir, options.filePath)
@@ -160,12 +161,9 @@ export async function writeTodos(
   // eslint-disable-next-line prefer-const
   let [add, remove] = await getTodoBatches(
     buildTodoData(baseDir, lintResults, options.todoConfig),
-    existing
+    existing,
+    options
   );
-
-  if (options.skipRemoval) {
-    remove = new Map();
-  }
 
   await applyTodoChanges(todoStorageDir, add, remove);
 
@@ -295,7 +293,8 @@ export async function readTodosForFilePath(
  */
 export function getTodoBatchesSync(
   lintResults: Map<FilePath, TodoData>,
-  existing: Map<FilePath, TodoData>
+  existing: Map<FilePath, TodoData>,
+  options: Partial<WriteTodoOptions>
 ): Map<FilePath, TodoData>[] {
   const add = new Map<FilePath, TodoData>();
   const remove = new Map<FilePath, TodoData>();
@@ -310,7 +309,8 @@ export function getTodoBatchesSync(
   }
 
   for (const [fileHash, todoDatum] of existing) {
-    if (!lintResults.has(fileHash)) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum)) {
       remove.set(fileHash, todoDatum);
     } else {
       stable.set(fileHash, todoDatum);
@@ -329,7 +329,8 @@ export function getTodoBatchesSync(
  */
 export async function getTodoBatches(
   lintResults: Map<FilePath, TodoData>,
-  existing: Map<FilePath, TodoData>
+  existing: Map<FilePath, TodoData>,
+  options: Partial<WriteTodoOptions>
 ): Promise<Map<FilePath, TodoData>[]> {
   const add = new Map<FilePath, TodoData>();
   const remove = new Map<FilePath, TodoData>();
@@ -344,7 +345,8 @@ export async function getTodoBatches(
   }
 
   for (const [fileHash, todoDatum] of existing) {
-    if (!lintResults.has(fileHash)) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum)) {
       remove.set(fileHash, todoDatum);
     } else {
       stable.set(fileHash, todoDatum);

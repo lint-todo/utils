@@ -63,7 +63,7 @@ export interface TodoConfig {
  * @param skipRemoval - Allows for skipping removal of todo files.
  */
 export interface WriteTodoOptions {
-  filePath?: string;
-  todoConfig?: TodoConfig;
-  skipRemoval?: boolean;
+  filePath: string;
+  todoConfig: TodoConfig;
+  shouldRemove: (todoDatum: TodoData) => boolean;
 }

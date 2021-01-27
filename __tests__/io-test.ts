@@ -231,7 +231,7 @@ describe('io', () => {
       });
     });
 
-    it('does not remove old todos if todos no longer contains violations if skipRemoval is true', async () => {
+    it('does not remove old todos if todos no longer contains violations if shouldRemove returns false', async () => {
       const fixture = getFixture('eslint-with-errors', tmp);
       const todoDir = getTodoStorageDirPath(tmp);
 
@@ -244,7 +244,7 @@ describe('io', () => {
 
       const firstHalf = fixture.slice(0, 3);
 
-      const [, removed] = writeTodosSync(tmp, firstHalf, { skipRemoval: true });
+      const [, removed] = writeTodosSync(tmp, firstHalf, { shouldRemove: () => false });
 
       const subsequentFiles = await readFiles(todoDir);
 
@@ -440,7 +440,7 @@ describe('io', () => {
       });
     });
 
-    it('does not remove old todos if todos no longer contains violations if skipRemoval is true', async () => {
+    it('does not remove old todos if todos no longer contains violations if shouldRemove returns false', async () => {
       const fixture = getFixture('eslint-with-errors', tmp);
       const todoDir = getTodoStorageDirPath(tmp);
 
@@ -453,7 +453,7 @@ describe('io', () => {
 
       const firstHalf = fixture.slice(0, 3);
 
-      const [, removed] = await writeTodos(tmp, firstHalf, { skipRemoval: true });
+      const [, removed] = await writeTodos(tmp, firstHalf, { shouldRemove: () => false });
 
       const subsequentFiles = await readFiles(todoDir);
 
@@ -543,7 +543,8 @@ describe('io', () => {
     it('creates items to add', async () => {
       const [add] = getTodoBatchesSync(
         buildTodoData(tmp, getFixture('new-batches', tmp)),
-        new Map()
+        new Map(),
+        { shouldRemove: () => true }
       );
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
@@ -560,7 +561,8 @@ describe('io', () => {
     it('creates items to delete', async () => {
       const [, remove] = getTodoBatchesSync(
         new Map(),
-        buildTodoData(tmp, getFixture('new-batches', tmp))
+        buildTodoData(tmp, getFixture('new-batches', tmp)),
+        { shouldRemove: () => true }
       );
 
       expect([...remove.keys()]).toMatchInlineSnapshot(`
@@ -577,7 +579,8 @@ describe('io', () => {
     it('creates all batches', async () => {
       const [add, remove, stable] = getTodoBatchesSync(
         buildTodoData(tmp, getFixture('new-batches', tmp)),
-        buildTodoData(tmp, getFixture('existing-batches', tmp))
+        buildTodoData(tmp, getFixture('existing-batches', tmp)),
+        { shouldRemove: () => true }
       );
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
@@ -606,7 +609,8 @@ describe('io', () => {
     it('creates items to add', async () => {
       const [add] = await getTodoBatches(
         buildTodoData(tmp, getFixture('new-batches', tmp)),
-        new Map()
+        new Map(),
+        { shouldRemove: () => true }
       );
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
@@ -623,7 +627,8 @@ describe('io', () => {
     it('creates items to delete', async () => {
       const [, remove] = await getTodoBatches(
         new Map(),
-        buildTodoData(tmp, getFixture('new-batches', tmp))
+        buildTodoData(tmp, getFixture('new-batches', tmp)),
+        { shouldRemove: () => true }
       );
 
       expect([...remove.keys()]).toMatchInlineSnapshot(`
@@ -640,7 +645,8 @@ describe('io', () => {
     it('creates all batches', async () => {
       const [add, remove, stable] = await getTodoBatches(
         buildTodoData(tmp, getFixture('new-batches', tmp)),
-        buildTodoData(tmp, getFixture('existing-batches', tmp))
+        buildTodoData(tmp, getFixture('existing-batches', tmp)),
+        { shouldRemove: () => true }
       );
 
       expect([...add.keys()]).toMatchInlineSnapshot(`
