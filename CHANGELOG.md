@@ -1,3 +1,15 @@
+## v7.0.0 (2021-01-27)
+
+#### :boom: Breaking Change
+* [#80](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/80) Changed signature of writeTodos to allow additional param for skipping removal ([@scalvert](https://github.com/scalvert))
+
+#### :rocket: Enhancement
+* [#80](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/80) Changed signature of writeTodos to allow additional param for skipping removal ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v6.1.0 (2021-01-26)
 
 #### :rocket: Enhancement
