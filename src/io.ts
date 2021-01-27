@@ -116,8 +116,7 @@ export function todoFileNameFor(todoData: TodoData): string {
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param lintResults - The raw linting data.
- * @param filePath - The relative file path of the file to update violations for.
- * @param todoConfig - An object containing the warn or error days, in integers.
+ * @param options - An object containing write options.
  * @returns - The counts of added and removed todos.
  */
 export function writeTodosSync(
@@ -153,8 +152,7 @@ export function writeTodosSync(
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param lintResults - The raw linting data.
- * @param filePath - The relative file path of the file to update violations for.
- * @param todoConfig - An object containing the warn or error days, in integers.
+ * @param options - An object containing write options.
  * @returns - A promise that resolves to the counts of added and removed todos.
  */
 export async function writeTodos(

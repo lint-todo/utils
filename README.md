@@ -45,13 +45,13 @@ serializing the contents to disc.</p>
 <dt><a href="#todoFileNameFor">todoFileNameFor(todoData)</a> ⇒</dt>
 <dd><p>Generates a unique filename for a todo lint data.</p>
 </dd>
-<dt><a href="#writeTodosSync">writeTodosSync(baseDir, lintResults, filePath, todoConfig)</a> ⇒</dt>
+<dt><a href="#writeTodosSync">writeTodosSync(baseDir, lintResults, options)</a> ⇒</dt>
 <dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
 <p>Given a list of todo lint violations, this function will also delete existing files that no longer
 have a todo lint violation.</p>
 </dd>
-<dt><a href="#writeTodos">writeTodos(baseDir, lintResults, filePath, todoConfig)</a> ⇒</dt>
+<dt><a href="#writeTodos">writeTodos(baseDir, lintResults, options)</a> ⇒</dt>
 <dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
 <p>Given a list of todo lint violations, this function will also delete existing files that no longer
@@ -220,7 +220,7 @@ Generates a unique filename for a todo lint data.
 
 <a name="writeTodosSync"></a>
 
-## writeTodosSync(baseDir, lintResults, filePath, todoConfig) ⇒
+## writeTodosSync(baseDir, lintResults, options) ⇒
 Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.
 
@@ -234,12 +234,11 @@ have a todo lint violation.
 | --- | --- |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 | lintResults | The raw linting data. |
-| filePath | The relative file path of the file to update violations for. |
-| todoConfig | An object containing the warn or error days, in integers. |
+| options | An object containing write options. |
 
 <a name="writeTodos"></a>
 
-## writeTodos(baseDir, lintResults, filePath, todoConfig) ⇒
+## writeTodos(baseDir, lintResults, options) ⇒
 Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.
 
@@ -253,8 +252,7 @@ have a todo lint violation.
 | --- | --- |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
 | lintResults | The raw linting data. |
-| filePath | The relative file path of the file to update violations for. |
-| todoConfig | An object containing the warn or error days, in integers. |
+| options | An object containing write options. |
 
 <a name="readTodosSync"></a>
 
