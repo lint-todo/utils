@@ -16,14 +16,7 @@ import {
   rmdir,
 } from 'fs-extra';
 import { buildTodoData } from './builders';
-import {
-  TodoConfig,
-  FilePath,
-  LintResult,
-  TodoData,
-  TodoBatchCounts,
-  WriteTodoOptions,
-} from './types';
+import { FilePath, LintResult, TodoData, TodoBatchCounts, WriteTodoOptions } from './types';
 
 /**
  * Determines if the .lint-todo storage directory exists.
