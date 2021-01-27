@@ -230,16 +230,35 @@ describe('io', () => {
         );
       });
     });
+
+    it('does not remove old todos if todos no longer contains violations if skipRemoval is true', async () => {
+      const fixture = getFixture('eslint-with-errors', tmp);
+      const todoDir = getTodoStorageDirPath(tmp);
+
+      const [added] = writeTodosSync(tmp, fixture);
+
+      const initialFiles = await readFiles(todoDir);
+
+      expect(added).toEqual(18);
+      expect(initialFiles).toHaveLength(18);
+
+      const firstHalf = fixture.slice(0, 3);
+
+      const [, removed] = writeTodosSync(tmp, firstHalf, { skipRemoval: true });
+
+      const subsequentFiles = await readFiles(todoDir);
+
+      expect(removed).toEqual(0);
+      expect(subsequentFiles).toHaveLength(18);
+    });
   });
 
   describe('writeTodosSync for single file', () => {
     it('generates todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodosSync(
-        tmp,
-        getFixture('single-file-todo', tmp),
-        'app/controllers/settings.js'
-      );
+      const [added] = writeTodosSync(tmp, getFixture('single-file-todo', tmp), {
+        filePath: 'app/controllers/settings.js',
+      });
 
       expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
@@ -253,11 +272,9 @@ describe('io', () => {
 
     it('updates todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodosSync(
-        tmp,
-        getFixture('single-file-todo', tmp),
-        'app/controllers/settings.js'
-      );
+      const [added] = writeTodosSync(tmp, getFixture('single-file-todo', tmp), {
+        filePath: 'app/controllers/settings.js',
+      });
 
       expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
@@ -268,11 +285,9 @@ describe('io', () => {
         ]
       `);
 
-      const [added2, removed2] = writeTodosSync(
-        tmp,
-        getFixture('single-file-todo-updated', tmp),
-        'app/controllers/settings.js'
-      );
+      const [added2, removed2] = writeTodosSync(tmp, getFixture('single-file-todo-updated', tmp), {
+        filePath: 'app/controllers/settings.js',
+      });
 
       expect(added2).toEqual(1);
       expect(removed2).toEqual(1);
@@ -287,11 +302,9 @@ describe('io', () => {
 
     it('deletes todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodosSync(
-        tmp,
-        getFixture('single-file-todo', tmp),
-        'app/controllers/settings.js'
-      );
+      const [added] = writeTodosSync(tmp, getFixture('single-file-todo', tmp), {
+        filePath: 'app/controllers/settings.js',
+      });
 
       expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
@@ -302,11 +315,9 @@ describe('io', () => {
         ]
       `);
 
-      const [added2, removed2] = writeTodosSync(
-        tmp,
-        getFixture('single-file-no-errors', tmp),
-        'app/controllers/settings.js'
-      );
+      const [added2, removed2] = writeTodosSync(tmp, getFixture('single-file-no-errors', tmp), {
+        filePath: 'app/controllers/settings.js',
+      });
 
       expect(added2).toEqual(0);
       expect(removed2).toEqual(3);
@@ -428,16 +439,35 @@ describe('io', () => {
         );
       });
     });
+
+    it('does not remove old todos if todos no longer contains violations if skipRemoval is true', async () => {
+      const fixture = getFixture('eslint-with-errors', tmp);
+      const todoDir = getTodoStorageDirPath(tmp);
+
+      const [added] = await writeTodos(tmp, fixture);
+
+      const initialFiles = await readFiles(todoDir);
+
+      expect(added).toEqual(18);
+      expect(initialFiles).toHaveLength(18);
+
+      const firstHalf = fixture.slice(0, 3);
+
+      const [, removed] = await writeTodos(tmp, firstHalf, { skipRemoval: true });
+
+      const subsequentFiles = await readFiles(todoDir);
+
+      expect(removed).toEqual(0);
+      expect(subsequentFiles).toHaveLength(18);
+    });
   });
 
   describe('writeTodos for single file', () => {
     it('generates todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = await writeTodos(
-        tmp,
-        getFixture('single-file-todo', tmp),
-        'app/controllers/settings.js'
-      );
+      const [added] = await writeTodos(tmp, getFixture('single-file-todo', tmp), {
+        filePath: 'app/controllers/settings.js',
+      });
 
       expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
@@ -451,11 +481,9 @@ describe('io', () => {
 
     it('updates todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = await writeTodos(
-        tmp,
-        getFixture('single-file-todo', tmp),
-        'app/controllers/settings.js'
-      );
+      const [added] = await writeTodos(tmp, getFixture('single-file-todo', tmp), {
+        filePath: 'app/controllers/settings.js',
+      });
 
       expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
@@ -469,7 +497,9 @@ describe('io', () => {
       const [added2, removed2] = await writeTodos(
         tmp,
         getFixture('single-file-todo-updated', tmp),
-        'app/controllers/settings.js'
+        {
+          filePath: 'app/controllers/settings.js',
+        }
       );
 
       expect(added2).toEqual(1);
@@ -485,11 +515,9 @@ describe('io', () => {
 
     it('deletes todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = await writeTodos(
-        tmp,
-        getFixture('single-file-todo', tmp),
-        'app/controllers/settings.js'
-      );
+      const [added] = await writeTodos(tmp, getFixture('single-file-todo', tmp), {
+        filePath: 'app/controllers/settings.js',
+      });
 
       expect(added).toEqual(3);
       expect(await readFiles(todoDir)).toMatchInlineSnapshot(`
@@ -500,11 +528,9 @@ describe('io', () => {
         ]
       `);
 
-      const [added2, removed2] = await writeTodos(
-        tmp,
-        getFixture('single-file-no-errors', tmp),
-        'app/controllers/settings.js'
-      );
+      const [added2, removed2] = await writeTodos(tmp, getFixture('single-file-no-errors', tmp), {
+        filePath: 'app/controllers/settings.js',
+      });
 
       expect(added2).toEqual(0);
       expect(removed2).toEqual(3);

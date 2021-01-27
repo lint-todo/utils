@@ -54,3 +54,9 @@ export interface TodoConfig {
   warn?: number;
   error?: number;
 }
+
+export interface WriteTodoOptions {
+  filePath?: string;
+  todoConfig?: TodoConfig;
+  skipRemoval?: boolean;
+}
