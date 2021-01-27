@@ -16,7 +16,7 @@ import {
   rmdir,
 } from 'fs-extra';
 import { buildTodoData } from './builders';
-import { TodoConfig, FilePath, LintResult, TodoData, TodoBatchCounts } from './types';
+import { FilePath, LintResult, TodoData, TodoBatchCounts, WriteTodoOptions } from './types';
 
 /**
  * Determines if the .lint-todo storage directory exists.
@@ -100,23 +100,6 @@ export function todoFileNameFor(todoData: TodoData): string {
   return createHash('sha256').update(hashParams).digest('hex').slice(0, 8);
 }
 
-export function writeTodosSync(baseDir: string, lintResults: LintResult[]): TodoBatchCounts;
-export function writeTodosSync(
-  baseDir: string,
-  lintResults: LintResult[],
-  filePath: string | undefined
-): TodoBatchCounts;
-export function writeTodosSync(
-  baseDir: string,
-  lintResults: LintResult[],
-  todoConfig: TodoConfig | undefined
-): TodoBatchCounts;
-export function writeTodosSync(
-  baseDir: string,
-  lintResults: LintResult[],
-  filePath: string | TodoConfig | undefined,
-  todoConfig?: TodoConfig
-): TodoBatchCounts;
 /**
  * Writes files for todo lint violations. One file is generated for each violation, using a generated
  * hash to identify each.
@@ -126,57 +109,33 @@ export function writeTodosSync(
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param lintResults - The raw linting data.
- * @param filePath - The relative file path of the file to update violations for.
- * @param todoConfig - An object containing the warn or error days, in integers.
+ * @param options - An object containing write options.
  * @returns - The counts of added and removed todos.
  */
 export function writeTodosSync(
   baseDir: string,
   lintResults: LintResult[],
-  filePath?: string | TodoConfig,
-  todoConfig?: TodoConfig
+  options: WriteTodoOptions = {}
 ): TodoBatchCounts {
-  if (typeof filePath === 'object') {
-    todoConfig = filePath;
-    filePath = '';
-  } else if (typeof filePath === 'undefined') {
-    filePath = '';
-  }
-
   const todoStorageDir: string = ensureTodoStorageDirSync(baseDir);
-  const existing: Map<FilePath, TodoData> = filePath
-    ? readTodosForFilePathSync(baseDir, filePath)
+  const existing: Map<FilePath, TodoData> = options.filePath
+    ? readTodosForFilePathSync(baseDir, options.filePath)
     : readTodosSync(baseDir);
-  const [add, remove] = getTodoBatchesSync(
-    buildTodoData(baseDir, lintResults, todoConfig),
+  // eslint-disable-next-line prefer-const
+  let [add, remove] = getTodoBatchesSync(
+    buildTodoData(baseDir, lintResults, options.todoConfig),
     existing
   );
+
+  if (options.skipRemoval) {
+    remove = new Map();
+  }
 
   applyTodoChangesSync(todoStorageDir, add, remove);
 
   return [add.size, remove.size];
 }
 
-export async function writeTodos(
-  baseDir: string,
-  lintResults: LintResult[]
-): Promise<TodoBatchCounts>;
-export async function writeTodos(
-  baseDir: string,
-  lintResults: LintResult[],
-  filePath: string | undefined
-): Promise<TodoBatchCounts>;
-export async function writeTodos(
-  baseDir: string,
-  lintResults: LintResult[],
-  todoConfig: TodoConfig | undefined
-): Promise<TodoBatchCounts>;
-export async function writeTodos(
-  baseDir: string,
-  lintResults: LintResult[],
-  filePath: string | TodoConfig | undefined,
-  todoConfig?: TodoConfig
-): Promise<TodoBatchCounts>;
 /**
  * Writes files for todo lint violations. One file is generated for each violation, using a generated
  * hash to identify each.
@@ -186,31 +145,27 @@ export async function writeTodos(
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param lintResults - The raw linting data.
- * @param filePath - The relative file path of the file to update violations for.
- * @param todoConfig - An object containing the warn or error days, in integers.
+ * @param options - An object containing write options.
  * @returns - A promise that resolves to the counts of added and removed todos.
  */
 export async function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
-  filePath?: string | TodoConfig,
-  todoConfig?: TodoConfig
+  options: WriteTodoOptions = {}
 ): Promise<TodoBatchCounts> {
-  if (typeof filePath === 'object') {
-    todoConfig = filePath;
-    filePath = '';
-  } else if (typeof filePath === 'undefined') {
-    filePath = '';
-  }
-
   const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
-  const existing: Map<FilePath, TodoData> = filePath
-    ? await readTodosForFilePath(baseDir, filePath)
+  const existing: Map<FilePath, TodoData> = options.filePath
+    ? await readTodosForFilePath(baseDir, options.filePath)
     : await readTodos(baseDir);
-  const [add, remove] = await getTodoBatches(
-    buildTodoData(baseDir, lintResults, todoConfig),
+  // eslint-disable-next-line prefer-const
+  let [add, remove] = await getTodoBatches(
+    buildTodoData(baseDir, lintResults, options.todoConfig),
     existing
   );
+
+  if (options.skipRemoval) {
+    remove = new Map();
+  }
 
   await applyTodoChanges(todoStorageDir, add, remove);
 
