@@ -1,3 +1,12 @@
+## v8.0.0-beta.2 (2021-02-02)
+
+#### :bug: Bug Fix
+* [#87](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/87) Fixes typo when writing todoConfig ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v8.0.0-beta.1 (2021-02-02)
 
 #### :bug: Bug Fix

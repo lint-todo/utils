@@ -1,6 +1,6 @@
 {
   "name": "@ember-template-lint/todo-utils",
-  "version": "8.0.0-beta.1",
+  "version": "8.0.0-beta.2",
   "repository": "https://github.com/ember-template-lint/ember-template-lint-todo-utils.git",
   "license": "MIT",
   "author": "Steve Calvert <steve.calvert@gmail.com>",
