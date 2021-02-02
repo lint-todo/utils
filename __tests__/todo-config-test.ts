@@ -221,7 +221,7 @@ describe('todo-config', () => {
           \\"dependencies\\": {},
           \\"devDependencies\\": {},
           \\"lintTodo\\": {
-            \\"decayDays\\": {
+            \\"daysToDecay\\": {
               \\"warn\\": 30,
               \\"error\\": 60
             }
@@ -263,7 +263,7 @@ describe('todo-config', () => {
           \\"dependencies\\": {},
           \\"devDependencies\\": {},
           \\"lintTodo\\": {
-            \\"decayDays\\": {
+            \\"daysToDecay\\": {
               \\"warn\\": 1,
               \\"error\\": 2
             }
@@ -294,7 +294,7 @@ describe('todo-config', () => {
           \\"dependencies\\": {},
           \\"devDependencies\\": {},
           \\"lintTodo\\": {
-            \\"decayDays\\": {
+            \\"daysToDecay\\": {
               \\"warn\\": 1,
               \\"error\\": 2
             }

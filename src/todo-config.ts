@@ -90,7 +90,7 @@ export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig): boolea
   }
 
   pkg.lintTodo = {
-    decayDays: todoConfig,
+    daysToDecay: todoConfig,
   };
 
   let updatedContents = JSON.stringify(pkg, undefined, 2);
