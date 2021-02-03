@@ -39,7 +39,20 @@ export function getTodoConfig(
 ): TodoConfig | undefined {
   const daysToDecayPackageConfig = getFromPackageJson(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
-  const mergedConfig = Object.assign({}, daysToDecayPackageConfig, daysToDecayEnvVars, todoConfig);
+  let mergedConfig = Object.assign({}, daysToDecayPackageConfig, daysToDecayEnvVars, todoConfig);
+
+  // we set a default config if the mergedConfig is an empty object, meaning either or both warn and error aren't
+  // defined and the package.json doesn't explicitly define an empty config (they're opting out of defining a todoConfig)
+  if (
+    Object.keys(mergedConfig).length === 0 &&
+    typeof daysToDecayPackageConfig !== 'undefined' &&
+    Object.keys(daysToDecayPackageConfig).length !== 0
+  ) {
+    mergedConfig = {
+      warn: 30,
+      error: 60,
+    };
+  }
 
   if (
     typeof mergedConfig.warn === 'number' &&
@@ -104,7 +117,7 @@ export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig): boolea
   return true;
 }
 
-function getFromPackageJson(basePath: string): TodoConfig {
+function getFromPackageJson(basePath: string): TodoConfig | undefined {
   let pkg;
 
   try {
@@ -112,7 +125,7 @@ function getFromPackageJson(basePath: string): TodoConfig {
     pkg = require(join(basePath, 'package.json'));
   } catch {}
 
-  return pkg?.lintTodo?.daysToDecay || {};
+  return pkg?.lintTodo?.daysToDecay;
 }
 
 function getFromEnvVars(): TodoConfig {
