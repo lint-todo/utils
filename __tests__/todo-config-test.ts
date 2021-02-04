@@ -19,13 +19,27 @@ describe('todo-config', () => {
   });
 
   describe('getTodoConfig', () => {
-    it('returns empty object when no package.json found', async () => {
+    it('returns default object when no package.json found', async () => {
       await unlink(join(project.baseDir, 'package.json'));
 
-      expect(getTodoConfig(project.baseDir)).toEqual({});
+      expect(getTodoConfig(project.baseDir)).toEqual({
+        warn: 30,
+        error: 60,
+      });
     });
 
-    it('returns empty object when no lint todo config found', () => {
+    it('returns default object when no lint todo config found', () => {
+      const config = getTodoConfig(project.baseDir);
+
+      expect(config).toEqual({
+        warn: 30,
+        error: 60,
+      });
+    });
+
+    it('can returns empty lint todo config from package.json when empty config explicitly configured', () => {
+      project.writeTodoConfig({});
+
       const config = getTodoConfig(project.baseDir);
 
       expect(config).toEqual({});
