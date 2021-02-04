@@ -1,4 +1,4 @@
-import { existsSync, readdir, statSync } from 'fs-extra';
+import { existsSync, readdir, statSync, readJson } from 'fs-extra';
 import { posix } from 'path';
 import {
   buildTodoData,
@@ -438,6 +438,50 @@ describe('io', () => {
           true
         );
       });
+    });
+
+    it('does not remove todos owned by different engine', async () => {
+      const todoDir = getTodoStorageDirPath(tmp);
+
+      await writeTodos(tmp, getFixture('ember-template-lint-single-error', tmp));
+
+      const fixture = getFixture('eslint-single-error', tmp);
+
+      const [added] = await writeTodos(tmp, fixture, {
+        shouldRemove: (todoDatum) => todoDatum.engine === 'eslint',
+      });
+
+      const initialFiles = await readFiles(todoDir);
+
+      expect(added).toEqual(1);
+      expect(initialFiles).toHaveLength(2);
+
+      const [, removed] = await writeTodos(tmp, getFixture('eslint-single-error2', tmp), {
+        shouldRemove: (todoDatum) => todoDatum.engine === 'eslint',
+      });
+
+      const subsequentFiles = await readFiles(todoDir);
+
+      expect(removed).toEqual(1);
+      expect(subsequentFiles).toHaveLength(2);
+      expect(await readJson(posix.join(todoDir, subsequentFiles[0]))).toEqual(
+        expect.objectContaining({
+          column: 11,
+          engine: 'eslint',
+          filePath: 'app/initializers/tracer.js',
+          line: 1,
+          ruleId: 'no-redeclare',
+        })
+      );
+      expect(await readJson(posix.join(todoDir, subsequentFiles[1]))).toEqual(
+        expect.objectContaining({
+          column: 4,
+          engine: 'ember-template-lint',
+          filePath: 'app/templates/components/add-ssh-key.hbs',
+          line: 3,
+          ruleId: 'require-input-label',
+        })
+      );
     });
 
     it('does not remove old todos if todos no longer contains violations if shouldRemove returns false', async () => {
