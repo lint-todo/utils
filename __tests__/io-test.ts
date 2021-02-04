@@ -476,7 +476,6 @@ describe('io', () => {
       expect(await readJson(posix.join(todoDir, subsequentFiles[1]))).toEqual(
         expect.objectContaining({
           column: 4,
-          createdDate: 1612425600000,
           engine: 'ember-template-lint',
           filePath: 'app/templates/components/add-ssh-key.hbs',
           line: 3,
