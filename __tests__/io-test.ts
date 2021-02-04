@@ -464,26 +464,25 @@ describe('io', () => {
 
       expect(removed).toEqual(1);
       expect(subsequentFiles).toHaveLength(2);
-      expect(await readJson(posix.join(todoDir, subsequentFiles[0]))).toMatchInlineSnapshot(`
-        Object {
-          "column": 11,
-          "createdDate": 1612425600000,
-          "engine": "eslint",
-          "filePath": "app/initializers/tracer.js",
-          "line": 1,
-          "ruleId": "no-redeclare",
-        }
-      `);
-      expect(await readJson(posix.join(todoDir, subsequentFiles[1]))).toMatchInlineSnapshot(`
-        Object {
-          "column": 4,
-          "createdDate": 1612425600000,
-          "engine": "ember-template-lint",
-          "filePath": "app/templates/components/add-ssh-key.hbs",
-          "line": 3,
-          "ruleId": "require-input-label",
-        }
-      `);
+      expect(await readJson(posix.join(todoDir, subsequentFiles[0]))).toEqual(
+        expect.objectContaining({
+          column: 11,
+          engine: 'eslint',
+          filePath: 'app/initializers/tracer.js',
+          line: 1,
+          ruleId: 'no-redeclare',
+        })
+      );
+      expect(await readJson(posix.join(todoDir, subsequentFiles[1]))).toEqual(
+        expect.objectContaining({
+          column: 4,
+          createdDate: 1612425600000,
+          engine: 'ember-template-lint',
+          filePath: 'app/templates/components/add-ssh-key.hbs',
+          line: 3,
+          ruleId: 'require-input-label',
+        })
+      );
     });
 
     it('does not remove old todos if todos no longer contains violations if shouldRemove returns false', async () => {
