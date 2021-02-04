@@ -45,8 +45,9 @@ export function getTodoConfig(
   // defined and the package.json doesn't explicitly define an empty config (they're opting out of defining a todoConfig)
   if (
     Object.keys(mergedConfig).length === 0 &&
-    typeof daysToDecayPackageConfig !== 'undefined' &&
-    Object.keys(daysToDecayPackageConfig).length !== 0
+    (typeof daysToDecayPackageConfig === 'undefined' ||
+      (typeof daysToDecayPackageConfig === 'object' &&
+        Object.keys(daysToDecayPackageConfig).length !== 0))
   ) {
     mergedConfig = {
       warn: 30,

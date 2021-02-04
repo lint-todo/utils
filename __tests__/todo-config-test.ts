@@ -37,8 +37,7 @@ describe('todo-config', () => {
       });
     });
 
-    it.only('can returns empty lint todo config from package.json when empty config explicitly configured', () => {
-      debugger;
+    it('can returns empty lint todo config from package.json when empty config explicitly configured', () => {
       project.writeTodoConfig({});
 
       const config = getTodoConfig(project.baseDir);
