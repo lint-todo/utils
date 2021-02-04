@@ -1,3 +1,15 @@
+## v8.0.0-beta.3 (2021-02-04)
+
+#### :rocket: Enhancement
+* [#88](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/88) Returning defaults for todoConfig when none exist ([@scalvert](https://github.com/scalvert))
+
+#### :house: Internal
+* [#90](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/90) Adding test to ensure engine scoped removal works using shouldRemove ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v8.0.0-beta.2 (2021-02-02)
 
 #### :bug: Bug Fix
