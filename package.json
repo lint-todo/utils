@@ -16,7 +16,7 @@
     "test": "jest --no-cache"
   },
   "dependencies": {
-    "@types/eslint": "^7.2.6",
+    "@types/eslint": "^7.2.7",
     "fs-extra": "^9.0.1",
     "slash": "^3.0.0",
     "tslib": "^2.1.0"
