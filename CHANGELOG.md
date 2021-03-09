@@ -1,5 +1,7 @@
 ## v8.0.0 (2021-03-09)
 
+## v8.0.0 (2021-03-09)
+
 #### :boom: Breaking Change
 
 - [#81](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/81) Changing property in WriteTodoOptions to more versatile version ([@scalvert](https://github.com/scalvert))
