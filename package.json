@@ -40,7 +40,7 @@
     "jsdoc-to-markdown": "^6.0.1",
     "prettier": "^2.2.1",
     "release-it": "^14.4.1",
-    "release-it-lerna-changelog": "^2.3.0",
+    "release-it-lerna-changelog": "^3.1.0",
     "tmp": "^0.2.1",
     "ts-jest": "^26.5.2",
     "type-fest": "^0.20.2",
