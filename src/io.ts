@@ -17,8 +17,6 @@ import {
 } from 'fs-extra';
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData, TodoBatchCounts, WriteTodoOptions } from './types';
-import { getSeverity } from './get-severity';
-import { checkExpiration } from './check-expiration';
 
 /**
  * Determines if the .lint-todo storage directory exists.
