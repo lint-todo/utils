@@ -348,7 +348,7 @@ export async function getTodoBatches(
 
   for (const [fileHash, todoDatum] of existing) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum) || ) {
+    if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum)) {
       remove.set(fileHash, todoDatum);
     } else {
       stable.set(fileHash, todoDatum);

@@ -20,5 +20,5 @@ export {
 } from './io';
 export { getTodoConfig, writeTodoConfig, ensureTodoConfig } from './todo-config';
 export { getSeverity, getDatePart } from './get-severity';
-
+export { checkExpiration } from './check-expiration';
 export * from './types';
