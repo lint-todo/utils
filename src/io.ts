@@ -17,6 +17,8 @@ import {
 } from 'fs-extra';
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData, TodoBatchCounts, WriteTodoOptions } from './types';
+import { getSeverity } from './get-severity';
+import { checkExpiration } from './check-expiration';
 
 /**
  * Determines if the .lint-todo storage directory exists.
@@ -346,7 +348,7 @@ export async function getTodoBatches(
 
   for (const [fileHash, todoDatum] of existing) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum)) {
+    if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum) || ) {
       remove.set(fileHash, todoDatum);
     } else {
       stable.set(fileHash, todoDatum);

@@ -7,6 +7,10 @@ export enum Severity {
   warn = 1,
   error = 2,
 }
+
+export interface ExpirationCheck {
+  isExpired: boolean;
+}
 export interface TemplateLintReport {
   results: TemplateLintResult[];
   errorCount: number;
@@ -60,7 +64,7 @@ export interface TodoConfig {
  *
  * @param filePath - The relative file path of the file to update violations for.
  * @param todoConfig - An object containing the warn or error days, in integers.
- * @param skipRemoval - Allows for skipping removal of todo files.
+ * @param shouldRemove - Allows for skipping removal of todo files.
  */
 export interface WriteTodoOptions {
   filePath: string;
