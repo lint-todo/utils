@@ -730,10 +730,44 @@ describe('io', () => {
       `);
     });
 
-    it('creates all batches', async () => {
-      const [add, remove, stable] = await getTodoBatches(
+    it('creates items to expire', async () => {
+      const expiredBatches: Map<string, TodoData> = buildTodoData(
+        tmp,
+        getFixture('new-batches', tmp)
+      );
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const expiredTodo: TodoData = expiredBatches.get(
+        '60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9'
+      )!;
+
+      expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
+
+      // eslint-disable-next-line unicorn/no-unreadable-array-destructuring
+      const [, , , expired] = await getTodoBatches(
         buildTodoData(tmp, getFixture('new-batches', tmp)),
-        buildTodoData(tmp, getFixture('existing-batches', tmp)),
+        expiredBatches,
+        { shouldRemove: () => true }
+      );
+
+      expect([...expired.keys()]).toMatchInlineSnapshot(`
+        Array [
+          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9",
+        ]
+      `);
+    });
+
+    it('creates all batches', async () => {
+      const existingBatches = buildTodoData(tmp, getFixture('existing-batches', tmp));
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const expiredTodo: TodoData = existingBatches.get(
+        '60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9'
+      )!;
+
+      expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
+
+      const [add, remove, stable, expired] = await getTodoBatches(
+        buildTodoData(tmp, getFixture('new-batches', tmp)),
+        existingBatches,
         { shouldRemove: () => true }
       );
 
@@ -754,6 +788,10 @@ describe('io', () => {
         Array [
           "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
           "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
+        ]
+      `);
+      expect([...expired.keys()]).toMatchInlineSnapshot(`
+        Array [
           "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9",
         ]
       `);
