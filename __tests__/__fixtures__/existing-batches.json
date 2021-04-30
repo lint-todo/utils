@@ -23,6 +23,17 @@
         "messageId": "redeclaredAsBuiltin",
         "endLine": 1,
         "endColumn": 33
+      },
+      {
+        "ruleId": "no-redeclare",
+        "severity": 2,
+        "message": "'XMLHttpRequest' is already defined as a built-in global variable.",
+        "line": 1,
+        "column": 119,
+        "nodeType": "Block",
+        "messageId": "redeclaredAsBuiltin",
+        "endLine": 1,
+        "endColumn": 133
       }
     ],
     "errorCount": 2,

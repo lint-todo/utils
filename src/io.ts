@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createHash } from 'crypto';
 import { posix } from 'path';
 import {
@@ -306,18 +307,22 @@ export function getTodoBatchesSync(
     if (!existing.has(fileHash)) {
       add.set(fileHash, todoDatum);
     } else {
-      stable.set(fileHash, todoDatum);
+      const existingTodo = existing.get(fileHash);
+      if (existingTodo && !isExpired(existingTodo.errorDate)) {
+        stable.set(fileHash, todoDatum);
+      }
     }
   }
 
   for (const [fileHash, todoDatum] of existing) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum)) {
-      if (isExpired(todoDatum.errorDate)) {
-        expired.set(fileHash, todoDatum);
-      } else {
-        remove.set(fileHash, todoDatum);
-      }
+    if (
+      lintResults.has(fileHash) &&
+      isExpired(todoDatum.errorDate) &&
+      options.shouldRemove!(todoDatum)
+    ) {
+      expired.set(fileHash, todoDatum);
+    } else if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum)) {
+      remove.set(fileHash, todoDatum);
     } else {
       stable.set(fileHash, todoDatum);
     }
