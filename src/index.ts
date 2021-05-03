@@ -19,6 +19,7 @@ export {
   writeTodosSync,
 } from './io';
 export { getTodoConfig, writeTodoConfig, ensureTodoConfig } from './todo-config';
-export { getSeverity, getDatePart } from './get-severity';
+export { getSeverity } from './get-severity';
+export { getDatePart, isExpired } from './date-utils';
 
 export * from './types';

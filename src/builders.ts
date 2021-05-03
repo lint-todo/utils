@@ -2,7 +2,7 @@ import { isAbsolute, relative } from 'path';
 import slash = require('slash');
 import { todoFilePathFor } from './io';
 import { TodoConfig, FilePath, LintMessage, LintResult, TodoData } from './types';
-import { getDatePart } from './get-severity';
+import { getDatePart } from './date-utils';
 
 /**
  * Adapts a list of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} to a map of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|FilePath}, {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
