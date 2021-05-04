@@ -1,3 +1,12 @@
+## v8.1.0 (2021-05-04)
+
+#### :rocket: Enhancement
+* [#185](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/185) Adding expired batch to getTodoBatches ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v8.0.0 (2021-03-09)
 
 ## v8.0.0 (2021-03-09)
