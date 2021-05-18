@@ -75,15 +75,17 @@ export function getTodoConfig(
 export function ensureTodoConfig(baseDir: string): void {
   if (!todoStorageDirExists(baseDir)) {
     const pkg = readJsonSync(join(baseDir, 'package.json'));
-    const ruleConfigFile = readJsonSync(join(baseDir, '.lint-todorc.js'));
+    const ruleConfigFile = require(join(baseDir, '.lint-todorc.js'));
 
-    if (!ruleConfigFile) {
-      if (!pkg.lintTodo) {
-        writeTodoConfig(pkg, {
-          warn: 30,
-          error: 60,
-        });
-      }
+    if (ruleConfigFile) {
+      return;
+    }
+
+    if (!pkg.lintTodo) {
+      writeTodoConfig(pkg, {
+        warn: 30,
+        error: 60,
+      });
     }
   }
 }
