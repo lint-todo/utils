@@ -39,7 +39,7 @@ export function getTodoConfig(
 ): TodoConfig | undefined {
   const daysToDecayPackageConfig = getFromPackageJson(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
-  const daysToDecayByRuleConfig = getFromTodoRuleConfigFile(baseDir);
+  const daysToDecayByRuleConfig = getFromTodoConfigFile(baseDir);
   let mergedConfig = Object.assign({}, daysToDecayPackageConfig, daysToDecayByRuleConfig, daysToDecayEnvVars, todoConfig);
 
   // we set a default config if the mergedConfig is an empty object, meaning either or both warn and error aren't
@@ -96,12 +96,12 @@ export function ensureTodoConfig(baseDir: string): void {
  */
 export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig): boolean {
   const packageJsonPath = join(baseDir, 'package.json');
-  const todoRuleConfigFile = join(baseDir, '.lint-todorc.js');
+  const todoConfigFile = join(baseDir, '.lint-todorc.js');
   const contents = readFileSync(packageJsonPath, { encoding: 'utf8' });
-  const ruleConfigContents = readFileSync(todoRuleConfigFile, { encoding: 'utf8' });
+  const todoConfigContents = readFileSync(todoConfigFile, { encoding: 'utf8' });
   const trailingWhitespace = DETECT_TRAILING_WHITESPACE.exec(contents);
   const pkg = JSON.parse(contents);
-  const ruleConfig = JSON.parse(ruleConfigContents);
+  const ruleConfig = JSON.parse(todoConfigContents);
 
   // if there is no lintTodo config in the package.json OR .lint-todorc.js file
   if (pkg.lintTodo || ruleConfig.lintTodo) {
@@ -135,7 +135,7 @@ function getFromPackageJson(basePath: string): TodoConfig | undefined {
   return pkg?.lintTodo?.daysToDecay;
 }
 
-function getFromTodoRuleConfigFile(basePath: string): TodoConfig | undefined {
+function getFromTodoConfigFile(basePath: string): TodoConfig | undefined {
   let ruleConfig;
 
   try {
