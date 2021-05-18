@@ -39,8 +39,8 @@ export function getTodoConfig(
 ): TodoConfig | undefined {
   const daysToDecayPackageConfig = getFromPackageJson(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
-  const daysToDecayByRuleConfig = getFromTodoConfigFile(baseDir);
-  let mergedConfig = Object.assign({}, daysToDecayPackageConfig, daysToDecayByRuleConfig, daysToDecayEnvVars, todoConfig);
+  const daysToDecayLintTodoConfig = getFromTodoConfigFile(baseDir);
+  let mergedConfig = Object.assign({}, daysToDecayPackageConfig, daysToDecayLintTodoConfig, daysToDecayEnvVars, todoConfig);
 
   // we set a default config if the mergedConfig is an empty object, meaning either or both warn and error aren't
   // defined and the package.json doesn't explicitly define an empty config (they're opting out of defining a todoConfig)
