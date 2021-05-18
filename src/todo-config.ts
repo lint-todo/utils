@@ -39,7 +39,8 @@ export function getTodoConfig(
 ): TodoConfig | undefined {
   const daysToDecayPackageConfig = getFromPackageJson(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
-  let mergedConfig = Object.assign({}, daysToDecayPackageConfig, daysToDecayEnvVars, todoConfig);
+  const daysToDecayByRuleConfig = getFromTodoRuleConfigFile(baseDir);
+  let mergedConfig = Object.assign({}, daysToDecayPackageConfig, daysToDecayByRuleConfig, daysToDecayEnvVars, todoConfig);
 
   // we set a default config if the mergedConfig is an empty object, meaning either or both warn and error aren't
   // defined and the package.json doesn't explicitly define an empty config (they're opting out of defining a todoConfig)
@@ -64,20 +65,25 @@ export function getTodoConfig(
 }
 
 /**
- * Ensures that a valid todo config exists in the project by writing one to the package.json
- * if we're invoking the todos functionality for the first time (there is no .lint-todo directory).
+ * Ensures that a valid todo config exists in the project
+ * if we're invoking the todos functionality for the first time (there is no .lint-todo directory)
+ * - if there is no config in the package.json
+ * - if there is no .lint-todorc.js file
  *
  * @param baseDir - The base directory that contains the project's package.json.
  */
 export function ensureTodoConfig(baseDir: string): void {
   if (!todoStorageDirExists(baseDir)) {
     const pkg = readJsonSync(join(baseDir, 'package.json'));
+    const ruleConfigFile = readJsonSync(join(baseDir, '.lint-todorc.js'));
 
-    if (!pkg.lintTodo) {
-      writeTodoConfig(baseDir, {
-        warn: 30,
-        error: 60,
-      });
+    if (!ruleConfigFile) {
+      if (!pkg.lintTodo) {
+        writeTodoConfig(baseDir, {
+          warn: 30,
+          error: 60,
+        });
+      }
     }
   }
 }
@@ -85,19 +91,24 @@ export function ensureTodoConfig(baseDir: string): void {
 /**
  * Writes a todo config to the package.json located at the provided baseDir.
  *
- * @param baseDir - The base directory that contains the project's package.json.
- * @param todoConfig - The todo configuration to write to the package.json.
+ * @param baseDir - The base directory that contains the project's package.json or .lint-todorc.js.
+ * @param todoConfig - The todo configuration to write to the package.json or .lint-todorc.js.
  */
 export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig): boolean {
   const packageJsonPath = join(baseDir, 'package.json');
+  const todoRuleConfigFile = join(baseDir, '.lint-todorc.js');
   const contents = readFileSync(packageJsonPath, { encoding: 'utf8' });
+  const ruleConfigContents = readFileSync(todoRuleConfigFile, { encoding: 'utf8' });
   const trailingWhitespace = DETECT_TRAILING_WHITESPACE.exec(contents);
   const pkg = JSON.parse(contents);
+  const ruleConfig = JSON.parse(ruleConfigContents);
 
-  if (pkg.lintTodo) {
+  // if there is no lintTodo config in the package.json OR .lint-todorc.js file
+  if (pkg.lintTodo || ruleConfig.lintTodo) {
     return false;
   }
 
+  // write the default daysToDecay to the package.json
   pkg.lintTodo = {
     daysToDecay: todoConfig,
   };
@@ -122,6 +133,17 @@ function getFromPackageJson(basePath: string): TodoConfig | undefined {
   } catch {}
 
   return pkg?.lintTodo?.daysToDecay;
+}
+
+function getFromTodoRuleConfigFile(basePath: string): TodoConfig | undefined {
+  let ruleConfig;
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    ruleConfig = require(join(basePath, '.lint-todorc.js'));
+  } catch {}
+
+  return ruleConfig?.lintTodo?.daysToDecay;
 }
 
 function getFromEnvVars(): TodoConfig {
