@@ -2,7 +2,6 @@ import { unlink, readFileSync, writeFileSync } from 'fs-extra';
 import { join } from 'path';
 import { getTodoConfig, writeTodoConfig, ensureTodoStorageDirSync } from '../src';
 import { FakeProject } from './__utils__/fake-project';
-import { ensureTodoConfig } from '../src/todo-config';
 
 describe('todo-config', () => {
   let project: FakeProject;
@@ -172,76 +171,6 @@ describe('todo-config', () => {
       expect(() => getTodoConfig(project.baseDir, { warn: 10, error: 5 })).toThrow(
         'The provided todo configuration contains invalid values. The `warn` value (10) must be less than the `error` value (5).'
       );
-    });
-  });
-
-  describe('ensureTodoConfig', () => {
-    it('does not change package.json if lintTodo directory present', () => {
-      ensureTodoStorageDirSync(project.baseDir);
-
-      const originalPkg = readFileSync(join(project.baseDir, 'package.json'), { encoding: 'utf8' });
-
-      ensureTodoConfig(project.baseDir);
-
-      const pkg = readFileSync(join(project.baseDir, 'package.json'), { encoding: 'utf8' });
-
-      expect(pkg).toEqual(originalPkg);
-    });
-
-    it('does not change package.json if todo config already present', () => {
-      ensureTodoStorageDirSync(project.baseDir);
-
-      writeTodoConfig(project.baseDir, {
-        warn: 10,
-        error: 20,
-      });
-
-      const originalPkg = readFileSync(join(project.baseDir, 'package.json'), { encoding: 'utf8' });
-
-      ensureTodoConfig(project.baseDir);
-
-      const pkg = readFileSync(join(project.baseDir, 'package.json'), { encoding: 'utf8' });
-
-      expect(pkg).toEqual(originalPkg);
-    });
-
-    it('does not change package.json if todo config is empty object', () => {
-      ensureTodoStorageDirSync(project.baseDir);
-
-      writeTodoConfig(project.baseDir, {});
-
-      const originalPkg = readFileSync(join(project.baseDir, 'package.json'), { encoding: 'utf8' });
-
-      ensureTodoConfig(project.baseDir);
-
-      const pkg = readFileSync(join(project.baseDir, 'package.json'), { encoding: 'utf8' });
-
-      expect(pkg).toEqual(originalPkg);
-    });
-
-    it('does change package.json if lintTodo directory not present', () => {
-      ensureTodoConfig(project.baseDir);
-
-      const pkg = readFileSync(join(project.baseDir, 'package.json'), { encoding: 'utf8' });
-
-      expect(pkg).toMatchInlineSnapshot(`
-        "{
-          \\"name\\": \\"fake-project\\",
-          \\"version\\": \\"0.0.0\\",
-          \\"keywords\\": [],
-          \\"license\\": \\"MIT\\",
-          \\"description\\": \\"Fake project\\",
-          \\"repository\\": \\"http://fakerepo.com\\",
-          \\"dependencies\\": {},
-          \\"devDependencies\\": {},
-          \\"lintTodo\\": {
-            \\"daysToDecay\\": {
-              \\"warn\\": 30,
-              \\"error\\": 60
-            }
-          }
-        }"
-      `);
     });
   });
 

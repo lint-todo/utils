@@ -56,8 +56,8 @@ export interface DaysToDecay {
 }
 
 export interface TodoConfig {
-  daysToDecay: DaysToDecay;
-  decayDaysByRule: {
+  daysToDecay?: DaysToDecay;
+  daysToDecayByRule?: {
     [ruleId: string]: DaysToDecay;
   }
 }
