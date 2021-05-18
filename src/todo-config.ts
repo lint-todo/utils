@@ -79,7 +79,7 @@ export function ensureTodoConfig(baseDir: string): void {
 
     if (!ruleConfigFile) {
       if (!pkg.lintTodo) {
-        writeTodoConfig(baseDir, {
+        writeTodoConfig(pkg, {
           warn: 30,
           error: 60,
         });
@@ -104,14 +104,22 @@ export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig): boolea
   const ruleConfig = JSON.parse(todoConfigContents);
 
   // if there is no lintTodo config in the package.json OR .lint-todorc.js file
-  if (pkg.lintTodo || ruleConfig.lintTodo) {
+  if (pkg.lintTodo || todoConfigFile) {
     return false;
   }
 
-  // write the default daysToDecay to the package.json
-  pkg.lintTodo = {
-    daysToDecay: todoConfig,
-  };
+  // if there's a .lint-todorc.js file but no lintTodo config
+  if (todoConfigFile && !ruleConfig.lintTodo) {
+    // write the default daysToDecay to the .lint-todorc.js file
+    ruleConfig.lintTodo = {
+      daysToDecay: todoConfig,
+    };
+  } else {
+    // write the default daysToDecay to the package.json
+    pkg.lintTodo = {
+      daysToDecay: todoConfig,
+    };
+  }
 
   let updatedContents = JSON.stringify(pkg, undefined, 2);
 
