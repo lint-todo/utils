@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { TodoConfig } from './types';
+import { TodoConfig, DaysToDecay } from './types';
 import { readFileSync, writeFileSync } from 'fs-extra';
 
 const DETECT_TRAILING_WHITESPACE = /\s+$/;
@@ -50,6 +50,8 @@ const DETECT_TRAILING_WHITESPACE = /\s+$/;
  * @param todoConfig - The optional todo configuration.
  * @returns - The todo config object.
  */
+
+// are we changing this to be get DaysToDecay since we're just trying to set default daysToDecay and don't care about per-rule settings
 export function getTodoConfig(
   baseDir: string,
   todoConfig: TodoConfig["daysToDecay"] = {}
@@ -58,7 +60,6 @@ export function getTodoConfig(
   const daysToDecayEnvVars = getFromEnvVars();
   const daysToDecayLintTodoConfig = getFromTodoConfigFile(baseDir);
 
-  // this doesn't really work because you will always have a package.json file so it can't just be that, it has to also include the lintTodo config to be invalid.
   if (daysToDecayPackageConfig && daysToDecayLintTodoConfig) {
     throw new Error(`Todo configuration should either exist in package.json or .lint-todorc.js, but not both.` );
   }
@@ -67,7 +68,7 @@ export function getTodoConfig(
 
   // we set a default config if the mergedConfig is an empty object, meaning either or both warn and error aren't
   // defined and the package.json doesn't explicitly define an empty config (they're opting out of defining a todoConfig(now daysToDecay))
-  if (Object.keys(mergedConfig).length === 0 && typeof daysToDecayPackageConfig === 'undefined') {
+  if (Object.keys(mergedConfig).length === 0 && typeof daysToDecayPackageConfig === 'undefined' && typeof daysToDecayLintTodoConfig === 'undefined') {
     mergedConfig = {
       warn: 30,
       error: 60,
@@ -95,14 +96,16 @@ export function getTodoConfig(
  */
 export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig): boolean {
   const packageJsonPath = join(baseDir, 'package.json');
-  const todoConfigFile = join(baseDir, '.lint-todorc.js');
   const contents = readFileSync(packageJsonPath, { encoding: 'utf8' });
-  // const todoConfigContents = readFileSync(todoConfigFile, { encoding: 'utf8' });
-  const trailingWhitespace = DETECT_TRAILING_WHITESPACE.exec(contents);
   const pkg = JSON.parse(contents);
-  // const ruleConfig = JSON.parse(todoConfigContents);
 
-  // if there is a .lint-todorc.js file or a lintTodo config in package.json, we don't need to write a config
+  const todoConfigFile = join(baseDir, '.lint-todorc.js');
+  const todoConfigContents = readFileSync(todoConfigFile, { encoding: 'utf8' });
+  const ruleConfig = JSON.parse(todoConfigContents);
+
+  const trailingWhitespace = DETECT_TRAILING_WHITESPACE.exec(contents);
+
+  // if a .lint-todorc.js file exists, or a lintTodo config exists in package.json, we don't need to write a config
   if (todoConfigFile || pkg.lintTodo) {
     return false;
   }
@@ -134,22 +137,23 @@ function getFromPackageJson(basePath: string): TodoConfig | undefined {
   return pkg?.lintTodo?.daysToDecay;
 }
 
-// if .lint-todorc.js exists, return the values
-function getFromTodoConfigFile(basePath: string): TodoConfig | undefined {
-  let ruleConfig;
+// if .lint-todorc.js exists, return the values for daysToDecay
+function getFromTodoConfigFile(basePath: string): DaysToDecay | undefined {
+  let todoDaysToDecayDefaultConfig;
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    ruleConfig = require(join(basePath, '.lint-todorc.js'));
+    todoDaysToDecayDefaultConfig = require(join(basePath, '.lint-todorc.js'));
   } catch {}
 
-  // this won't be lintTodo because that won't be in the .lint-todorc.js file
-  return ruleConfig?.lintTodo?.daysToDecay;
+  // this won't be `lintTodo` because that won't be in the .lint-todorc.js file
+  // but how do we abstract "whatever the name of the engine is" into syntax that will be accepted?
+  return todoDaysToDecayDefaultConfig?.lintTodo?.daysToDecay;
 }
 
 // what is the syntax here?
 function getFromEnvVars(): TodoConfig {
-  const config: TodoConfig = { daysToDecay };
+  const config: TodoConfig = {};
 
   const warn = getEnvVar('TODO_DAYS_TO_WARN');
   const error = getEnvVar('TODO_DAYS_TO_ERROR');
