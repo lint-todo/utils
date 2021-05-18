@@ -48,9 +48,18 @@ export type LintTodoPackageJson = PackageJson & {
   lintTodo?: { daysToDecay: TodoConfig };
 };
 
+// should I do something like LintTodoPackageJson for the .lint-todorc.js file?
+
 export type TodoBatchCounts = [number, number];
 
 export interface TodoConfig {
+  warn?: number;
+  error?: number;
+}
+
+// do I need this here?
+export interface TodoConfigByRule {
+  ruleId?: string;
   warn?: number;
   error?: number;
 }
