@@ -156,8 +156,8 @@ function getFromTodoConfigFile(basePath: string): TodoConfig["daysToDecay"] | un
 }
 
 // what is the syntax here?
-function getFromEnvVars(): TodoConfig["daysToDecay"] {
-  const config: TodoConfig["daysToDecay"] = {};
+function getFromEnvVars(): DaysToDecay {
+  const config: DaysToDecay = {};
 
   const warn = getEnvVar('TODO_DAYS_TO_WARN');
   const error = getEnvVar('TODO_DAYS_TO_ERROR');

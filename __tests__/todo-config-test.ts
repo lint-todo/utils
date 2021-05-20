@@ -40,12 +40,14 @@ describe('todo-config', () => {
       });
     });
 
-    it('can returns empty lint todo config from package.json when empty config explicitly configured', () => {
+    it('can return empty lint todo config from package.json when empty config explicitly configured', () => {
       project.writeTodoConfig({});
 
       const config = getTodoConfig(project.baseDir);
 
-      expect(config).toEqual({});
+      expect(config).toEqual({
+        "daysToDecay": {}
+      });
     });
 
     it('can get lint todo config from package.json', () => {
@@ -57,8 +59,10 @@ describe('todo-config', () => {
       const config = getTodoConfig(project.baseDir);
 
       expect(config).toEqual({
-        warn: 5,
-        error: 10,
+        "daysToDecay": {
+          warn: 5,
+          error: 10,
+        }
       });
     });
 
