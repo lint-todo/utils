@@ -54,8 +54,8 @@ const DETECT_TRAILING_WHITESPACE = /\s+$/;
 // rename this later, it doesn't get the whole todoConfig just the daysToDecay
 export function getTodoConfig(
   baseDir: string,
-  todoConfig: TodoConfig["daysToDecay"] = {}
-): TodoConfig["daysToDecay"] | undefined {
+  todoConfig: DaysToDecay = {}
+): DaysToDecay | undefined {
   const daysToDecayPackageConfig = getFromPackageJson(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
   const daysToDecayLintTodoConfig = getFromTodoConfigFile(baseDir);
@@ -70,8 +70,10 @@ export function getTodoConfig(
   // defined and the package.json doesn't explicitly define an empty config (they're opting out of defining a todoConfig(now daysToDecay))
   if (Object.keys(mergedConfig).length === 0 && typeof daysToDecayPackageConfig === 'undefined' && typeof daysToDecayLintTodoConfig === 'undefined') {
     mergedConfig = {
-      warn: 30,
-      error: 60,
+      "daysToDecay": {
+        warn: 30,
+        error: 60,
+      }
     };
   }
 
@@ -94,7 +96,7 @@ export function getTodoConfig(
  * @param baseDir - The base directory that contains the project's package.json or .lint-todorc.js.
  * @param todoConfig - The todo configuration to write to the package.json or .lint-todorc.js.
  */
-export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig["daysToDecay"]): boolean {
+export function writeTodoConfig(baseDir: string, todoConfig: DaysToDecay): boolean {
   const packageJsonPath = join(baseDir, 'package.json');
   const contents = readFileSync(packageJsonPath, { encoding: 'utf8' });
   const pkg = JSON.parse(contents);
@@ -129,7 +131,7 @@ export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig["daysToD
 // we'd need to refactor the `getTodoConfig` function that use these.
 
 // if package.json has lintTodo config, return those values
-function getFromPackageJson(basePath: string): TodoConfig["daysToDecay"] | undefined {
+function getFromPackageJson(basePath: string): DaysToDecay | undefined {
   let pkg;
 
   try {
