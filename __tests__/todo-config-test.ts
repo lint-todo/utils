@@ -1,6 +1,6 @@
 import { unlink, readFileSync, writeFileSync } from 'fs-extra';
 import { join } from 'path';
-import { getTodoConfig, writeTodoConfig, ensureTodoStorageDirSync } from '../src';
+import { getTodoConfig, writeTodoConfig } from '../src';
 import { FakeProject } from './__utils__/fake-project';
 
 describe('todo-config', () => {
@@ -22,8 +22,10 @@ describe('todo-config', () => {
       await unlink(join(project.baseDir, 'package.json'));
 
       expect(getTodoConfig(project.baseDir)).toEqual({
-        warn: 30,
-        error: 60,
+        "daysToDecay": {
+          warn: 30,
+          error: 60,
+        }
       });
     });
 
@@ -31,8 +33,10 @@ describe('todo-config', () => {
       const config = getTodoConfig(project.baseDir);
 
       expect(config).toEqual({
-        warn: 30,
-        error: 60,
+        "daysToDecay": {
+          warn: 30,
+          error: 60,
+        }
       });
     });
 
@@ -81,8 +85,8 @@ describe('todo-config', () => {
 
     it('can override lint todo config from package.json with env vars', () => {
       project.writeTodoConfig({
-        warn: 1,
-        error: 2,
+          warn: 1,
+          error: 2,
       });
 
       setupEnvVar('TODO_DAYS_TO_WARN', '5');
@@ -147,8 +151,8 @@ describe('todo-config', () => {
 
     it('can override defaults with single null value', () => {
       project.writeTodoConfig({
-        warn: 1,
-        error: 2,
+          warn: 1,
+          error: 2,
       });
 
       const config = getTodoConfig(project.baseDir, {

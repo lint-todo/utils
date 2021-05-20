@@ -18,7 +18,7 @@ export class FakeProject extends Project {
     this.writeSync();
   }
 
-  writeTodoConfig(todoConfig: TodoConfig): void {
+  writeTodoConfig(todoConfig: TodoConfig["daysToDecay"]): void {
     this.pkg = Object.assign({}, this.pkg, {
       lintTodo: {
         daysToDecay: todoConfig,

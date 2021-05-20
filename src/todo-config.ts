@@ -51,11 +51,11 @@ const DETECT_TRAILING_WHITESPACE = /\s+$/;
  * @returns - The todo config object.
  */
 
-// are we changing this to be get DaysToDecay since we're just trying to set default daysToDecay and don't care about per-rule settings
+// rename this later, it doesn't get the whole todoConfig just the daysToDecay
 export function getTodoConfig(
   baseDir: string,
   todoConfig: TodoConfig["daysToDecay"] = {}
-): TodoConfig | undefined {
+): TodoConfig["daysToDecay"] | undefined {
   const daysToDecayPackageConfig = getFromPackageJson(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
   const daysToDecayLintTodoConfig = getFromTodoConfigFile(baseDir);
@@ -94,14 +94,14 @@ export function getTodoConfig(
  * @param baseDir - The base directory that contains the project's package.json or .lint-todorc.js.
  * @param todoConfig - The todo configuration to write to the package.json or .lint-todorc.js.
  */
-export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig): boolean {
+export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig["daysToDecay"]): boolean {
   const packageJsonPath = join(baseDir, 'package.json');
   const contents = readFileSync(packageJsonPath, { encoding: 'utf8' });
   const pkg = JSON.parse(contents);
 
   const todoConfigFile = join(baseDir, '.lint-todorc.js');
-  const todoConfigContents = readFileSync(todoConfigFile, { encoding: 'utf8' });
-  const ruleConfig = JSON.parse(todoConfigContents);
+  // const todoConfigContents = readFileSync(todoConfigFile, { encoding: 'utf8' });
+  // const ruleConfig = JSON.parse(todoConfigContents);
 
   const trailingWhitespace = DETECT_TRAILING_WHITESPACE.exec(contents);
 
@@ -125,8 +125,11 @@ export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig): boolea
   return true;
 }
 
+// for the next two functions, could we combine them into one function with conditionals?
+// we'd need to refactor the `getTodoConfig` function that use these.
+
 // if package.json has lintTodo config, return those values
-function getFromPackageJson(basePath: string): TodoConfig | undefined {
+function getFromPackageJson(basePath: string): TodoConfig["daysToDecay"] | undefined {
   let pkg;
 
   try {
@@ -134,11 +137,11 @@ function getFromPackageJson(basePath: string): TodoConfig | undefined {
     pkg = require(join(basePath, 'package.json'));
   } catch {}
 
-  return pkg?.lintTodo?.daysToDecay;
+  return pkg?.lintTodo;
 }
 
 // if .lint-todorc.js exists, return the values for daysToDecay
-function getFromTodoConfigFile(basePath: string): DaysToDecay | undefined {
+function getFromTodoConfigFile(basePath: string): TodoConfig["daysToDecay"] | undefined {
   let todoDaysToDecayDefaultConfig;
 
   try {
@@ -146,14 +149,13 @@ function getFromTodoConfigFile(basePath: string): DaysToDecay | undefined {
     todoDaysToDecayDefaultConfig = require(join(basePath, '.lint-todorc.js'));
   } catch {}
 
-  // this won't be `lintTodo` because that won't be in the .lint-todorc.js file
-  // but how do we abstract "whatever the name of the engine is" into syntax that will be accepted?
-  return todoDaysToDecayDefaultConfig?.lintTodo?.daysToDecay;
+  // abstract "whatever the name of the engine is" into syntax that will be accepted
+  return todoDaysToDecayDefaultConfig?.["ember-template-lint"].daysToDecay;
 }
 
 // what is the syntax here?
-function getFromEnvVars(): TodoConfig {
-  const config: TodoConfig = {};
+function getFromEnvVars(): TodoConfig["daysToDecay"] {
+  const config: TodoConfig["daysToDecay"] = {};
 
   const warn = getEnvVar('TODO_DAYS_TO_WARN');
   const error = getEnvVar('TODO_DAYS_TO_ERROR');
