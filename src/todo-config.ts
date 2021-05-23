@@ -1,9 +1,5 @@
 import { join } from 'path';
 import { TodoConfig } from './types';
-import { readFileSync, writeFileSync, readJsonSync } from 'fs-extra';
-import { todoStorageDirExists } from './io';
-
-const DETECT_TRAILING_WHITESPACE = /\s+$/;
 
 /**
  * Gets the todo configuration.
