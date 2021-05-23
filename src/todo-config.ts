@@ -63,56 +63,6 @@ export function getTodoConfig(
   return mergedConfig;
 }
 
-/**
- * Ensures that a valid todo config exists in the project by writing one to the package.json
- * if we're invoking the todos functionality for the first time (there is no .lint-todo directory).
- *
- * @param baseDir - The base directory that contains the project's package.json.
- */
-export function ensureTodoConfig(baseDir: string): void {
-  if (!todoStorageDirExists(baseDir)) {
-    const pkg = readJsonSync(join(baseDir, 'package.json'));
-
-    if (!pkg.lintTodo) {
-      writeTodoConfig(baseDir, {
-        warn: 30,
-        error: 60,
-      });
-    }
-  }
-}
-
-/**
- * Writes a todo config to the package.json located at the provided baseDir.
- *
- * @param baseDir - The base directory that contains the project's package.json.
- * @param todoConfig - The todo configuration to write to the package.json.
- */
-export function writeTodoConfig(baseDir: string, todoConfig: TodoConfig): boolean {
-  const packageJsonPath = join(baseDir, 'package.json');
-  const contents = readFileSync(packageJsonPath, { encoding: 'utf8' });
-  const trailingWhitespace = DETECT_TRAILING_WHITESPACE.exec(contents);
-  const pkg = JSON.parse(contents);
-
-  if (pkg.lintTodo) {
-    return false;
-  }
-
-  pkg.lintTodo = {
-    daysToDecay: todoConfig,
-  };
-
-  let updatedContents = JSON.stringify(pkg, undefined, 2);
-
-  if (trailingWhitespace) {
-    updatedContents += trailingWhitespace[0];
-  }
-
-  writeFileSync(packageJsonPath, updatedContents, { encoding: 'utf8' });
-
-  return true;
-}
-
 function getFromPackageJson(basePath: string): TodoConfig | undefined {
   let pkg;
 
