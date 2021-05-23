@@ -1,7 +1,7 @@
 import { isAbsolute, relative } from 'path';
 import slash = require('slash');
 import { todoFilePathFor } from './io';
-import { TodoConfig, FilePath, LintMessage, LintResult, TodoData } from './types';
+import { DaysToDecay, FilePath, LintMessage, LintResult, TodoData } from './types';
 import { getDatePart } from './date-utils';
 
 /**
@@ -15,7 +15,7 @@ import { getDatePart } from './date-utils';
 export function buildTodoData(
   baseDir: string,
   lintResults: LintResult[],
-  todoConfig?: TodoConfig
+  todoConfig?: DaysToDecay
 ): Map<FilePath, TodoData> {
   const results = lintResults.filter((result) => result.messages.length > 0);
 
@@ -48,7 +48,7 @@ export function _buildTodoDatum(
   baseDir: string,
   lintResult: LintResult,
   lintMessage: LintMessage,
-  todoConfig?: TodoConfig
+  todoConfig?: DaysToDecay
 ): TodoData {
   // Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
   // provided that the fix is landed on the supported node versions of this lib

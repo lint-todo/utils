@@ -45,12 +45,12 @@ export interface TodoData {
 }
 
 export type LintTodoPackageJson = PackageJson & {
-  lintTodo?: { daysToDecay: TodoConfig };
+  lintTodo?: { daysToDecay: DaysToDecay };
 };
 
 export type TodoBatchCounts = [number, number];
 
-export interface TodoConfig {
+export interface DaysToDecay {
   warn?: number;
   error?: number;
 }
@@ -64,6 +64,6 @@ export interface TodoConfig {
  */
 export interface WriteTodoOptions {
   filePath: string;
-  todoConfig: TodoConfig;
+  todoConfig: DaysToDecay;
   shouldRemove: (todoDatum: TodoData) => boolean;
 }

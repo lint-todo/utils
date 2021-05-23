@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { TodoConfig } from './types';
+import { DaysToDecay } from './types';
 
 /**
  * Gets the todo configuration.
@@ -31,8 +31,8 @@ import { TodoConfig } from './types';
  */
 export function getTodoConfig(
   baseDir: string,
-  todoConfig: TodoConfig = {}
-): TodoConfig | undefined {
+  todoConfig: DaysToDecay = {}
+): DaysToDecay | undefined {
   const daysToDecayPackageConfig = getFromPackageJson(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
   let mergedConfig = Object.assign({}, daysToDecayPackageConfig, daysToDecayEnvVars, todoConfig);
@@ -59,7 +59,7 @@ export function getTodoConfig(
   return mergedConfig;
 }
 
-function getFromPackageJson(basePath: string): TodoConfig | undefined {
+function getFromPackageJson(basePath: string): DaysToDecay | undefined {
   let pkg;
 
   try {
@@ -70,8 +70,8 @@ function getFromPackageJson(basePath: string): TodoConfig | undefined {
   return pkg?.lintTodo?.daysToDecay;
 }
 
-function getFromEnvVars(): TodoConfig {
-  const config: TodoConfig = {};
+function getFromEnvVars(): DaysToDecay {
+  const config: DaysToDecay = {};
 
   const warn = getEnvVar('TODO_DAYS_TO_WARN');
   const error = getEnvVar('TODO_DAYS_TO_ERROR');
