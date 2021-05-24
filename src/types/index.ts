@@ -73,6 +73,6 @@ export interface TodoConfig {
  */
 export interface WriteTodoOptions {
   filePath: string;
-  todoConfig: DaysToDecay;
+  todoConfig: TodoConfig;
   shouldRemove: (todoDatum: TodoData) => boolean;
 }
