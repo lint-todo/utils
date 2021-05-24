@@ -107,7 +107,7 @@ describe('todo-config', () => {
     });
 
     it('can get lint todo config from .lint-todorc.js with decay days by rule', () => {
-      project.writePackageJsonTodoConfig(
+      project.writeLintTodorc(
         {
           warn: 5,
           error: 10,
