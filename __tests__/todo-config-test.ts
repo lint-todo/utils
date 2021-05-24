@@ -37,7 +37,7 @@ describe('todo-config', () => {
     });
 
     it('can returns empty lint todo config from package.json when empty config explicitly configured', () => {
-      project.writeTodoConfig({});
+      project.writePackageJsonTodoConfig({});
 
       const config = getTodoConfig(project.baseDir);
 
@@ -45,7 +45,7 @@ describe('todo-config', () => {
     });
 
     it('can get lint todo config from package.json', () => {
-      project.writeTodoConfig({
+      project.writePackageJsonTodoConfig({
         warn: 5,
         error: 10,
       });
@@ -56,6 +56,28 @@ describe('todo-config', () => {
         warn: 5,
         error: 10,
       });
+    });
+
+    it('can get lint todo config from .lint-todorc.js', () => {
+      project.writeLintTodorc({ warn: 20, error: 40 });
+
+      const config = getTodoConfig(project.baseDir);
+
+      expect(config).toEqual({ warn: 20, error: 40 });
+    });
+
+    it('errors if both package.json and .lint-todorc.js contain todo configurations', () => {
+      project.writePackageJsonTodoConfig({
+        warn: 5,
+        error: 10,
+      });
+      project.writeLintTodorc({ warn: 20, error: 40 });
+
+      expect(() => {
+        getTodoConfig(project.baseDir);
+      }).toThrow(
+        'You cannot have todo configuratons in both package.json and .lint-todorc.js. Please move the configurations from the package.json to the .lint-todorc.js'
+      );
     });
 
     it('can get lint todo config from env vars', () => {
@@ -80,7 +102,7 @@ describe('todo-config', () => {
     });
 
     it('can override lint todo config from package.json with env vars', () => {
-      project.writeTodoConfig({
+      project.writePackageJsonTodoConfig({
         warn: 1,
         error: 2,
       });
@@ -97,7 +119,7 @@ describe('todo-config', () => {
     });
 
     it('can override lint todo config from package.json with options', () => {
-      project.writeTodoConfig({
+      project.writePackageJsonTodoConfig({
         warn: 1,
         error: 2,
       });
@@ -129,7 +151,7 @@ describe('todo-config', () => {
     });
 
     it('can override defaults with null values', () => {
-      project.writeTodoConfig({
+      project.writePackageJsonTodoConfig({
         warn: 1,
         error: 2,
       });
@@ -146,7 +168,7 @@ describe('todo-config', () => {
     });
 
     it('can override defaults with single null value', () => {
-      project.writeTodoConfig({
+      project.writePackageJsonTodoConfig({
         warn: 1,
         error: 2,
       });

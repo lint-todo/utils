@@ -18,7 +18,10 @@ export class FakeProject extends Project {
     this.writeSync();
   }
 
-  writeTodoConfig(daysToDecay: DaysToDecay, daysToDecayByRule?: DaysToDecayByRule): void {
+  writePackageJsonTodoConfig(
+    daysToDecay: DaysToDecay,
+    daysToDecayByRule?: DaysToDecayByRule
+  ): void {
     const todoConfig: {
       lintTodo: TodoConfig;
     } = {
@@ -34,5 +37,20 @@ export class FakeProject extends Project {
     this.pkg = Object.assign({}, this.pkg, todoConfig);
 
     this.writeSync();
+  }
+
+  writeLintTodorc(daysToDecay: DaysToDecay, daysToDecayByRule?: DaysToDecayByRule): void {
+    const todoConfig: TodoConfig = {
+      daysToDecay,
+    };
+
+    if (daysToDecayByRule) {
+      todoConfig.daysToDecayByRule = daysToDecayByRule;
+    }
+
+    this.write({
+      // eslint-disable-next-line unicorn/no-null
+      '.lint-todorc.js': `module.exports = ${JSON.stringify(todoConfig, null, 2)}`,
+    });
   }
 }
