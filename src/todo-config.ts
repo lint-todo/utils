@@ -14,7 +14,25 @@ import { DaysToDecay, TodoConfig } from './types';
  *     "daysToDecay": {
  *       "warn": 5,
  *       "error": 10
+ *     },
+ *     "daysToDecayByRule": {
+ *       "no-bare-strings": { "warn": 10, "error": 20 }
  *     }
+ *   }
+ * }
+ * ```
+ *
+ * A .lint-todorc.js file
+ *
+ * @example
+ * ```js
+ * module.exports = {
+ *   "daysToDecay": {
+ *     "warn": 5,
+ *     "error": 10
+ *   },
+ *   "daysToDecayByRule": {
+ *     "no-bare-strings": { "warn": 10, "error": 20 }
  *   }
  * }
  * ```
