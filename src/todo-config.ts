@@ -33,7 +33,7 @@ export function getTodoConfig(
   baseDir: string,
   customDaysToDecay: DaysToDecay = {}
 ): DaysToDecay | undefined {
-  const daysToDecayPackageConfig = getFromPackageJson(baseDir);
+  const daysToDecayPackageConfig = getFromConfigFile(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
   let mergedConfig = Object.assign(
     {},
@@ -64,15 +64,25 @@ export function getTodoConfig(
   return mergedConfig;
 }
 
-function getFromPackageJson(basePath: string): DaysToDecay | undefined {
-  let pkg;
+function getFromConfigFile(basePath: string): DaysToDecay | undefined {
+  const pkg = requireFile(basePath, 'package.json');
+  const lintTodorc = requireFile(basePath, '.lint-todorc.js');
 
+  if (pkg?.lintTodo && lintTodorc) {
+    throw new Error(
+      'You cannot have todo configuratons in both package.json and .lint-todorc.js. Please move the configurations from the package.json to the .lint-todorc.js'
+    );
+  }
+
+  return lintTodorc ?? pkg?.lintTodo?.daysToDecay;
+}
+
+function requireFile(basePath: string, fileName: string) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    pkg = require(join(basePath, 'package.json'));
-  } catch {}
-
-  return pkg?.lintTodo?.daysToDecay;
+    return require(join(basePath, fileName));
+  } catch {
+    return;
+  }
 }
 
 function getFromEnvVars(): DaysToDecay {

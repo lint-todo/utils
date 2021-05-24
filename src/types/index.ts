@@ -45,14 +45,23 @@ export interface TodoData {
 }
 
 export type LintTodoPackageJson = PackageJson & {
-  lintTodo?: { daysToDecay: DaysToDecay };
+  lintTodo?: TodoConfig;
 };
 
 export type TodoBatchCounts = [number, number];
 
-export interface DaysToDecay {
+export type DaysToDecay = {
   warn?: number;
   error?: number;
+};
+
+export type DaysToDecayByRule = {
+  [ruleId: string]: DaysToDecay;
+};
+
+export interface TodoConfig {
+  daysToDecay?: DaysToDecay;
+  daysToDecayByRule?: DaysToDecayByRule;
 }
 
 /**
