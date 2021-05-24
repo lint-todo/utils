@@ -73,7 +73,7 @@ function getFromConfigFile(basePath: string): TodoConfig | undefined {
 
   if (pkg?.lintTodo && lintTodorc) {
     throw new Error(
-      'You cannot have todo configuratons in both package.json and .lint-todorc.js. Please move the configurations from the package.json to the .lint-todorc.js'
+      'You cannot have todo configurations in both package.json and .lint-todorc.js. Please move the configuration from the package.json to the .lint-todorc.js'
     );
   }
 
