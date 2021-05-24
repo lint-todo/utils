@@ -66,12 +66,76 @@ describe('todo-config', () => {
       });
     });
 
+    it('can get lint todo config from package.json with decay days by rule', () => {
+      project.writePackageJsonTodoConfig(
+        {
+          warn: 5,
+          error: 10,
+        },
+        {
+          'no-bare-strings': {
+            warn: 10,
+            error: 20,
+          },
+        }
+      );
+
+      const config = getTodoConfig(project.baseDir);
+
+      expect(config).toMatchInlineSnapshot(`
+        Object {
+          "daysToDecay": Object {
+            "error": 10,
+            "warn": 5,
+          },
+          "daysToDecayByRule": Object {
+            "no-bare-strings": Object {
+              "error": 20,
+              "warn": 10,
+            },
+          },
+        }
+      `);
+    });
+
     it('can get lint todo config from .lint-todorc.js', () => {
       project.writeLintTodorc({ warn: 20, error: 40 });
 
       const config = getTodoConfig(project.baseDir);
 
       expect(config.daysToDecay).toEqual({ warn: 20, error: 40 });
+    });
+
+    it('can get lint todo config from .lint-todorc.js with decay days by rule', () => {
+      project.writePackageJsonTodoConfig(
+        {
+          warn: 5,
+          error: 10,
+        },
+        {
+          'no-bare-strings': {
+            warn: 10,
+            error: 20,
+          },
+        }
+      );
+
+      const config = getTodoConfig(project.baseDir);
+
+      expect(config).toMatchInlineSnapshot(`
+        Object {
+          "daysToDecay": Object {
+            "error": 10,
+            "warn": 5,
+          },
+          "daysToDecayByRule": Object {
+            "no-bare-strings": Object {
+              "error": 20,
+              "warn": 10,
+            },
+          },
+        }
+      `);
     });
 
     it('errors if both package.json and .lint-todorc.js contain todo configurations', () => {
