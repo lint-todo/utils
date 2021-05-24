@@ -20,7 +20,7 @@ describe('todo-config', () => {
   describe('getTodoConfig', () => {
     it('returns default object when no package.json found', async () => {
       await unlink(join(project.baseDir, 'package.json'));
-      debugger;
+
       expect(getTodoConfig(project.baseDir).daysToDecay).toEqual({
         warn: 30,
         error: 60,
@@ -29,7 +29,7 @@ describe('todo-config', () => {
 
     it('returns default object when no lint todo config found', () => {
       const config = getTodoConfig(project.baseDir);
-      debugger;
+
       expect(config.daysToDecay).toEqual({
         warn: 30,
         error: 60,
