@@ -26,16 +26,21 @@ import { DaysToDecay } from './types';
  * 	- Passed in options override both env vars and package.json config
  *
  * @param baseDir - The base directory that contains the project's package.json.
- * @param todoConfig - The optional todo configuration.
+ * @param customDaysToDecay - The optional custom days to decay configuration.
  * @returns - The todo config object.
  */
 export function getTodoConfig(
   baseDir: string,
-  todoConfig: DaysToDecay = {}
+  customDaysToDecay: DaysToDecay = {}
 ): DaysToDecay | undefined {
   const daysToDecayPackageConfig = getFromPackageJson(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
-  let mergedConfig = Object.assign({}, daysToDecayPackageConfig, daysToDecayEnvVars, todoConfig);
+  let mergedConfig = Object.assign(
+    {},
+    daysToDecayPackageConfig,
+    daysToDecayEnvVars,
+    customDaysToDecay
+  );
 
   // we set a default config if the mergedConfig is an empty object, meaning either or both warn and error aren't
   // defined and the package.json doesn't explicitly define an empty config (they're opting out of defining a todoConfig)
