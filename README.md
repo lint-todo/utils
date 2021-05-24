@@ -86,15 +86,11 @@ have a todo lint violation.</p>
 Config values can be present in</p>
 <p>The package.json</p>
 </dd>
-<dt><a href="#ensureTodoConfig">ensureTodoConfig(baseDir)</a></dt>
-<dd><p>Ensures that a valid todo config exists in the project by writing one to the package.json
-if we&#39;re invoking the todos functionality for the first time (there is no .lint-todo directory).</p>
-</dd>
-<dt><a href="#writeTodoConfig">writeTodoConfig(baseDir, todoConfig)</a></dt>
-<dd><p>Writes a todo config to the package.json located at the provided baseDir.</p>
-</dd>
 <dt><a href="#getSeverity">getSeverity(todo, today)</a> ⇒</dt>
 <dd><p>Returns the correct severity level based on the todo data&#39;s decay dates.</p>
+</dd>
+<dt><a href="#isExpired">isExpired(date, today)</a> ⇒</dt>
+<dd><p>Evaluates whether a date is expired (earlier than today)</p>
 </dd>
 <dt><a href="#getDatePart">getDatePart(date)</a> ⇒</dt>
 <dd><p>Converts a date to include year, month, and day values only (time is zeroed out).</p>
@@ -389,30 +385,6 @@ Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
 
 Passed in directly, such as from command line options.
 	- Passed in options override both env vars and package.json config
-<a name="ensureTodoConfig"></a>
-
-## ensureTodoConfig(baseDir)
-Ensures that a valid todo config exists in the project by writing one to the package.json
-if we're invoking the todos functionality for the first time (there is no .lint-todo directory).
-
-**Kind**: global function  
-
-| Param | Description |
-| --- | --- |
-| baseDir | The base directory that contains the project's package.json. |
-
-<a name="writeTodoConfig"></a>
-
-## writeTodoConfig(baseDir, todoConfig)
-Writes a todo config to the package.json located at the provided baseDir.
-
-**Kind**: global function  
-
-| Param | Description |
-| --- | --- |
-| baseDir | The base directory that contains the project's package.json. |
-| todoConfig | The todo configuration to write to the package.json. |
-
 <a name="getSeverity"></a>
 
 ## getSeverity(todo, today) ⇒
@@ -424,6 +396,19 @@ Returns the correct severity level based on the todo data's decay dates.
 | Param | Description |
 | --- | --- |
 | todo | The todo data. |
+| today | A number representing a date (UNIX Epoch - milliseconds) |
+
+<a name="isExpired"></a>
+
+## isExpired(date, today) ⇒
+Evaluates whether a date is expired (earlier than today)
+
+**Kind**: global function  
+**Returns**: true if the date is earlier than today, otherwise false  
+
+| Param | Description |
+| --- | --- |
+| date | The date to evaluate |
 | today | A number representing a date (UNIX Epoch - milliseconds) |
 
 <a name="getDatePart"></a>

@@ -8,7 +8,13 @@ const jsdoc2md = require('jsdoc-to-markdown');
   const docsPlaceholder = /<!--DOCS_START-->[\S\s]*<!--DOCS_END-->/;
 
   let docsContent = await jsdoc2md.render({
-    files: ['lib/builders.js', 'lib/io.js', 'lib/todo-config.js', 'lib/get-severity.js'],
+    files: [
+      'lib/builders.js',
+      'lib/io.js',
+      'lib/todo-config.js',
+      'lib/get-severity.js',
+      'lib/date-utils.js',
+    ],
   });
 
   fs.writeFileSync(
