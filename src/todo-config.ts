@@ -29,13 +29,10 @@ import { DaysToDecay, TodoConfig } from './types';
  * @param customDaysToDecay - The optional custom days to decay configuration.
  * @returns - The todo config object.
  */
-export function getTodoConfig(
-  baseDir: string,
-  customDaysToDecay: DaysToDecay = {}
-): DaysToDecay | undefined {
+export function getTodoConfig(baseDir: string, customDaysToDecay: DaysToDecay = {}): TodoConfig {
   const todoConfig = getFromConfigFile(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
-  let mergedConfig = Object.assign(
+  let mergedDaysToDecay = Object.assign(
     {},
     todoConfig?.daysToDecay,
     daysToDecayEnvVars,
@@ -44,24 +41,26 @@ export function getTodoConfig(
 
   // we set a default config if the mergedConfig is an empty object, meaning either or both warn and error aren't
   // defined and the package.json doesn't explicitly define an empty config (they're opting out of defining a todoConfig)
-  if (Object.keys(mergedConfig).length === 0 && typeof todoConfig === 'undefined') {
-    mergedConfig = {
+  if (Object.keys(mergedDaysToDecay).length === 0 && typeof todoConfig === 'undefined') {
+    mergedDaysToDecay = {
       warn: 30,
       error: 60,
     };
   }
 
   if (
-    typeof mergedConfig.warn === 'number' &&
-    typeof mergedConfig.error === 'number' &&
-    mergedConfig.warn >= mergedConfig.error
+    typeof mergedDaysToDecay.warn === 'number' &&
+    typeof mergedDaysToDecay.error === 'number' &&
+    mergedDaysToDecay.warn >= mergedDaysToDecay.error
   ) {
     throw new Error(
-      `The provided todo configuration contains invalid values. The \`warn\` value (${mergedConfig.warn}) must be less than the \`error\` value (${mergedConfig.error}).`
+      `The provided todo configuration contains invalid values. The \`warn\` value (${mergedDaysToDecay.warn}) must be less than the \`error\` value (${mergedDaysToDecay.error}).`
     );
   }
 
-  return mergedConfig;
+  return {
+    daysToDecay: mergedDaysToDecay,
+  };
 }
 
 function getFromConfigFile(basePath: string): TodoConfig | undefined {

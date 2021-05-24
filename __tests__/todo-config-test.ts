@@ -21,7 +21,7 @@ describe('todo-config', () => {
     it('returns default object when no package.json found', async () => {
       await unlink(join(project.baseDir, 'package.json'));
 
-      expect(getTodoConfig(project.baseDir)).toEqual({
+      expect(getTodoConfig(project.baseDir).daysToDecay).toEqual({
         warn: 30,
         error: 60,
       });
@@ -30,7 +30,7 @@ describe('todo-config', () => {
     it('returns default object when no lint todo config found', () => {
       const config = getTodoConfig(project.baseDir);
 
-      expect(config).toEqual({
+      expect(config.daysToDecay).toEqual({
         warn: 30,
         error: 60,
       });
@@ -41,7 +41,7 @@ describe('todo-config', () => {
 
       const config = getTodoConfig(project.baseDir);
 
-      expect(config).toEqual({});
+      expect(config.daysToDecay).toEqual({});
     });
 
     it('can get lint todo config from package.json', () => {
@@ -52,7 +52,7 @@ describe('todo-config', () => {
 
       const config = getTodoConfig(project.baseDir);
 
-      expect(config).toEqual({
+      expect(config.daysToDecay).toEqual({
         warn: 5,
         error: 10,
       });
@@ -63,7 +63,7 @@ describe('todo-config', () => {
 
       const config = getTodoConfig(project.baseDir);
 
-      expect(config).toEqual({ warn: 20, error: 40 });
+      expect(config.daysToDecay).toEqual({ warn: 20, error: 40 });
     });
 
     it('errors if both package.json and .lint-todorc.js contain todo configurations', () => {
@@ -86,7 +86,7 @@ describe('todo-config', () => {
 
       const config = getTodoConfig(project.baseDir);
 
-      expect(config).toEqual({
+      expect(config.daysToDecay).toEqual({
         warn: 5,
         error: 10,
       });
@@ -95,7 +95,7 @@ describe('todo-config', () => {
     it('can get lint todo config from options', () => {
       const config = getTodoConfig(project.baseDir, { warn: 3, error: 5 });
 
-      expect(config).toEqual({
+      expect(config.daysToDecay).toEqual({
         warn: 3,
         error: 5,
       });
@@ -112,7 +112,7 @@ describe('todo-config', () => {
 
       const config = getTodoConfig(project.baseDir);
 
-      expect(config).toEqual({
+      expect(config.daysToDecay).toEqual({
         warn: 5,
         error: 10,
       });
@@ -129,7 +129,7 @@ describe('todo-config', () => {
         error: 10,
       });
 
-      expect(config).toEqual({
+      expect(config.daysToDecay).toEqual({
         warn: 5,
         error: 10,
       });
@@ -144,7 +144,7 @@ describe('todo-config', () => {
         error: 10,
       });
 
-      expect(config).toEqual({
+      expect(config.daysToDecay).toEqual({
         warn: 5,
         error: 10,
       });
@@ -161,7 +161,7 @@ describe('todo-config', () => {
         error: undefined,
       });
 
-      expect(config).toEqual({
+      expect(config.daysToDecay).toEqual({
         warn: undefined,
         error: undefined,
       });
@@ -177,7 +177,7 @@ describe('todo-config', () => {
         error: undefined,
       });
 
-      expect(config).toEqual({
+      expect(config.daysToDecay).toEqual({
         warn: 1,
         error: undefined,
       });
