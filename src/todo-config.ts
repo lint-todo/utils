@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { DaysToDecay } from './types';
+import { DaysToDecay, TodoConfig } from './types';
 
 /**
  * Gets the todo configuration.
@@ -33,18 +33,18 @@ export function getTodoConfig(
   baseDir: string,
   customDaysToDecay: DaysToDecay = {}
 ): DaysToDecay | undefined {
-  const daysToDecayPackageConfig = getFromConfigFile(baseDir);
+  const todoConfig = getFromConfigFile(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
   let mergedConfig = Object.assign(
     {},
-    daysToDecayPackageConfig,
+    todoConfig?.daysToDecay,
     daysToDecayEnvVars,
     customDaysToDecay
   );
 
   // we set a default config if the mergedConfig is an empty object, meaning either or both warn and error aren't
   // defined and the package.json doesn't explicitly define an empty config (they're opting out of defining a todoConfig)
-  if (Object.keys(mergedConfig).length === 0 && typeof daysToDecayPackageConfig === 'undefined') {
+  if (Object.keys(mergedConfig).length === 0 && typeof todoConfig === 'undefined') {
     mergedConfig = {
       warn: 30,
       error: 60,
@@ -64,7 +64,7 @@ export function getTodoConfig(
   return mergedConfig;
 }
 
-function getFromConfigFile(basePath: string): DaysToDecay | undefined {
+function getFromConfigFile(basePath: string): TodoConfig | undefined {
   const pkg = requireFile(basePath, 'package.json');
   const lintTodorc = requireFile(basePath, '.lint-todorc.js');
 
@@ -74,7 +74,7 @@ function getFromConfigFile(basePath: string): DaysToDecay | undefined {
     );
   }
 
-  return lintTodorc ?? pkg?.lintTodo?.daysToDecay;
+  return lintTodorc ?? pkg?.lintTodo;
 }
 
 function requireFile(basePath: string, fileName: string) {
