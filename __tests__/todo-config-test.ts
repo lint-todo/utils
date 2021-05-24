@@ -36,8 +36,16 @@ describe('todo-config', () => {
       });
     });
 
-    it('can returns empty lint todo config from package.json when empty config explicitly configured', () => {
+    it('can return empty lint todo config from package.json when empty config explicitly configured', () => {
       project.writePackageJsonTodoConfig({});
+
+      const config = getTodoConfig(project.baseDir);
+
+      expect(config.daysToDecay).toEqual({});
+    });
+
+    it('can return empty lint todo config from .lint-todorc.js when empty config explicitly configured', () => {
+      project.writeLintTodorc({});
 
       const config = getTodoConfig(project.baseDir);
 
