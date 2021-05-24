@@ -30,7 +30,7 @@ import { DaysToDecay, TodoConfig } from './types';
  * @returns - The todo config object.
  */
 export function getTodoConfig(baseDir: string, customDaysToDecay: DaysToDecay = {}): TodoConfig {
-  const todoConfig = getFromConfigFile(baseDir);
+  let todoConfig = getFromConfigFile(baseDir);
   const daysToDecayEnvVars = getFromEnvVars();
   let mergedDaysToDecay = Object.assign(
     {},
@@ -58,9 +58,13 @@ export function getTodoConfig(baseDir: string, customDaysToDecay: DaysToDecay = 
     );
   }
 
-  return {
-    daysToDecay: mergedDaysToDecay,
-  };
+  if (!todoConfig) {
+    todoConfig = {};
+  }
+
+  todoConfig.daysToDecay = mergedDaysToDecay;
+
+  return todoConfig;
 }
 
 function getFromConfigFile(basePath: string): TodoConfig | undefined {
