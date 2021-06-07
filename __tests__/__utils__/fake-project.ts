@@ -18,7 +18,7 @@ export class FakeProject extends Project {
     this.writeSync();
   }
 
-  writePackageJsonTodoConfig(
+  writeLegacyPackageJsonTodoConfig(
     daysToDecay: DaysToDecay,
     daysToDecayByRule?: DaysToDecayByRule
   ): void {

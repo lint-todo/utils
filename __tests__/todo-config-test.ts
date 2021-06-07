@@ -36,13 +36,13 @@ describe('todo-config', () => {
       });
     });
 
-    it('can return empty lint todo config from package.json when empty config explicitly configured', () => {
-      project.writePackageJsonTodoConfig({});
+    // it('can return empty lint todo config from package.json when empty config explicitly configured', () => {
+    //   project.writeLegacyPackageJsonTodoConfig({});
 
-      const config = getTodoConfig(project.baseDir);
+    //   const config = getTodoConfig(project.baseDir);
 
-      expect(config.daysToDecay).toEqual({});
-    });
+    //   expect(config.daysToDecay).toEqual({});
+    // });
 
     it('can return empty lint todo config from .lint-todorc.js when empty config explicitly configured', () => {
       project.writeLintTodorc({});
@@ -53,7 +53,7 @@ describe('todo-config', () => {
     });
 
     it('can get lint todo config from package.json', () => {
-      project.writePackageJsonTodoConfig({
+      project.writeLegacyPackageJsonTodoConfig({
         warn: 5,
         error: 10,
       });
@@ -67,7 +67,7 @@ describe('todo-config', () => {
     });
 
     it('can get lint todo config from package.json with decay days by rule', () => {
-      project.writePackageJsonTodoConfig(
+      project.writeLegacyPackageJsonTodoConfig(
         {
           warn: 5,
           error: 10,
@@ -139,7 +139,7 @@ describe('todo-config', () => {
     });
 
     it('errors if both package.json and .lint-todorc.js contain todo configurations', () => {
-      project.writePackageJsonTodoConfig({
+      project.writeLegacyPackageJsonTodoConfig({
         warn: 5,
         error: 10,
       });
@@ -174,7 +174,7 @@ describe('todo-config', () => {
     });
 
     it('can override lint todo config from package.json with env vars', () => {
-      project.writePackageJsonTodoConfig({
+      project.writeLegacyPackageJsonTodoConfig({
         warn: 1,
         error: 2,
       });
@@ -191,7 +191,7 @@ describe('todo-config', () => {
     });
 
     it('can override lint todo config from package.json with options', () => {
-      project.writePackageJsonTodoConfig({
+      project.writeLegacyPackageJsonTodoConfig({
         warn: 1,
         error: 2,
       });
@@ -223,7 +223,7 @@ describe('todo-config', () => {
     });
 
     it('can override defaults with null values', () => {
-      project.writePackageJsonTodoConfig({
+      project.writeLegacyPackageJsonTodoConfig({
         warn: 1,
         error: 2,
       });
@@ -240,7 +240,7 @@ describe('todo-config', () => {
     });
 
     it('can override defaults with single null value', () => {
-      project.writePackageJsonTodoConfig({
+      project.writeLegacyPackageJsonTodoConfig({
         warn: 1,
         error: 2,
       });
@@ -265,6 +265,111 @@ describe('todo-config', () => {
       expect(() => getTodoConfig(project.baseDir, { warn: 10, error: 5 })).toThrow(
         'The provided todo configuration contains invalid values. The `warn` value (10) must be less than the `error` value (5).'
       );
+    });
+
+    describe('legacy configuration', () => {
+      it('can return empty lint todo config from package.json when empty config explicitly configured', () => {
+        project.writeLegacyPackageJsonTodoConfig({});
+
+        const config = getTodoConfig(project.baseDir);
+
+        expect(config.daysToDecay).toEqual({});
+      });
+
+      it('can get lint todo config from package.json', () => {
+        project.writeLegacyPackageJsonTodoConfig({
+          warn: 5,
+          error: 10,
+        });
+
+        const config = getTodoConfig(project.baseDir);
+
+        expect(config.daysToDecay).toEqual({
+          warn: 5,
+          error: 10,
+        });
+      });
+
+      it('errors if both package.json and .lint-todorc.js contain todo configurations', () => {
+        project.writeLegacyPackageJsonTodoConfig({
+          warn: 5,
+          error: 10,
+        });
+        project.writeLintTodorc({ warn: 20, error: 40 });
+
+        expect(() => {
+          getTodoConfig(project.baseDir);
+        }).toThrow(
+          'You cannot have todo configurations in both package.json and .lint-todorc.js. Please move the configuration from the package.json to the .lint-todorc.js'
+        );
+      });
+
+      it('can override lint todo config from package.json with env vars', () => {
+        project.writeLegacyPackageJsonTodoConfig({
+          warn: 1,
+          error: 2,
+        });
+
+        setupEnvVar('TODO_DAYS_TO_WARN', '5');
+        setupEnvVar('TODO_DAYS_TO_ERROR', '10');
+
+        const config = getTodoConfig(project.baseDir);
+
+        expect(config.daysToDecay).toEqual({
+          warn: 5,
+          error: 10,
+        });
+      });
+
+      it('can override lint todo config from package.json with options', () => {
+        project.writeLegacyPackageJsonTodoConfig({
+          warn: 1,
+          error: 2,
+        });
+
+        const config = getTodoConfig(project.baseDir, {
+          warn: 5,
+          error: 10,
+        });
+
+        expect(config.daysToDecay).toEqual({
+          warn: 5,
+          error: 10,
+        });
+      });
+
+      it('can override defaults with null values', () => {
+        project.writeLegacyPackageJsonTodoConfig({
+          warn: 1,
+          error: 2,
+        });
+
+        const config = getTodoConfig(project.baseDir, {
+          warn: undefined,
+          error: undefined,
+        });
+
+        expect(config.daysToDecay).toEqual({
+          warn: undefined,
+          error: undefined,
+        });
+      });
+
+      it('can override defaults with single null value', () => {
+        project.writeLegacyPackageJsonTodoConfig({
+          warn: 1,
+          error: 2,
+        });
+
+        const config = getTodoConfig(project.baseDir, {
+          error: undefined,
+        });
+
+        expect(config.daysToDecay).toEqual({
+          warn: 1,
+          error: undefined,
+        });
+      });
     });
   });
 });
