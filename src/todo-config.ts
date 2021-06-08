@@ -11,12 +11,14 @@ import { DaysToDecay, TodoConfig } from './types';
  * ```json
  * {
  *   "lintTodo": {
- *     "daysToDecay": {
- *       "warn": 5,
- *       "error": 10
- *     },
- *     "daysToDecayByRule": {
- *       "no-bare-strings": { "warn": 10, "error": 20 }
+ *     "some-engine": {
+ *       "daysToDecay": {
+ *         "warn": 5,
+ *         "error": 10
+ *       },
+ *       "daysToDecayByRule": {
+ *         "no-bare-strings": { "warn": 10, "error": 20 }
+ *       }
  *     }
  *   }
  * }
@@ -27,12 +29,14 @@ import { DaysToDecay, TodoConfig } from './types';
  * @example
  * ```js
  * module.exports = {
- *   "daysToDecay": {
- *     "warn": 5,
- *     "error": 10
- *   },
- *   "daysToDecayByRule": {
- *     "no-bare-strings": { "warn": 10, "error": 20 }
+ *   "some-engine": {
+ *     "daysToDecay": {
+ *       "warn": 5,
+ *       "error": 10
+ *     },
+ *     "daysToDecayByRule": {
+ *       "no-bare-strings": { "warn": 10, "error": 20 }
+ *     }
  *   }
  * }
  * ```
