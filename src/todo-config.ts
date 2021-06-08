@@ -47,8 +47,12 @@ import { DaysToDecay, TodoConfig } from './types';
  * @param customDaysToDecay - The optional custom days to decay configuration.
  * @returns - The todo config object.
  */
-export function getTodoConfig(baseDir: string, customDaysToDecay: DaysToDecay = {}): TodoConfig {
-  let todoConfig = getFromConfigFile(baseDir);
+export function getTodoConfig(
+  baseDir: string,
+  engine: string,
+  customDaysToDecay: DaysToDecay = {}
+): TodoConfig {
+  let todoConfig = getFromConfigFile(baseDir, engine);
   const daysToDecayEnvVars = getFromEnvVars();
   let mergedDaysToDecay = Object.assign(
     {},
@@ -85,7 +89,7 @@ export function getTodoConfig(baseDir: string, customDaysToDecay: DaysToDecay = 
   return todoConfig;
 }
 
-function getFromConfigFile(basePath: string): TodoConfig | undefined {
+function getFromConfigFile(basePath: string, engine: string): TodoConfig | undefined {
   const pkg = requireFile(basePath, 'package.json');
   const lintTodorc = requireFile(basePath, '.lint-todorc.js');
 
@@ -95,7 +99,18 @@ function getFromConfigFile(basePath: string): TodoConfig | undefined {
     );
   }
 
-  return lintTodorc ?? pkg?.lintTodo;
+  const todoConfig = lintTodorc ?? pkg?.lintTodo;
+
+  // either an empty config or a legacy config where the object only had a top-level daysToDecay property
+  if (
+    !todoConfig ||
+    Object.keys(todoConfig).length === 0 ||
+    Object.prototype.hasOwnProperty.call(todoConfig, 'daysToDecay')
+  ) {
+    return todoConfig;
+  }
+
+  return todoConfig[engine];
 }
 
 function requireFile(basePath: string, fileName: string) {

@@ -1,6 +1,6 @@
 import type { DirJSON } from 'fixturify';
 import Project from 'fixturify-project';
-import { DaysToDecay, DaysToDecayByRule, TodoConfig } from '../../src';
+import { DaysToDecay, DaysToDecayByRule, TodoConfig, TodoConfigByEngine } from '../../src';
 
 export class FakeProject extends Project {
   constructor(name = 'fake-project', ...args: any[]) {
@@ -39,13 +39,43 @@ export class FakeProject extends Project {
     this.writeSync();
   }
 
-  writeLintTodorc(daysToDecay: DaysToDecay, daysToDecayByRule?: DaysToDecayByRule): void {
-    const todoConfig: TodoConfig = {
-      daysToDecay,
+  writePackageJsonTodoConfig(
+    engine: string,
+    daysToDecay: DaysToDecay,
+    daysToDecayByRule?: DaysToDecayByRule
+  ): void {
+    const todoConfig: {
+      lintTodo: TodoConfigByEngine;
+    } = {
+      lintTodo: {
+        [engine]: {
+          daysToDecay,
+        },
+      },
     };
 
     if (daysToDecayByRule) {
-      todoConfig.daysToDecayByRule = daysToDecayByRule;
+      todoConfig.lintTodo[engine].daysToDecayByRule = daysToDecayByRule;
+    }
+
+    this.pkg = Object.assign({}, this.pkg, todoConfig);
+
+    this.writeSync();
+  }
+
+  writeLintTodorc(
+    engine: string,
+    daysToDecay: DaysToDecay,
+    daysToDecayByRule?: DaysToDecayByRule
+  ): void {
+    const todoConfig: TodoConfigByEngine = {
+      [engine]: {
+        daysToDecay,
+      },
+    };
+
+    if (daysToDecayByRule) {
+      todoConfig[engine].daysToDecayByRule = daysToDecayByRule;
     }
 
     this.write({
