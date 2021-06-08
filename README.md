@@ -81,7 +81,7 @@ have a todo lint violation.</p>
 <dt><a href="#applyTodoChanges">applyTodoChanges(todoStorageDir, add, remove)</a></dt>
 <dd><p>Applies todo changes, either adding or removing, based on batches from <code>getTodoBatches</code>.</p>
 </dd>
-<dt><a href="#getTodoConfig">getTodoConfig(baseDir, todoConfig)</a> ⇒</dt>
+<dt><a href="#getTodoConfig">getTodoConfig(baseDir, engine, customDaysToDecay)</a> ⇒</dt>
 <dd><p>Gets the todo configuration.
 Config values can be present in</p>
 <p>The package.json</p>
@@ -354,7 +354,7 @@ Applies todo changes, either adding or removing, based on batches from `getTodoB
 
 <a name="getTodoConfig"></a>
 
-## getTodoConfig(baseDir, todoConfig) ⇒
+## getTodoConfig(baseDir, engine, customDaysToDecay) ⇒
 Gets the todo configuration.
 Config values can be present in
 
@@ -366,15 +366,37 @@ The package.json
 | Param | Description |
 | --- | --- |
 | baseDir | The base directory that contains the project's package.json. |
-| todoConfig | The optional todo configuration. |
+| engine | The engine for this configuration, eg. eslint |
+| customDaysToDecay | The optional custom days to decay configuration. |
 
 **Example**  
 ```json
 {
   "lintTodo": {
+    "some-engine": {
+      "daysToDecay": {
+        "warn": 5,
+        "error": 10
+      },
+      "daysToDecayByRule": {
+        "no-bare-strings": { "warn": 10, "error": 20 }
+      }
+    }
+  }
+}
+```
+
+A .lint-todorc.js file
+**Example**  
+```js
+module.exports = {
+  "some-engine": {
     "daysToDecay": {
       "warn": 5,
       "error": 10
+    },
+    "daysToDecayByRule": {
+      "no-bare-strings": { "warn": 10, "error": 20 }
     }
   }
 }

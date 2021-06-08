@@ -48,6 +48,7 @@ import { DaysToDecay, TodoConfig } from './types';
  * 	- Passed in options override both env vars and package.json config
  *
  * @param baseDir - The base directory that contains the project's package.json.
+ * @param engine - The engine for this configuration, eg. eslint
  * @param customDaysToDecay - The optional custom days to decay configuration.
  * @returns - The todo config object.
  */
