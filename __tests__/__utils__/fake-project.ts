@@ -1,6 +1,6 @@
 import type { DirJSON } from 'fixturify';
 import Project from 'fixturify-project';
-import { TodoConfig } from '../../src';
+import { DaysToDecay, DaysToDecayByRule, TodoConfig, TodoConfigByEngine } from '../../src';
 
 export class FakeProject extends Project {
   constructor(name = 'fake-project', ...args: any[]) {
@@ -18,13 +18,69 @@ export class FakeProject extends Project {
     this.writeSync();
   }
 
-  writeTodoConfig(todoConfig: TodoConfig): void {
-    this.pkg = Object.assign({}, this.pkg, {
+  writeLegacyPackageJsonTodoConfig(
+    daysToDecay: DaysToDecay,
+    daysToDecayByRule?: DaysToDecayByRule
+  ): void {
+    const todoConfig: {
+      lintTodo: TodoConfig;
+    } = {
       lintTodo: {
-        daysToDecay: todoConfig,
+        daysToDecay,
       },
-    });
+    };
+
+    if (daysToDecayByRule) {
+      todoConfig.lintTodo.daysToDecayByRule = daysToDecayByRule;
+    }
+
+    this.pkg = Object.assign({}, this.pkg, todoConfig);
 
     this.writeSync();
+  }
+
+  writePackageJsonTodoConfig(
+    engine: string,
+    daysToDecay: DaysToDecay,
+    daysToDecayByRule?: DaysToDecayByRule
+  ): void {
+    const todoConfig: {
+      lintTodo: TodoConfigByEngine;
+    } = {
+      lintTodo: {
+        [engine]: {
+          daysToDecay,
+        },
+      },
+    };
+
+    if (daysToDecayByRule) {
+      todoConfig.lintTodo[engine].daysToDecayByRule = daysToDecayByRule;
+    }
+
+    this.pkg = Object.assign({}, this.pkg, todoConfig);
+
+    this.writeSync();
+  }
+
+  writeLintTodorc(
+    engine: string,
+    daysToDecay: DaysToDecay,
+    daysToDecayByRule?: DaysToDecayByRule
+  ): void {
+    const todoConfig: TodoConfigByEngine = {
+      [engine]: {
+        daysToDecay,
+      },
+    };
+
+    if (daysToDecayByRule) {
+      todoConfig[engine].daysToDecayByRule = daysToDecayByRule;
+    }
+
+    this.write({
+      // eslint-disable-next-line unicorn/no-null
+      '.lint-todorc.js': `module.exports = ${JSON.stringify(todoConfig, null, 2)}`,
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { isAbsolute, relative } from 'path';
 import slash = require('slash');
 import { todoFilePathFor } from './io';
-import { TodoConfig, FilePath, LintMessage, LintResult, TodoData } from './types';
+import { DaysToDecay, FilePath, LintMessage, LintResult, TodoConfig, TodoData } from './types';
 import { getDatePart } from './date-utils';
 
 /**
@@ -56,6 +56,7 @@ export function _buildTodoDatum(
   const filePath = isAbsolute(lintResult.filePath)
     ? relative(baseDir, lintResult.filePath)
     : lintResult.filePath;
+  const ruleId = getRuleId(lintMessage);
   const todoDatum: TodoData = {
     engine: getEngine(lintResult),
     filePath: slash(filePath),
@@ -65,15 +66,29 @@ export function _buildTodoDatum(
     createdDate: createdDate.getTime(),
   };
 
-  if (todoConfig?.warn) {
-    todoDatum.warnDate = addDays(createdDate, todoConfig.warn).getTime();
+  const daysToDecay: DaysToDecay | undefined = getDaysToDecay(ruleId, todoConfig);
+
+  if (daysToDecay?.warn) {
+    todoDatum.warnDate = addDays(createdDate, daysToDecay.warn).getTime();
   }
 
-  if (todoConfig?.error) {
-    todoDatum.errorDate = addDays(createdDate, todoConfig.error).getTime();
+  if (daysToDecay?.error) {
+    todoDatum.errorDate = addDays(createdDate, daysToDecay.error).getTime();
   }
 
   return todoDatum;
+}
+
+function getDaysToDecay(ruleId: string, todoConfig?: TodoConfig) {
+  if (!todoConfig) {
+    return;
+  }
+
+  if (todoConfig?.daysToDecayByRule && todoConfig.daysToDecayByRule[ruleId]) {
+    return todoConfig.daysToDecayByRule[ruleId];
+  } else if (todoConfig?.daysToDecay) {
+    return todoConfig.daysToDecay;
+  }
 }
 
 function getEngine(result: LintResult) {

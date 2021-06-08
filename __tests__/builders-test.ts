@@ -83,14 +83,18 @@ describe('builders', () => {
     });
 
     it('can build todo data from results with days to decay warn only', () => {
-      const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), { warn: 30 });
+      const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
+        daysToDecay: { warn: 30 },
+      });
       const todoDatum: TodoData = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
     });
 
     it('can build todo data from results with days to decay error only', () => {
-      const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), { error: 30 });
+      const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
+        daysToDecay: { error: 30 },
+      });
       const todoDatum: TodoData = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(30);
@@ -98,8 +102,10 @@ describe('builders', () => {
 
     it('can build todo data from results with days to decay warn and error', () => {
       const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
-        warn: 30,
-        error: 60,
+        daysToDecay: {
+          warn: 30,
+          error: 60,
+        },
       });
       const todoDatum: TodoData = todoData.values().next().value;
 
@@ -110,7 +116,9 @@ describe('builders', () => {
     it('can build todo data with a custom createdDate', () => {
       process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
 
-      const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), { warn: 30 });
+      const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
+        daysToDecay: { warn: 30 },
+      });
       const todoDatum: TodoData = todoData.values().next().value;
 
       expect(todoDatum.createdDate).toEqual(getDatePart(new Date(2015, 1, 23)).getTime());
@@ -181,7 +189,9 @@ describe('builders', () => {
 
     it('can build todo data from results with days to decay warn only', () => {
       const todoData = buildTodoData(tmp, getFixture('ember-template-lint-single-error', tmp), {
-        warn: 30,
+        daysToDecay: {
+          warn: 30,
+        },
       });
       const todoDatum: TodoData = todoData.values().next().value;
 
@@ -190,7 +200,9 @@ describe('builders', () => {
 
     it('can build todo data from results with days to decay error only', () => {
       const todoData = buildTodoData(tmp, getFixture('ember-template-lint-single-error', tmp), {
-        error: 30,
+        daysToDecay: {
+          error: 30,
+        },
       });
       const todoDatum: TodoData = todoData.values().next().value;
 
@@ -199,8 +211,10 @@ describe('builders', () => {
 
     it('can build todo data from results with days to decay warn and error', () => {
       const todoData = buildTodoData(tmp, getFixture('ember-template-lint-single-error', tmp), {
-        warn: 30,
-        error: 60,
+        daysToDecay: {
+          warn: 30,
+          error: 60,
+        },
       });
       const todoDatum: TodoData = todoData.values().next().value;
 
