@@ -1,3 +1,14 @@
+## v9.0.0 (2021-06-08)
+
+#### :boom: Breaking Change
+* [#213](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/213) Extends todo configuration to support configuring days to decay by rule ID. ([@scalvert](https://github.com/scalvert))
+* [#212](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/212) Removes unsued APIs for write/ensure todo config ([@scalvert](https://github.com/scalvert))
+#### :memo: Documentation
+* [#225](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/225) Update docs with new getTodoConfig API changes ([@scalvert](https://github.com/scalvert))
+#### Committers: 2
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+- [@dependabot-preview[bot]](https://github.com/apps/dependabot-preview)
+
 ## v8.1.0 (2021-05-04)
 
 #### :rocket: Enhancement
