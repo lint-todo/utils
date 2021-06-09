@@ -42,6 +42,7 @@ export interface TodoData {
   createdDate: number;
   warnDate?: number;
   errorDate?: number;
+  source?: string;
 }
 
 export type LintTodoPackageJson = PackageJson & {

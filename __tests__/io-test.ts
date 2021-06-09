@@ -9,6 +9,7 @@ import {
   getTodoBatchesSync,
   todoDirFor,
   todoFileNameFor,
+  todoFileNameForSource,
   todoFilePathFor,
   todoStorageDirExists,
   writeTodos,
@@ -29,6 +30,16 @@ const TODO_DATA: TodoData = {
   ruleId: 'no-prototype-builtins',
   line: 25,
   column: 21,
+  createdDate: getDatePart(new Date('12/11/2020')).getTime(),
+};
+
+const TODO_TEMPLATE_DATA: TodoData = {
+  engine: 'ember-template-lint',
+  filePath: 'app/templates/components/add-ssh-key.hbs',
+  ruleId: 'require-input-label',
+  line: 3,
+  column: 4,
+  source: '<input />',
   createdDate: getDatePart(new Date('12/11/2020')).getTime(),
 };
 
@@ -85,6 +96,22 @@ describe('io', () => {
 
       expect(fileName).toEqual('6e3be839');
       expect(secondFileName).toEqual('6e3be839');
+    });
+  });
+
+  describe('todoFileNameForSource', () => {
+    it('can generate a unique hash for todo based on the source', () => {
+      const fileName = todoFileNameForSource(TODO_TEMPLATE_DATA);
+
+      expect(fileName).toEqual('388885f3');
+    });
+
+    it('generates idempotent file names', () => {
+      const fileName = todoFileNameForSource(TODO_TEMPLATE_DATA);
+      const secondFileName = todoFileNameForSource(TODO_TEMPLATE_DATA);
+
+      expect(fileName).toEqual('388885f3');
+      expect(secondFileName).toEqual('388885f3');
     });
   });
 

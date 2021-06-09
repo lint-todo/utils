@@ -103,6 +103,19 @@ export function todoFileNameFor(todoData: TodoData): string {
 }
 
 /**
+ * Generates a unique hash for the filename for a todo lint data based on the violation source.
+ *
+ * @param todoData - The linting data for an individual violation.
+ * @returns  - The todo file name for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object (based on the source, not the line and column).
+ */
+
+export function todoFileNameForSource(todoData: TodoData): string {
+  const hashParams = `${todoData.engine}${todoData.ruleId}${todoData.source}`;
+  console.log(`${todoData.source}`);
+  return createHash('sha256').update(hashParams).digest('hex').slice(0, 8);
+}
+
+/**
  * Writes files for todo lint violations. One file is generated for each violation, using a generated
  * hash to identify each.
  *
