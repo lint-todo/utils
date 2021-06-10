@@ -105,7 +105,7 @@ export function getTodoConfig(
  * Validates whether we have a unique config in a single location.
  *
  * @param baseDir - The base directory that contains the project's package.json.
- * @returns
+ * @returns A ConfigValidationResult that indicates whether a config is unique
  */
 export function validateConfig(baseDir: string): ConfigValidationResult {
   const pkg = requireFile(baseDir, 'package.json');
