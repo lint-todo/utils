@@ -19,5 +19,5 @@ export function isExpired(
  * @returns Date - A date with the time zeroed out eg. '2021-01-01T08:00:00.000Z'
  */
 export function getDatePart(date: Date = new Date()): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0));
 }
