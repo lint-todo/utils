@@ -86,6 +86,9 @@ have a todo lint violation.</p>
 Config values can be present in</p>
 <p>The package.json</p>
 </dd>
+<dt><a href="#validateConfig">validateConfig(baseDir)</a> ⇒</dt>
+<dd><p>Validates whether we have a unique config in a single location.</p>
+</dd>
 <dt><a href="#getSeverity">getSeverity(todo, today)</a> ⇒</dt>
 <dd><p>Returns the correct severity level based on the todo data&#39;s decay dates.</p>
 </dd>
@@ -413,6 +416,18 @@ Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
 
 Passed in directly, such as from command line options.
 	- Passed in options override both env vars and package.json config
+<a name="validateConfig"></a>
+
+## validateConfig(baseDir) ⇒
+Validates whether we have a unique config in a single location.
+
+**Kind**: global function  
+**Returns**: A ConfigValidationResult that indicates whether a config is unique  
+
+| Param | Description |
+| --- | --- |
+| baseDir | The base directory that contains the project's package.json. |
+
 <a name="getSeverity"></a>
 
 ## getSeverity(todo, today) ⇒
