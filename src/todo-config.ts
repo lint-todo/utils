@@ -1,5 +1,12 @@
 import { join } from 'path';
-import { DaysToDecay, TodoConfig } from './types';
+import { DaysToDecay, LintTodoPackageJson, TodoConfig, TodoConfigByEngine } from './types';
+
+type ConfigValidationResult = {
+  pkg?: LintTodoPackageJson;
+  lintTodorc?: TodoConfig;
+  isValid: boolean;
+  message?: string;
+};
 
 /**
  * Gets the todo configuration.
@@ -94,33 +101,60 @@ export function getTodoConfig(
   return todoConfig;
 }
 
-function getFromConfigFile(basePath: string, engine: string): TodoConfig | undefined {
-  const pkg = requireFile(basePath, 'package.json');
-  const lintTodorc = requireFile(basePath, '.lint-todorc.js');
+/**
+ * Validates whether we have a unique config in a single location.
+ *
+ * @param baseDir - The base directory that contains the project's package.json.
+ * @returns
+ */
+export function validateConfig(baseDir: string): ConfigValidationResult {
+  const pkg = requireFile(baseDir, 'package.json');
+  const lintTodorc = requireFile(baseDir, '.lint-todorc.js');
+  const validationResult: ConfigValidationResult = {
+    pkg,
+    lintTodorc,
+    isValid: !(pkg?.lintTodo && lintTodorc),
+  };
 
-  if (pkg?.lintTodo && lintTodorc) {
-    throw new Error(
-      'You cannot have todo configurations in both package.json and .lint-todorc.js. Please move the configuration from the package.json to the .lint-todorc.js'
-    );
+  if (!validationResult.isValid) {
+    validationResult.message =
+      'You cannot have todo configurations in both package.json and .lint-todorc.js. Please move the configuration from the package.json to the .lint-todorc.js';
   }
 
-  const todoConfig = lintTodorc ?? pkg?.lintTodo;
+  return validationResult;
+}
+
+function isTodoConfig(config: TodoConfig | TodoConfigByEngine): config is TodoConfig {
+  return (
+    Object.keys(config).length === 0 || Object.prototype.hasOwnProperty.call(config, 'daysToDecay')
+  );
+}
+
+function getFromConfigFile(baseDir: string, engine: string): TodoConfig | undefined {
+  const result = validateConfig(baseDir);
+
+  if (!result.isValid) {
+    throw new Error(result.message);
+  }
+
+  const todoConfig: TodoConfig | TodoConfigByEngine | undefined =
+    result.lintTodorc ?? result.pkg?.lintTodo;
+
+  if (todoConfig === undefined) {
+    return;
+  }
 
   // either an empty config or a legacy config where the object only had a top-level daysToDecay property
-  if (
-    !todoConfig ||
-    Object.keys(todoConfig).length === 0 ||
-    Object.prototype.hasOwnProperty.call(todoConfig, 'daysToDecay')
-  ) {
+  if (isTodoConfig(todoConfig)) {
     return todoConfig;
   }
 
   return todoConfig[engine];
 }
 
-function requireFile(basePath: string, fileName: string) {
+function requireFile(baseDir: string, fileName: string) {
   try {
-    return require(join(basePath, fileName));
+    return require(join(baseDir, fileName));
   } catch {
     return;
   }

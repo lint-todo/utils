@@ -1,6 +1,7 @@
 import { unlink } from 'fs-extra';
 import { join } from 'path';
 import { getTodoConfig } from '../src';
+import { validateConfig } from '../src/todo-config';
 import { FakeProject } from './__utils__/fake-project';
 
 describe('todo-config', () => {
@@ -369,6 +370,47 @@ describe('todo-config', () => {
         warn: 1,
         error: undefined,
       });
+    });
+
+    it('can validate a config as valid with package.json', () => {
+      project.writeLegacyPackageJsonTodoConfig({
+        warn: 1,
+        error: 2,
+      });
+
+      const result = validateConfig(project.baseDir);
+
+      expect(result.isValid).toEqual(true);
+    });
+
+    it('can validate a config as valid with .lint-todorc.js', () => {
+      project.writeLintTodorc('foo', {
+        warn: 1,
+        error: 2,
+      });
+
+      const result = validateConfig(project.baseDir);
+
+      expect(result.isValid).toEqual(true);
+    });
+
+    it('can validate a config as invalid', () => {
+      project.writeLegacyPackageJsonTodoConfig({
+        warn: 1,
+        error: 2,
+      });
+
+      project.writeLintTodorc('foo', {
+        warn: 1,
+        error: 2,
+      });
+
+      const result = validateConfig(project.baseDir);
+
+      expect(result.isValid).toEqual(false);
+      expect(result.message).toEqual(
+        'You cannot have todo configurations in both package.json and .lint-todorc.js. Please move the configuration from the package.json to the .lint-todorc.js'
+      );
     });
   });
 });
