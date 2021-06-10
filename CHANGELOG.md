@@ -1,3 +1,13 @@
+## v9.0.1 (2021-06-10)
+
+#### :bug: Bug Fix
+* [#237](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/237) Tweak `getDatePart` to use UTC date ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 2
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+- [@dependabot-preview[bot]](https://github.com/apps/dependabot-preview)
+
+
 ## v9.0.0 (2021-06-08)
 
 #### :boom: Breaking Change
