@@ -1,3 +1,12 @@
+## v9.1.1 (2021-06-10)
+
+#### :bug: Bug Fix
+* [#247](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/247) Exporting new date-utils APIs ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v9.1.0 (2021-06-10)
 
 #### :rocket: Enhancement
