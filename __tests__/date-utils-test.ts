@@ -1,5 +1,5 @@
 import { subDays, addDays } from 'date-fns';
-import { isExpired, getDatePart, differenceInDays } from '../src/date-utils';
+import { isExpired, getDatePart, differenceInDays, format } from '../src/date-utils';
 
 describe('date-utils', () => {
   describe('isExpired', () => {
@@ -38,6 +38,20 @@ describe('date-utils', () => {
 
     it('returns -10 when start date is past end date', () => {
       expect(differenceInDays(new Date('2021-01-11'), new Date('2021-01-01'))).toEqual(-10);
+    });
+  });
+
+  describe('format', () => {
+    it('returns correctly formatted date for string', () => {
+      expect(format('2021-01-01')).toEqual('2021-01-01');
+    });
+
+    it('returns correctly formatted date for number', () => {
+      expect(format(1609459200000)).toEqual('2021-01-01');
+    });
+
+    it('returns correctly formatted date for date', () => {
+      expect(format(getDatePart(new Date('2021-01-01')))).toEqual('2021-01-01');
     });
   });
 });
