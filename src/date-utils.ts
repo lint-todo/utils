@@ -21,3 +21,11 @@ export function isExpired(
 export function getDatePart(date: Date = new Date()): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0));
 }
+
+export function differenceInDays(startDate: Date, endDate: Date): number {
+  const millisecondsPerDay = 86400000;
+
+  return Math.round(
+    (getDatePart(endDate).getTime() - getDatePart(startDate).getTime()) / millisecondsPerDay
+  );
+}
