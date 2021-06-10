@@ -18,7 +18,7 @@ export {
   readTodosForFilePathSync,
   writeTodosSync,
 } from './io';
-export { getTodoConfig } from './todo-config';
+export { getTodoConfig, validateConfig } from './todo-config';
 export { getSeverity } from './get-severity';
 export { getDatePart, isExpired, differenceInDays, format } from './date-utils';
 
