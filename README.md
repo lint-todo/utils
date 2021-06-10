@@ -95,6 +95,12 @@ Config values can be present in</p>
 <dt><a href="#getDatePart">getDatePart(date)</a> ⇒</dt>
 <dd><p>Converts a date to include year, month, and day values only (time is zeroed out).</p>
 </dd>
+<dt><a href="#differenceInDays">differenceInDays(startDate, endDate)</a> ⇒</dt>
+<dd><p>Returns the difference in days between two dates.</p>
+</dd>
+<dt><a href="#format">format(date)</a> ⇒</dt>
+<dd><p>Formats the date in short form, eg. 2021-01-01</p>
+</dd>
 </dl>
 
 <a name="buildTodoData"></a>
@@ -444,6 +450,31 @@ Converts a date to include year, month, and day values only (time is zeroed out)
 | Param | Description |
 | --- | --- |
 | date | The date to convert |
+
+<a name="differenceInDays"></a>
+
+## differenceInDays(startDate, endDate) ⇒
+Returns the difference in days between two dates.
+
+**Kind**: global function  
+**Returns**: a number representing the days between the dates  
+
+| Param | Description |
+| --- | --- |
+| startDate | The start date |
+| endDate | The end date |
+
+<a name="format"></a>
+
+## format(date) ⇒
+Formats the date in short form, eg. 2021-01-01
+
+**Kind**: global function  
+**Returns**: A string representing the formatted date  
+
+| Param | Description |
+| --- | --- |
+| date | The date to format |
 
 
 <!--DOCS_END-->

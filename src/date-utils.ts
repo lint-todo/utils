@@ -21,3 +21,32 @@ export function isExpired(
 export function getDatePart(date: Date = new Date()): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0));
 }
+
+/**
+ * Returns the difference in days between two dates.
+ *
+ * @param startDate - The start date
+ * @param endDate - The end date
+ * @returns a number representing the days between the dates
+ */
+export function differenceInDays(startDate: Date, endDate: Date): number {
+  const millisecondsPerDay = 86400000;
+
+  return Math.round(
+    (getDatePart(endDate).getTime() - getDatePart(startDate).getTime()) / millisecondsPerDay
+  );
+}
+
+/**
+ * Formats the date in short form, eg. 2021-01-01
+ *
+ * @param date - The date to format
+ * @returns A string representing the formatted date
+ */
+export function format(date: string | number | Date): string {
+  if (!(date instanceof Date)) {
+    date = new Date(date);
+  }
+
+  return getDatePart(date).toISOString().split('T')[0];
+}
