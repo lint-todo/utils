@@ -1,3 +1,13 @@
+## v9.1.0 (2021-06-10)
+
+#### :rocket: Enhancement
+* [#242](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/242) Adds new validateConfig function ([@scalvert](https://github.com/scalvert))
+* [#238](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/238) Adds new date utils: differenceInDays and format ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v9.0.1 (2021-06-10)
 
 #### :bug: Bug Fix
