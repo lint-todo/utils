@@ -20,6 +20,6 @@ export {
 } from './io';
 export { getTodoConfig } from './todo-config';
 export { getSeverity } from './get-severity';
-export { getDatePart, isExpired } from './date-utils';
+export { getDatePart, isExpired, differenceInDays, format } from './date-utils';
 
 export * from './types';
