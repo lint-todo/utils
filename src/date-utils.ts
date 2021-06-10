@@ -25,8 +25,8 @@ export function getDatePart(date: Date = new Date()): Date {
 /**
  * Returns the difference in days between two dates.
  *
- * @param startDate
- * @param endDate
+ * @param startDate - The start date
+ * @param endDate - The end date
  * @returns a number representing the days between the dates
  */
 export function differenceInDays(startDate: Date, endDate: Date): number {
@@ -40,7 +40,7 @@ export function differenceInDays(startDate: Date, endDate: Date): number {
 /**
  * Formats the date in short form, eg. 2021-01-01
  *
- * @param date
+ * @param date - The date to format
  * @returns A string representing the formatted date
  */
 export function format(date: string | number | Date): string {

@@ -459,10 +459,10 @@ Returns the difference in days between two dates.
 **Kind**: global function  
 **Returns**: a number representing the days between the dates  
 
-| Param |
-| --- |
-| startDate | 
-| endDate | 
+| Param | Description |
+| --- | --- |
+| startDate | The start date |
+| endDate | The end date |
 
 <a name="format"></a>
 
@@ -472,9 +472,9 @@ Formats the date in short form, eg. 2021-01-01
 **Kind**: global function  
 **Returns**: A string representing the formatted date  
 
-| Param |
-| --- |
-| date | 
+| Param | Description |
+| --- | --- |
+| date | The date to format |
 
 
 <!--DOCS_END-->
