@@ -14,7 +14,7 @@ export function isFuzzyMatch(testTodo: TodoData, refTodo: TodoData): boolean {
     testTodo.ruleId === refTodo.ruleId &&
     testTodo.source === refTodo.source &&
   // if the line or column (or both) have changed
-    (testTodo.line !== refTodo.line || testTodo.column !== testTodo.column)
+    (testTodo.line !== refTodo.line || testTodo.column !== refTodo.column)
   ) {
       return true;
   } return false;
