@@ -96,4 +96,70 @@ describe('isFuzzyMatch', () => {
     }
     expect(isFuzzyMatch(testTodo, refTodo)).toEqual(false);
   });
+
+  it('does not recognize a fuzzy match if the filePath(s) do not match', () => {
+    const testTodo: TodoData = {
+      engine: 'ember-template-lint',
+      filePath: 'app/components/my-input.hbs',
+      ruleId: 'require-input-label',
+      line: 4,
+      column: 3,
+      createdDate: today,
+      source: '<input/>'
+    }
+    const refTodo: TodoData = {
+      engine: 'ember-template-lint',
+      filePath: 'app/components/my-inputs.hbs',
+      ruleId: 'require-input-label',
+      line: 4,
+      column: 3,
+      createdDate: today,
+      source: '<input/>'
+    }
+    expect(isFuzzyMatch(testTodo, refTodo)).toEqual(false);
+  });
+
+  it('does not recognize a fuzzy match if the ruleId(s) do not match', () => {
+    const testTodo: TodoData = {
+      engine: 'ember-template-lint',
+      filePath: 'app/components/my-input.hbs',
+      ruleId: 'require-input-label',
+      line: 4,
+      column: 3,
+      createdDate: today,
+      source: '<input/>'
+    }
+    const refTodo: TodoData = {
+      engine: 'ember-template-lint',
+      filePath: 'app/components/my-input.hbs',
+      ruleId: 'no-nested-interactive',
+      line: 4,
+      column: 3,
+      createdDate: today,
+      source: '<input/>'
+    }
+    expect(isFuzzyMatch(testTodo, refTodo)).toEqual(false);
+  });
+
+  it('does not recognize a fuzzy match if the source(s) do not match', () => {
+    const testTodo: TodoData = {
+      engine: 'ember-template-lint',
+      filePath: 'app/components/my-input.hbs',
+      ruleId: 'require-input-label',
+      line: 4,
+      column: 3,
+      createdDate: today,
+      source: '<textarea/>'
+    }
+    const refTodo: TodoData = {
+      engine: 'ember-template-lint',
+      filePath: 'app/components/my-input.hbs',
+      ruleId: 'require-input-label',
+      line: 4,
+      column: 3,
+      createdDate: today,
+      source: '<input/>'
+    }
+    expect(isFuzzyMatch(testTodo, refTodo)).toEqual(false);
+  });
 });
