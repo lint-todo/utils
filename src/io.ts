@@ -19,6 +19,7 @@ import {
 import { buildTodoData } from './builders';
 import { FilePath, LintResult, TodoData, TodoBatchCounts, WriteTodoOptions } from './types';
 import { isExpired } from './date-utils';
+// import { isFuzzyMatch } from './match-utils';
 
 /**
  * Determines if the .lint-todo storage directory exists.
@@ -334,7 +335,10 @@ export function getTodoBatchesSync(
       options.shouldRemove!(todoDatum)
     ) {
       expired.set(fileHash, todoDatum);
-    } else if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum)) {
+    } else if (
+      !lintResults.has(fileHash) &&
+      options.shouldRemove!(todoDatum)
+      ) {
       remove.set(fileHash, todoDatum);
     } else {
       stable.set(fileHash, todoDatum);
@@ -361,14 +365,25 @@ export async function getTodoBatches(
   const expired = new Map<FilePath, TodoData>();
   const stable = new Map<FilePath, TodoData>();
 
+  // These lintResults aren't todo data yet
+  // but we convert to todo data in order to compare
+  // we put lintResults into `stable` without changing lintResults to todo data
   for (const [fileHash, todoDatum] of lintResults) {
-    if (!existing.has(fileHash)) {
-      add.set(fileHash, todoDatum);
-    } else {
-      const existingTodo = existing.get(fileHash);
-      if (existingTodo && !isExpired(existingTodo.errorDate)) {
+    const existingTodo = existing.get(fileHash);
+
+    if (
+      existingTodo &&
+      !isExpired(existingTodo.errorDate)
+      // isFuzzyMatch(lintResults, existing)
+      ) {
         stable.set(fileHash, todoDatum);
-      }
+    } else if (
+      !existing.has(fileHash)
+      // !isFuzzyMatch(todoDatum)
+      ) {
+        add.set(fileHash, todoDatum);
+    } else {
+      console.log(`a condition is falling through the cracks for add/stable`);
     }
   }
 
@@ -377,12 +392,22 @@ export async function getTodoBatches(
       lintResults.has(fileHash) &&
       isExpired(todoDatum.errorDate) &&
       options.shouldRemove!(todoDatum)
-    ) {
-      expired.set(fileHash, todoDatum);
-    } else if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum)) {
-      remove.set(fileHash, todoDatum);
+      ) {
+        expired.set(fileHash, todoDatum)
+      } else if (
+        (options.shouldRemove!(todoDatum) && lintResults.has(fileHash))
+        // ||
+        // (options.shouldRemove!(todoDatum) && isFuzzyMatch(todoDatum))
+      ) {
+        stable.set(fileHash, todoDatum)
+      } else if (
+        !lintResults.has(fileHash) &&
+        // !isFuzzyMatch(todoDatum) &&
+        options.shouldRemove!(todoDatum)
+      ) {
+        remove.set(fileHash, todoDatum);
     } else {
-      stable.set(fileHash, todoDatum);
+      console.log(`A condition is falling through the cracks for expired/remove/stable`)
     }
   }
 

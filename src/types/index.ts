@@ -74,7 +74,7 @@ export interface TodoConfigByEngine {
  *
  * @param filePath - The relative file path of the file to update violations for.
  * @param todoConfig - An object containing the warn or error days, in integers.
- * @param skipRemoval - Allows for skipping removal of todo files.
+ * @param shouldRemove - Allows for skipping removal of todo files.
  */
 export interface WriteTodoOptions {
   filePath: string;
