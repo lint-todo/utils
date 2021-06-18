@@ -379,11 +379,8 @@ export async function getTodoBatches(
         stable.set(fileHash, todoDatum);
     } else if (
       !existing.has(fileHash)
-      // !isFuzzyMatch(todoDatum)
       ) {
         add.set(fileHash, todoDatum);
-    } else {
-      console.log(`a condition is falling through the cracks for add/stable`);
     }
   }
 
@@ -402,12 +399,9 @@ export async function getTodoBatches(
         stable.set(fileHash, todoDatum)
       } else if (
         !lintResults.has(fileHash) &&
-        // !isFuzzyMatch(todoDatum) &&
         options.shouldRemove!(todoDatum)
       ) {
         remove.set(fileHash, todoDatum);
-    } else {
-      console.log(`A condition is falling through the cracks for expired/remove/stable`)
     }
   }
 

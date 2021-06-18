@@ -19,7 +19,7 @@ import {
   getDatePart,
   getTodoStorageDirPath,
 } from '../src';
-import { LintResult, TodoData } from '../src/types';
+import { FilePath, LintResult, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePaths } from './__utils__';
 import { getFixture } from './__utils__/get-fixture';
@@ -823,5 +823,69 @@ describe('io', () => {
         ]
       `);
     });
+
+    it('creates the correct number of items', async () => {
+      // two lint result objects
+      // one existing todo that is an exact match for one object and a fuzzy match for the other
+      // expect that we get one `stable` and one `add`
+
+      // Single existing todo
+      const existing = new Map<FilePath, TodoData>();
+      existing.set(
+        "existingHash", {
+            engine: 'ember-template-lint',
+            filePath: 'app/components/my-input.hbs',
+            ruleId: 'require-input-label',
+            line: 1,
+            column: 1,
+            createdDate: getDatePart().getTime(),
+            source: '<input/>'
+        });
+
+
+      const lintResults = new Map<FilePath, TodoData>();
+
+      lintResults.set(
+        // Should one exact match in `existing`
+        // Should generate one `stable` todo
+        "existingHash", {
+          engine: 'ember-template-lint',
+          filePath: 'app/components/my-input.hbs',
+          ruleId: 'require-input-label',
+          line: 1,
+          column: 1,
+          createdDate: getDatePart().getTime(),
+          source: '<input/>'
+        });
+
+      lintResults.set(
+        // Technically, has a fuzzy match in existing
+        // BUT that matching existing todo item should have already been accounted for
+        // above when the lintResult "existingHash" was assigned to stable
+        // Should generate one `add` todo
+        "fuzzyHash", {
+          engine: 'ember-template-lint',
+          filePath: 'app/components/my-input.hbs',
+          ruleId: 'require-input-label',
+          line: 2,
+          column: 1,
+          createdDate: getDatePart().getTime(),
+          source: '<input/>'
+        });
+
+        const [add, remove, stable, expired] = await getTodoBatches(
+          lintResults,
+          existing,
+          { shouldRemove: () => true }
+        );
+
+        expect(add.size).toEqual(1);
+        expect(remove.size).toEqual(0);
+        expect(stable.size).toEqual(1);
+        expect(expired.size).toEqual(0);
+
+
+    });
+
   });
 });
