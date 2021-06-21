@@ -246,43 +246,43 @@ describe('hasFuzzyMatch', () => {
 });
 
 describe('isFuzzyMatchFromSourceHash', () => {
-    it('successfully identifies a source-hashed fuzzy matchwhen the line number has changed', () => {
+    it('successfully identifies a source-hashed fuzzy match when the line number has changed', () => {
       const testTodo: TodoData = todoDatumTemplate;
       const refTodo: TodoData = Object.assign({}, todoDatumTemplate, { line: 2 } );
       expect(isFuzzyMatchFromSourceHash(testTodo, refTodo)).toEqual(true);
     });
 
-    it('successfully identifies a source-hashed fuzzy matchwhen the column number has changed', () => {
+    it('successfully identifies a source-hashed fuzzy match when the column number has changed', () => {
       const testTodo: TodoData = todoDatumTemplate;
       const refTodo: TodoData = Object.assign({}, todoDatumTemplate, { column: 2 } );
       expect(isFuzzyMatch(testTodo, refTodo)).toEqual(true);
     });
 
-    it('successfully identifies a source-hashed fuzzy matchif both line and column have changed', () => {
+    it('successfully identifies a source-hashed fuzzy match if both line and column have changed', () => {
       const testTodo: TodoData = todoDatumTemplate;
       const refTodo: TodoData = Object.assign({}, todoDatumTemplate, { line: 2, column: 2 } );
       expect(isFuzzyMatch(testTodo, refTodo)).toEqual(true);
     });
 
-    it('does not recognize a source-hashed fuzzy matchif they are an exact match', () => {
+    it('does not recognize a source-hashed fuzzy match if they are an exact match', () => {
       const testTodo: TodoData = todoDatumTemplate;
       const refTodo: TodoData = Object.assign({}, todoDatumTemplate );
       expect(isFuzzyMatch(testTodo, refTodo)).toEqual(false);
     });
 
-    it('does not recognize a source-hashed fuzzy matchif the filePath(s) do not match', () => {
+    it('does not recognize a source-hashed fuzzy match if the filePath(s) do not match', () => {
       const testTodo: TodoData = todoDatumTemplate;
       const refTodo: TodoData = Object.assign({}, todoDatumTemplate, { filePath: 'app/components/my-other-input.hbs' } );
       expect(isFuzzyMatch(testTodo, refTodo)).toEqual(false);
     });
 
-    it('does not recognize a source-hashed fuzzy matchif the ruleId(s) do not match', () => {
+    it('does not recognize a source-hashed fuzzy match if the ruleId(s) do not match', () => {
       const testTodo: TodoData = todoDatumTemplate;
       const refTodo: TodoData = Object.assign({}, todoDatumTemplate, { ruleId: 'some-other-rule'  } );
       expect(isFuzzyMatch(testTodo, refTodo)).toEqual(false);
     });
 
-    it('does not recognize a source-hashed fuzzy matchif the source(s) do not match', () => {
+    it('does not recognize a source-hashed fuzzy match if the source(s) do not match', () => {
       const testTodo: TodoData = todoDatumTemplate;
       const refTodo: TodoData = Object.assign({}, todoDatumTemplate);
       expect(isFuzzyMatch(testTodo, refTodo)).toEqual(false);
