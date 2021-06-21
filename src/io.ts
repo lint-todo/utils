@@ -184,11 +184,11 @@ export function readTodosSync(baseDir: string): Map<TodoFileHash, TodoData> {
   const todoFileDirs = readdirSync(todoStorageDir);
 
   for (const todoFileDir of todoFileDirs) {
-    const fileNames = readdirSync(posix.join(todoStorageDir, todoFileDir));
+    const todoFileHashes = readdirSync(posix.join(todoStorageDir, todoFileDir));
 
-    for (const fileName of fileNames) {
-      const todo = readJSONSync(posix.join(todoStorageDir, todoFileDir, fileName));
-      map.set(posix.join(todoFileDir, posix.parse(fileName).name), todo);
+    for (const todoFileHash of todoFileHashes) {
+      const todo = readJSONSync(posix.join(todoStorageDir, todoFileDir, todoFileHash));
+      map.set(posix.join(todoFileDir, posix.parse(todoFileHash).name), todo);
     }
   }
 
@@ -207,11 +207,11 @@ export async function readTodos(baseDir: string): Promise<Map<TodoFileHash, Todo
   const todoFileDirs = await readdir(todoStorageDir);
 
   for (const todoFileDir of todoFileDirs) {
-    const fileNames = await readdir(posix.join(todoStorageDir, todoFileDir));
+    const todoFileHashes = await readdir(posix.join(todoStorageDir, todoFileDir));
 
-    for (const fileName of fileNames) {
-      const todo = await readJSON(posix.join(todoStorageDir, todoFileDir, fileName));
-      map.set(posix.join(todoFileDir, posix.parse(fileName).name), todo);
+    for (const todoFileHash of todoFileHashes) {
+      const todo = await readJSON(posix.join(todoStorageDir, todoFileDir, todoFileHash));
+      map.set(posix.join(todoFileDir, posix.parse(todoFileHash).name), todo);
     }
   }
 
