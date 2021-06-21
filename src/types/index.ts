@@ -32,7 +32,9 @@ export interface TemplateLintMessage {
 export type LintResult = ESLint.LintResult | TemplateLintResult;
 export type LintMessage = Linter.LintMessage | TemplateLintMessage;
 
+// This type is deprecated, but is still included here for backwards compatibility.
 export type FilePath = string;
+export type TodoFileHash = string;
 export interface TodoData {
   engine: 'eslint' | 'ember-template-lint';
   filePath: string;
