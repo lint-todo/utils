@@ -1,4 +1,10 @@
 import { TodoData, FilePath } from './types';
+import {
+	//
+	todoDirFor, // 'app/components/my-input.hbs' -> [folderHash]
+	todoFileNameFor, // TodoDatum -> [folderHash]/[engineRuleIdLineColHash]
+	todoFileNameForSource, // '<input/>' -> [sourceHash]
+} from './io';
 
 /**
  * Checks to see if a todo might be a fuzzy match.
@@ -18,6 +24,17 @@ export function isFuzzyMatch(testTodo: TodoData, refTodo: TodoData): boolean {
   } return false;
 }
 
+// Same as `isFuzzyMatch(testTodo, refTodo)` except its abstracted to the hashing system
+export function isFuzzyMatchFromSourceHash(testTodo: TodoData, refTodo: TodoData): boolean {
+  if (
+    todoDirFor(testTodo.filePath) === todoDirFor(refTodo.filePath) &&
+    todoFileNameForSource(testTodo) === todoFileNameForSource(refTodo) &&
+    (todoFileNameFor(testTodo) !== todoFileNameFor(refTodo))
+  ) {
+    return true;
+  } return false;
+}
+
 /**
  * Checks to see if a todo has a fuzzy match within a reference Map
  * @param testTodo - The todo data needle to look for
@@ -25,6 +42,6 @@ export function isFuzzyMatch(testTodo: TodoData, refTodo: TodoData): boolean {
  * @returns boolean - the testTodo fuzzy matches against at least one todo in the reference Map
  * Note: a fuzzy match is false for an exact match
  */
-export function hasFuzzyMatch(testTodo: TodoData, refTodoMap: Map<FilePath, TodoData>): boolean {
+  export function hasFuzzyMatch(testTodo: TodoData, refTodoMap: Map<FilePath, TodoData>): boolean {
   return [...refTodoMap.values()].some(refTodoDatum => isFuzzyMatch(testTodo, refTodoDatum));
 }
