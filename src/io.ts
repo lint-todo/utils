@@ -17,7 +17,7 @@ import {
   rmdir,
 } from 'fs-extra';
 import { buildTodoData } from './builders';
-import { FilePath, LintResult, TodoData, TodoBatchCounts, WriteTodoOptions } from './types';
+import { TodoFileHash, LintResult, TodoData, TodoBatchCounts, WriteTodoOptions } from './types';
 import { isExpired } from './date-utils';
 
 /**
@@ -122,7 +122,7 @@ export function writeTodosSync(
   options = Object.assign({ shouldRemove: () => true }, options ?? {});
 
   const todoStorageDir: string = ensureTodoStorageDirSync(baseDir);
-  const existing: Map<FilePath, TodoData> = options.filePath
+  const existing: Map<TodoFileHash, TodoData> = options.filePath
     ? readTodosForFilePathSync(baseDir, options.filePath)
     : readTodosSync(baseDir);
   // eslint-disable-next-line prefer-const
@@ -157,7 +157,7 @@ export async function writeTodos(
   options = Object.assign({ shouldRemove: () => true }, options ?? {});
 
   const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
-  const existing: Map<FilePath, TodoData> = options.filePath
+  const existing: Map<TodoFileHash, TodoData> = options.filePath
     ? await readTodosForFilePath(baseDir, options.filePath)
     : await readTodos(baseDir);
   // eslint-disable-next-line prefer-const
@@ -176,9 +176,9 @@ export async function writeTodos(
  * Reads all todo files in the .lint-todo directory.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
  */
-export function readTodosSync(baseDir: string): Map<FilePath, TodoData> {
+export function readTodosSync(baseDir: string): Map<TodoFileHash, TodoData> {
   const map = new Map();
   const todoStorageDir: string = ensureTodoStorageDirSync(baseDir);
   const todoFileDirs = readdirSync(todoStorageDir);
@@ -199,9 +199,9 @@ export function readTodosSync(baseDir: string): Map<FilePath, TodoData> {
  * Reads all todo files in the .lint-todo directory.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns - A Promise that resolves to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * @returns - A Promise that resolves to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
  */
-export async function readTodos(baseDir: string): Promise<Map<FilePath, TodoData>> {
+export async function readTodos(baseDir: string): Promise<Map<TodoFileHash, TodoData>> {
   const map = new Map();
   const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const todoFileDirs = await readdir(todoStorageDir);
@@ -223,12 +223,12 @@ export async function readTodos(baseDir: string): Promise<Map<FilePath, TodoData
  *
  * @param todoStorageDir - The .lint-todo storage directory.
  * @param filePath - The relative file path of the file to return todo items for.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
  */
 export function readTodosForFilePathSync(
   baseDir: string,
   filePath: string
-): Map<FilePath, TodoData> {
+): Map<TodoFileHash, TodoData> {
   const map = new Map();
   const todoStorageDir: string = ensureTodoStorageDirSync(baseDir);
   const todoFileDir = todoDirFor(filePath);
@@ -257,12 +257,12 @@ export function readTodosForFilePathSync(
  *
  * @param todoStorageDir - The .lint-todo storage directory.
  * @param filePath - The relative file path of the file to return todo items for.
- * @returns - A Promise that resolves to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * @returns - A Promise that resolves to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
  */
 export async function readTodosForFilePath(
   baseDir: string,
   filePath: string
-): Promise<Map<FilePath, TodoData>> {
+): Promise<Map<TodoFileHash, TodoData>> {
   const map = new Map();
   const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
   const todoFileDir = todoDirFor(filePath);
@@ -291,17 +291,17 @@ export async function readTodosForFilePath(
  *
  * @param lintResults - The linting data for all violations.
  * @param existing - Existing todo lint data.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
  */
 export function getTodoBatchesSync(
-  lintResults: Map<FilePath, TodoData>,
-  existing: Map<FilePath, TodoData>,
+  lintResults: Map<TodoFileHash, TodoData>,
+  existing: Map<TodoFileHash, TodoData>,
   options: Partial<WriteTodoOptions>
-): Map<FilePath, TodoData>[] {
-  const add = new Map<FilePath, TodoData>();
-  const remove = new Map<FilePath, TodoData>();
-  const expired = new Map<FilePath, TodoData>();
-  const stable = new Map<FilePath, TodoData>();
+): Map<TodoFileHash, TodoData>[] {
+  const add = new Map<TodoFileHash, TodoData>();
+  const remove = new Map<TodoFileHash, TodoData>();
+  const expired = new Map<TodoFileHash, TodoData>();
+  const stable = new Map<TodoFileHash, TodoData>();
 
   for (const [fileHash, todoDatum] of lintResults) {
     if (!existing.has(fileHash)) {
@@ -336,17 +336,17 @@ export function getTodoBatchesSync(
  *
  * @param lintResults - The linting data for all violations.
  * @param existing - Existing todo lint data.
- * @returns - A Promise that resolves to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * @returns - A Promise that resolves to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
  */
 export async function getTodoBatches(
-  lintResults: Map<FilePath, TodoData>,
-  existing: Map<FilePath, TodoData>,
+  lintResults: Map<TodoFileHash, TodoData>,
+  existing: Map<TodoFileHash, TodoData>,
   options: Partial<WriteTodoOptions>
-): Promise<Map<FilePath, TodoData>[]> {
-  const add = new Map<FilePath, TodoData>();
-  const remove = new Map<FilePath, TodoData>();
-  const expired = new Map<FilePath, TodoData>();
-  const stable = new Map<FilePath, TodoData>();
+): Promise<Map<TodoFileHash, TodoData>[]> {
+  const add = new Map<TodoFileHash, TodoData>();
+  const remove = new Map<TodoFileHash, TodoData>();
+  const expired = new Map<TodoFileHash, TodoData>();
+  const stable = new Map<TodoFileHash, TodoData>();
 
   for (const [fileHash, todoDatum] of lintResults) {
     if (!existing.has(fileHash)) {
@@ -385,8 +385,8 @@ export async function getTodoBatches(
  */
 export function applyTodoChangesSync(
   todoStorageDir: string,
-  add: Map<FilePath, TodoData>,
-  remove: Map<FilePath, TodoData>
+  add: Map<TodoFileHash, TodoData>,
+  remove: Map<TodoFileHash, TodoData>
 ): void {
   for (const [fileHash, todoDatum] of add) {
     const { dir } = posix.parse(fileHash);
@@ -416,8 +416,8 @@ export function applyTodoChangesSync(
  */
 export async function applyTodoChanges(
   todoStorageDir: string,
-  add: Map<FilePath, TodoData>,
-  remove: Map<FilePath, TodoData>
+  add: Map<TodoFileHash, TodoData>,
+  remove: Map<TodoFileHash, TodoData>
 ): Promise<void> {
   for (const [fileHash, todoDatum] of add) {
     const { dir } = posix.parse(fileHash);
