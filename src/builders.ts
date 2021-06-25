@@ -1,8 +1,17 @@
 import { isAbsolute, relative } from 'path';
 import slash = require('slash');
-import { todoFilePathFor } from './io';
-import { DaysToDecay, TodoFileHash, LintMessage, LintResult, TodoConfig, TodoData } from './types';
+import { todoDirFor, todoFilePathFor } from './io';
+import {
+  DaysToDecay,
+  TodoFileHash,
+  LintMessage,
+  LintResult,
+  TodoConfig,
+  TodoData,
+  TodoFilePathHash,
+} from './types';
 import { getDatePart } from './date-utils';
+import TodoMatcher from './todo-matcher';
 
 /**
  * Adapts a list of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} to a map of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}, {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
@@ -30,6 +39,36 @@ export function buildTodoData(
 
     return converted;
   }, new Map<TodoFileHash, TodoData>());
+
+  return todoData;
+}
+
+/**
+ * Adapts a list of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} to a map of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}, {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ *
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @param lintResults - A list of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} objects to convert to {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} objects.
+ * @param todoConfig - An object containing the warn or error days, in integers.
+ * @returns - A Promise resolving to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ */
+export function buildTodoData2(
+  baseDir: string,
+  lintResults: LintResult[],
+  todoConfig?: TodoConfig
+): Set<TodoData> {
+  const results = lintResults.filter((result) => result.messages.length > 0);
+
+  const todoData = results.reduce((converted, lintResult) => {
+    lintResult.messages.forEach((message: LintMessage) => {
+      if (message.severity === 2) {
+        const todoDatum = _buildTodoDatum(baseDir, lintResult, message, todoConfig);
+
+        converted.add(todoDatum);
+      }
+    });
+
+    return converted;
+  }, new Set<TodoData>());
 
   return todoData;
 }

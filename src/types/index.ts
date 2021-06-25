@@ -33,14 +33,44 @@ export type LintResult = ESLint.LintResult | TemplateLintResult;
 export type LintMessage = Linter.LintMessage | TemplateLintMessage;
 
 // This type is deprecated, but is still included here for backwards compatibility.
+/**
+ * Represents the path to the todo file.
+ *
+ * @deprecated This type is deprecated in favor of the more descriptive TodoFileHash.
+ * @example
+ * 42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839
+ */
 export type FilePath = string;
+
+/**
+ * Represents the hashed filePath of the todos, which is a directory that contains todo files.
+ *
+ * @example
+ * 42b8532cff6da75c5e5895a6f33522bf37418d0c
+ */
+export type TodoFilePathHash = string;
+
+/**
+ * Represents the path to the todo file.
+ *
+ * @example
+ * 42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839
+ */
 export type TodoFileHash = string;
+
+export type TodoBatches = {
+  add: Map<TodoFileHash, TodoData>;
+  expired: Map<TodoFileHash, TodoData>;
+  stable: Map<TodoFileHash, TodoData>;
+  remove: Set<TodoFileHash>;
+};
 export interface TodoData {
   engine: 'eslint' | 'ember-template-lint';
   filePath: string;
   ruleId: string;
   line: number;
   column: number;
+  source?: string;
   createdDate: number;
   warnDate?: number;
   errorDate?: number;
@@ -50,7 +80,7 @@ export type LintTodoPackageJson = PackageJson & {
   lintTodo?: TodoConfig | TodoConfigByEngine;
 };
 
-export type TodoBatchCounts = [number, number];
+export type TodoBatchCounts = [add: number, remove: number, stable: number, expired: number];
 
 export type DaysToDecay = {
   warn?: number;
