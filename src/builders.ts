@@ -1,17 +1,8 @@
 import { isAbsolute, relative } from 'path';
 import slash = require('slash');
-import { todoDirFor, todoFilePathFor } from './io';
-import {
-  DaysToDecay,
-  TodoFileHash,
-  LintMessage,
-  LintResult,
-  TodoConfig,
-  TodoData,
-  TodoFilePathHash,
-} from './types';
+import { todoFilePathFor } from './io';
+import { DaysToDecay, TodoFileHash, LintMessage, LintResult, TodoConfig, TodoData } from './types';
 import { getDatePart } from './date-utils';
-import TodoMatcher from './todo-matcher';
 
 /**
  * Adapts a list of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} to a map of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}, {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
