@@ -20,9 +20,6 @@ Those utilities are:
 <dt><a href="#buildTodoData">buildTodoData(baseDir, lintResults, todoConfig)</a> ⇒</dt>
 <dd><p>Adapts a list of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32">LintResult</a> to a map of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35">TodoFileHash</a>, <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36">TodoData</a>.</p>
 </dd>
-<dt><a href="#buildTodoData2">buildTodoData2(baseDir, lintResults, todoConfig)</a> ⇒</dt>
-<dd><p>Adapts a list of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32">LintResult</a> to a map of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35">TodoFileHash</a>, <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36">TodoData</a>.</p>
-</dd>
 <dt><a href="#_buildTodoDatum">_buildTodoDatum(lintResult, lintMessage, todoConfig)</a> ⇒</dt>
 <dd><p>Adapts an <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32">LintResult</a> to a <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36">TodoData</a>. FilePaths are absolute
 when received from a lint result, so they&#39;re converted to relative paths for stability in
@@ -94,21 +91,7 @@ Config values can be present in</p>
 Adapts a list of [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32) to a map of [TodoFileHash](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35), [TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36).
 
 **Kind**: global function  
-**Returns**: - A Promise resolving to a [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) of [TodoFileHash](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35)/[TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36).  
-
-| Param | Description |
-| --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
-| lintResults | A list of [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32) objects to convert to [TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36) objects. |
-| todoConfig | An object containing the warn or error days, in integers. |
-
-<a name="buildTodoData2"></a>
-
-## buildTodoData2(baseDir, lintResults, todoConfig) ⇒
-Adapts a list of [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32) to a map of [TodoFileHash](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35), [TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36).
-
-**Kind**: global function  
-**Returns**: - A Promise resolving to a [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) of [TodoFileHash](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35)/[TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36).  
+**Returns**: - A Promise resolving to a [Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set) of [TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36).  
 
 | Param | Description |
 | --- | --- |
