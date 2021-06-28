@@ -1,4 +1,4 @@
-import { buildTodoData2 } from './builders';
+import { buildTodoData } from './builders';
 import { isExpired } from './date-utils';
 import { todoDirFor, todoFilePathFor } from './io';
 import TodoMatcher from './todo-matcher';
@@ -67,7 +67,7 @@ export default class TodoBatchGenerator {
     const stable = new Map<TodoFileHash, TodoData>();
     let remove = new Set<TodoFileHash>();
 
-    const unmatched = buildTodoData2(this.baseDir, lintResults, this.options?.todoConfig);
+    const unmatched = buildTodoData(this.baseDir, lintResults, this.options?.todoConfig);
 
     for (const unmatchedTodoData of unmatched) {
       const todoFilePathHash = todoDirFor(unmatchedTodoData.filePath);
