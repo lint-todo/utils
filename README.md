@@ -20,7 +20,7 @@ Those utilities are:
 <dt><a href="#buildTodoData">buildTodoData(baseDir, lintResults, todoConfig)</a> ⇒</dt>
 <dd><p>Adapts a list of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32">LintResult</a> to a map of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35">TodoFileHash</a>, <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36">TodoData</a>.</p>
 </dd>
-<dt><a href="#_buildTodoDatum">_buildTodoDatum(lintResult, lintMessage, todoConfig)</a> ⇒</dt>
+<dt><a href="#buildTodoDatum">buildTodoDatum(lintResult, lintMessage, todoConfig)</a> ⇒</dt>
 <dd><p>Adapts an <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32">LintResult</a> to a <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36">TodoData</a>. FilePaths are absolute
 when received from a lint result, so they&#39;re converted to relative paths for stability in
 serializing the contents to disc.</p>
@@ -99,9 +99,9 @@ Adapts a list of [LintResult](https://github.com/ember-template-lint/ember-templ
 | lintResults | A list of [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32) objects to convert to [TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36) objects. |
 | todoConfig | An object containing the warn or error days, in integers. |
 
-<a name="_buildTodoDatum"></a>
+<a name="buildTodoDatum"></a>
 
-## \_buildTodoDatum(lintResult, lintMessage, todoConfig) ⇒
+## buildTodoDatum(lintResult, lintMessage, todoConfig) ⇒
 Adapts an [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32) to a [TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36). FilePaths are absolute
 when received from a lint result, so they're converted to relative paths for stability in
 serializing the contents to disc.
