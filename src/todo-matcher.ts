@@ -34,7 +34,11 @@ export default class TodoMatcher {
         todoDataToFind.engine === todoDatum.engine &&
         todoDataToFind.ruleId === todoDatum.ruleId &&
         todoDataToFind.line === todoDatum.line &&
-        todoDataToFind.column === todoDatum.column
+        todoDataToFind.column === todoDatum.column &&
+        ((todoDataToFind.source !== undefined &&
+          todoDatum.source !== undefined &&
+          todoDataToFind.source === todoDatum.source) ||
+          true)
       ) {
         found = todoDatum;
         this.unprocessed.delete(todoDatum);
