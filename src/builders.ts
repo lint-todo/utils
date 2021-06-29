@@ -1,7 +1,6 @@
 import { isAbsolute, relative } from 'path';
 import slash = require('slash');
-import { todoFilePathFor } from './io';
-import { DaysToDecay, TodoFileHash, LintMessage, LintResult, TodoConfig, TodoData } from './types';
+import { DaysToDecay, LintMessage, LintResult, TodoConfig, TodoData } from './types';
 import { getDatePart } from './date-utils';
 
 /**
@@ -10,26 +9,26 @@ import { getDatePart } from './date-utils';
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param lintResults - A list of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} objects to convert to {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} objects.
  * @param todoConfig - An object containing the warn or error days, in integers.
- * @returns - A Promise resolving to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * @returns - A Promise resolving to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set|Set} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
  */
 export function buildTodoData(
   baseDir: string,
   lintResults: LintResult[],
   todoConfig?: TodoConfig
-): Map<TodoFileHash, TodoData> {
+): Set<TodoData> {
   const results = lintResults.filter((result) => result.messages.length > 0);
 
   const todoData = results.reduce((converted, lintResult) => {
     lintResult.messages.forEach((message: LintMessage) => {
       if (message.severity === 2) {
-        const todoDatum = _buildTodoDatum(baseDir, lintResult, message, todoConfig);
+        const todoDatum = buildTodoDatum(baseDir, lintResult, message, todoConfig);
 
-        converted.set(todoFilePathFor(todoDatum), todoDatum);
+        converted.add(todoDatum);
       }
     });
 
     return converted;
-  }, new Map<TodoFileHash, TodoData>());
+  }, new Set<TodoData>());
 
   return todoData;
 }
@@ -44,7 +43,7 @@ export function buildTodoData(
  * @param todoConfig - An object containing the warn or error days, in integers.
  * @returns - A {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object.
  */
-export function _buildTodoDatum(
+export function buildTodoDatum(
   baseDir: string,
   lintResult: LintResult,
   lintMessage: LintMessage,

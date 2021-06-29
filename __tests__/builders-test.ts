@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ESLint, Linter } from 'eslint';
 import { differenceInDays } from 'date-fns';
-import { _buildTodoDatum, buildTodoData, getDatePart } from '../src';
+import { buildTodoDatum, buildTodoData, getDatePart } from '../src';
 import { TemplateLintMessage, TemplateLintResult, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePath } from './__utils__/update-path';
@@ -51,7 +51,7 @@ describe('builders', () => {
         endColumn: 35,
       };
 
-      const todoDatum = _buildTodoDatum(tmp, eslintResult, eslintMessage);
+      const todoDatum = buildTodoDatum(tmp, eslintResult, eslintMessage);
 
       expect(todoDatum).toEqual(
         expect.objectContaining({
@@ -156,7 +156,7 @@ describe('builders', () => {
         source: '',
       };
 
-      const todoDatum = _buildTodoDatum(tmp, emberTemplateLintResult, emberTemplateLintMessage);
+      const todoDatum = buildTodoDatum(tmp, emberTemplateLintResult, emberTemplateLintMessage);
 
       expect(todoDatum).toEqual(
         expect.objectContaining({

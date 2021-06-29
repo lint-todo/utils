@@ -2,23 +2,25 @@
 import { createHash } from 'crypto';
 import { posix } from 'path';
 import {
-  ensureDir,
   existsSync,
-  readdir,
-  readJSON,
-  unlink,
-  writeJson,
   ensureDirSync,
   readdirSync,
   readJSONSync,
   writeJsonSync,
   unlinkSync,
   rmdirSync,
-  rmdir,
 } from 'fs-extra';
-import { buildTodoData } from './builders';
-import { TodoFileHash, LintResult, TodoData, TodoBatchCounts, WriteTodoOptions } from './types';
-import { isExpired } from './date-utils';
+import {
+  TodoFileHash,
+  LintResult,
+  TodoData,
+  TodoBatchCounts,
+  WriteTodoOptions,
+  TodoFilePathHash,
+  TodoBatches,
+} from './types';
+import TodoMatcher from './todo-matcher';
+import TodoBatchGenerator from './todo-batch-generator';
 
 /**
  * Determines if the .lint-todo storage directory exists.
@@ -36,24 +38,10 @@ export function todoStorageDirExists(baseDir: string): boolean {
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @returns - The todo storage directory path.
  */
-export function ensureTodoStorageDirSync(baseDir: string): string {
+export function ensureTodoStorageDir(baseDir: string): string {
   const path = getTodoStorageDirPath(baseDir);
 
   ensureDirSync(path);
-
-  return path;
-}
-
-/**
- * Creates, or ensures the creation of, the .lint-todo directory.
- *
- * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns - A promise that resolves to the todo storage directory path.
- */
-export async function ensureTodoStorageDir(baseDir: string): Promise<string> {
-  const path = getTodoStorageDirPath(baseDir);
-
-  await ensureDir(path);
 
   return path;
 }
@@ -114,108 +102,56 @@ export function todoFileNameFor(todoData: TodoData): string {
  * @param options - An object containing write options.
  * @returns - The counts of added and removed todos.
  */
-export function writeTodosSync(
+export function writeTodos(
   baseDir: string,
   lintResults: LintResult[],
   options?: Partial<WriteTodoOptions>
 ): TodoBatchCounts {
   options = Object.assign({ shouldRemove: () => true }, options ?? {});
 
-  const todoStorageDir: string = ensureTodoStorageDirSync(baseDir);
-  const existing: Map<TodoFileHash, TodoData> = options.filePath
-    ? readTodosForFilePathSync(baseDir, options.filePath)
-    : readTodosSync(baseDir);
-  // eslint-disable-next-line prefer-const
-  let [add, remove] = getTodoBatchesSync(
-    buildTodoData(baseDir, lintResults, options.todoConfig),
+  const todoStorageDir: string = ensureTodoStorageDir(baseDir);
+  const existing: Map<TodoFilePathHash, TodoMatcher> = options.filePath
+    ? readTodosForFilePath(baseDir, options.filePath)
+    : readTodos(baseDir);
+  const { add, remove, stable, expired } = getTodoBatchesSync(
+    baseDir,
+    lintResults,
     existing,
     options
   );
 
-  applyTodoChangesSync(todoStorageDir, add, remove);
+  applyTodoChanges(todoStorageDir, add, remove);
 
-  return [add.size, remove.size];
-}
-
-/**
- * Writes files for todo lint violations. One file is generated for each violation, using a generated
- * hash to identify each.
- *
- * Given a list of todo lint violations, this function will also delete existing files that no longer
- * have a todo lint violation.
- *
- * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @param lintResults - The raw linting data.
- * @param options - An object containing write options.
- * @returns - A promise that resolves to the counts of added and removed todos.
- */
-export async function writeTodos(
-  baseDir: string,
-  lintResults: LintResult[],
-  options?: Partial<WriteTodoOptions>
-): Promise<TodoBatchCounts> {
-  options = Object.assign({ shouldRemove: () => true }, options ?? {});
-
-  const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
-  const existing: Map<TodoFileHash, TodoData> = options.filePath
-    ? await readTodosForFilePath(baseDir, options.filePath)
-    : await readTodos(baseDir);
-  // eslint-disable-next-line prefer-const
-  let [add, remove] = await getTodoBatches(
-    buildTodoData(baseDir, lintResults, options.todoConfig),
-    existing,
-    options
-  );
-
-  await applyTodoChanges(todoStorageDir, add, remove);
-
-  return [add.size, remove.size];
+  return [add.size, remove.size, stable.size, expired.size];
 }
 
 /**
  * Reads all todo files in the .lint-todo directory.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L51|TodoFilePathHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
-export function readTodosSync(baseDir: string): Map<TodoFileHash, TodoData> {
-  const map = new Map();
-  const todoStorageDir: string = ensureTodoStorageDirSync(baseDir);
+export function readTodos(baseDir: string): Map<TodoFilePathHash, TodoMatcher> {
+  const existingTodos = new Map<TodoFilePathHash, TodoMatcher>();
+  const todoStorageDir: string = ensureTodoStorageDir(baseDir);
   const todoFileDirs = readdirSync(todoStorageDir);
 
   for (const todoFileDir of todoFileDirs) {
     const todoFileHashes = readdirSync(posix.join(todoStorageDir, todoFileDir));
 
+    if (!existingTodos.has(todoFileDir)) {
+      existingTodos.set(todoFileDir, new TodoMatcher());
+    }
+
+    const matcher = existingTodos.get(todoFileDir);
+
     for (const todoFileHash of todoFileHashes) {
-      const todo = readJSONSync(posix.join(todoStorageDir, todoFileDir, todoFileHash));
-      map.set(posix.join(todoFileDir, posix.parse(todoFileHash).name), todo);
+      const todoDatum = readJSONSync(posix.join(todoStorageDir, todoFileDir, todoFileHash));
+      matcher!.add(todoDatum);
     }
   }
 
-  return map;
-}
-
-/**
- * Reads all todo files in the .lint-todo directory.
- *
- * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns - A Promise that resolves to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
- */
-export async function readTodos(baseDir: string): Promise<Map<TodoFileHash, TodoData>> {
-  const map = new Map();
-  const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
-  const todoFileDirs = await readdir(todoStorageDir);
-
-  for (const todoFileDir of todoFileDirs) {
-    const todoFileHashes = await readdir(posix.join(todoStorageDir, todoFileDir));
-
-    for (const todoFileHash of todoFileHashes) {
-      const todo = await readJSON(posix.join(todoStorageDir, todoFileDir, todoFileHash));
-      map.set(posix.join(todoFileDir, posix.parse(todoFileHash).name), todo);
-    }
-  }
-
-  return map;
+  return existingTodos;
 }
 
 /**
@@ -223,67 +159,38 @@ export async function readTodos(baseDir: string): Promise<Map<TodoFileHash, Todo
  *
  * @param todoStorageDir - The .lint-todo storage directory.
  * @param filePath - The relative file path of the file to return todo items for.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L51|TodoFilePathHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
-export function readTodosForFilePathSync(
+export function readTodosForFilePath(
   baseDir: string,
   filePath: string
-): Map<TodoFileHash, TodoData> {
-  const map = new Map();
-  const todoStorageDir: string = ensureTodoStorageDirSync(baseDir);
+): Map<TodoFilePathHash, TodoMatcher> {
+  const existingTodos = new Map<TodoFilePathHash, TodoMatcher>();
+  const todoStorageDir: string = ensureTodoStorageDir(baseDir);
   const todoFileDir = todoDirFor(filePath);
   const todoFilePathDir = posix.join(todoStorageDir, todoFileDir);
 
   try {
+    if (!existingTodos.has(todoFileDir)) {
+      existingTodos.set(todoFileDir, new TodoMatcher());
+    }
+
+    const matcher = existingTodos.get(todoFileDir);
     const fileNames = readdirSync(todoFilePathDir);
 
     for (const fileName of fileNames) {
-      const todo = readJSONSync(posix.join(todoFilePathDir, fileName));
-      map.set(posix.join(todoFileDir, posix.parse(fileName).name), todo);
+      const todoDatum = readJSONSync(posix.join(todoFilePathDir, fileName));
+      matcher?.add(todoDatum);
     }
   } catch (error) {
     if (error.code === 'ENOENT') {
-      return map;
+      return existingTodos;
     }
 
     throw error;
   }
 
-  return map;
-}
-
-/**
- * Reads todo files in the .lint-todo directory for a specific filePath.
- *
- * @param todoStorageDir - The .lint-todo storage directory.
- * @param filePath - The relative file path of the file to return todo items for.
- * @returns - A Promise that resolves to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
- */
-export async function readTodosForFilePath(
-  baseDir: string,
-  filePath: string
-): Promise<Map<TodoFileHash, TodoData>> {
-  const map = new Map();
-  const todoStorageDir: string = await ensureTodoStorageDir(baseDir);
-  const todoFileDir = todoDirFor(filePath);
-  const todoFilePathDir = posix.join(todoStorageDir, todoFileDir);
-
-  try {
-    const fileNames = await readdir(todoFilePathDir);
-
-    for (const fileName of fileNames) {
-      const todo = await readJSON(posix.join(todoFilePathDir, fileName));
-      map.set(posix.join(todoFileDir, posix.parse(fileName).name), todo);
-    }
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return map;
-    }
-
-    throw error;
-  }
-
-  return map;
+  return existingTodos;
 }
 
 /**
@@ -294,86 +201,13 @@ export async function readTodosForFilePath(
  * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
  */
 export function getTodoBatchesSync(
-  lintResults: Map<TodoFileHash, TodoData>,
-  existing: Map<TodoFileHash, TodoData>,
+  baseDir: string,
+  lintResults: LintResult[],
+  existing: Map<TodoFilePathHash, TodoMatcher>,
   options: Partial<WriteTodoOptions>
-): Map<TodoFileHash, TodoData>[] {
-  const add = new Map<TodoFileHash, TodoData>();
-  const remove = new Map<TodoFileHash, TodoData>();
-  const expired = new Map<TodoFileHash, TodoData>();
-  const stable = new Map<TodoFileHash, TodoData>();
-
-  for (const [fileHash, todoDatum] of lintResults) {
-    if (!existing.has(fileHash)) {
-      add.set(fileHash, todoDatum);
-    } else {
-      const existingTodo = existing.get(fileHash);
-      if (existingTodo && !isExpired(existingTodo.errorDate)) {
-        stable.set(fileHash, todoDatum);
-      }
-    }
-  }
-
-  for (const [fileHash, todoDatum] of existing) {
-    if (
-      lintResults.has(fileHash) &&
-      isExpired(todoDatum.errorDate) &&
-      options.shouldRemove!(todoDatum)
-    ) {
-      expired.set(fileHash, todoDatum);
-    } else if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum)) {
-      remove.set(fileHash, todoDatum);
-    } else {
-      stable.set(fileHash, todoDatum);
-    }
-  }
-
-  return [add, remove, stable, expired];
-}
-
-/**
- * Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).
- *
- * @param lintResults - The linting data for all violations.
- * @param existing - Existing todo lint data.
- * @returns - A Promise that resolves to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
- */
-export async function getTodoBatches(
-  lintResults: Map<TodoFileHash, TodoData>,
-  existing: Map<TodoFileHash, TodoData>,
-  options: Partial<WriteTodoOptions>
-): Promise<Map<TodoFileHash, TodoData>[]> {
-  const add = new Map<TodoFileHash, TodoData>();
-  const remove = new Map<TodoFileHash, TodoData>();
-  const expired = new Map<TodoFileHash, TodoData>();
-  const stable = new Map<TodoFileHash, TodoData>();
-
-  for (const [fileHash, todoDatum] of lintResults) {
-    if (!existing.has(fileHash)) {
-      add.set(fileHash, todoDatum);
-    } else {
-      const existingTodo = existing.get(fileHash);
-      if (existingTodo && !isExpired(existingTodo.errorDate)) {
-        stable.set(fileHash, todoDatum);
-      }
-    }
-  }
-
-  for (const [fileHash, todoDatum] of existing) {
-    if (
-      lintResults.has(fileHash) &&
-      isExpired(todoDatum.errorDate) &&
-      options.shouldRemove!(todoDatum)
-    ) {
-      expired.set(fileHash, todoDatum);
-    } else if (!lintResults.has(fileHash) && options.shouldRemove!(todoDatum)) {
-      remove.set(fileHash, todoDatum);
-    } else {
-      stable.set(fileHash, todoDatum);
-    }
-  }
-
-  return [add, remove, stable, expired];
+): TodoBatches {
+  const todoBatchGenerator = new TodoBatchGenerator(baseDir, options);
+  return todoBatchGenerator.generate(lintResults, existing);
 }
 
 /**
@@ -383,10 +217,10 @@ export async function getTodoBatches(
  * @param add - Batch of todos to add.
  * @param remove - Batch of todos to remove.
  */
-export function applyTodoChangesSync(
+export function applyTodoChanges(
   todoStorageDir: string,
   add: Map<TodoFileHash, TodoData>,
-  remove: Map<TodoFileHash, TodoData>
+  remove: Set<TodoFileHash>
 ): void {
   for (const [fileHash, todoDatum] of add) {
     const { dir } = posix.parse(fileHash);
@@ -395,7 +229,7 @@ export function applyTodoChangesSync(
     writeJsonSync(posix.join(todoStorageDir, `${fileHash}.json`), todoDatum);
   }
 
-  for (const [fileHash] of remove) {
+  for (const fileHash of remove) {
     const { dir } = posix.parse(fileHash);
     const todoDir = posix.join(todoStorageDir, dir);
 
@@ -403,37 +237,6 @@ export function applyTodoChangesSync(
 
     if (readdirSync(todoDir).length === 0) {
       rmdirSync(todoDir);
-    }
-  }
-}
-
-/**
- * Applies todo changes, either adding or removing, based on batches from `getTodoBatches`.
- *
- * @param todoStorageDir - The .lint-todo storage directory.
- * @param add - Batch of todos to add.
- * @param remove - Batch of todos to remove.
- */
-export async function applyTodoChanges(
-  todoStorageDir: string,
-  add: Map<TodoFileHash, TodoData>,
-  remove: Map<TodoFileHash, TodoData>
-): Promise<void> {
-  for (const [fileHash, todoDatum] of add) {
-    const { dir } = posix.parse(fileHash);
-
-    await ensureDir(posix.join(todoStorageDir, dir));
-    await writeJson(posix.join(todoStorageDir, `${fileHash}.json`), todoDatum);
-  }
-
-  for (const [fileHash] of remove) {
-    const { dir } = posix.parse(fileHash);
-    const todoDir = posix.join(todoStorageDir, dir);
-
-    await unlink(posix.join(todoStorageDir, `${fileHash}.json`));
-
-    if ((await readdir(todoDir)).length === 0) {
-      await rmdir(todoDir);
     }
   }
 }
