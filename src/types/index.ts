@@ -59,18 +59,35 @@ export type TodoFilePathHash = string;
 export type TodoFileHash = string;
 
 export type TodoBatches = {
-  add: Map<TodoFileHash, TodoData>;
-  expired: Map<TodoFileHash, TodoData>;
-  stable: Map<TodoFileHash, TodoData>;
+  add: Map<TodoFileHash, TodoDataV1>;
+  expired: Map<TodoFileHash, TodoDataV1>;
+  stable: Map<TodoFileHash, TodoDataV1>;
   remove: Set<TodoFileHash>;
 };
-export interface TodoData {
+
+export interface TodoDataV1 {
   engine: 'eslint' | 'ember-template-lint';
   filePath: string;
   ruleId: string;
   line: number;
   column: number;
   source?: string;
+  createdDate: number;
+  warnDate?: number;
+  errorDate?: number;
+}
+
+export interface TodoDataV2 {
+  engine: 'eslint' | 'ember-template-lint' | string;
+  filePath: string;
+  ruleId: string;
+  range: {
+    startLine: number;
+    endLine: number | null;
+    startColumn: number;
+    endColumn: number | null;
+  };
+  source: string;
   createdDate: number;
   warnDate?: number;
   errorDate?: number;
@@ -110,5 +127,5 @@ export interface TodoConfigByEngine {
 export interface WriteTodoOptions {
   filePath: string;
   todoConfig: TodoConfig;
-  shouldRemove: (todoDatum: TodoData) => boolean;
+  shouldRemove: (todoDatum: TodoDataV1) => boolean;
 }

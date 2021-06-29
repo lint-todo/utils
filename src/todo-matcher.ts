@@ -1,32 +1,32 @@
 import { todoFilePathFor, todoFileNameFor } from './io';
-import { TodoData, TodoFilePathHash } from './types';
+import { TodoDataV1, TodoFilePathHash } from './types';
 
 export default class TodoMatcher {
-  private unprocessed: Set<TodoData>;
+  private unprocessed: Set<TodoDataV1>;
 
   constructor() {
     this.unprocessed = new Set();
   }
 
-  unmatched(predicate: (todoDatum: TodoData) => boolean = () => false): string[] {
+  unmatched(predicate: (todoDatum: TodoDataV1) => boolean = () => false): string[] {
     return [...this.unprocessed]
       .filter((todoDatum) => predicate(todoDatum))
-      .map((todoDatum: TodoData) => {
+      .map((todoDatum: TodoDataV1) => {
         return todoFilePathFor(todoDatum);
       });
   }
 
-  add(todoDatum: TodoData): void {
+  add(todoDatum: TodoDataV1): void {
     this.unprocessed.add(todoDatum);
   }
 
-  find(todoFilePathHash: TodoFilePathHash): TodoData | undefined {
+  find(todoFilePathHash: TodoFilePathHash): TodoDataV1 | undefined {
     return [...this.unprocessed].find(
       (todoDatum) => todoFileNameFor(todoDatum) === todoFilePathHash
     );
   }
 
-  exactMatch(todoDataToFind: TodoData): TodoData | undefined {
+  exactMatch(todoDataToFind: TodoDataV1): TodoDataV1 | undefined {
     let found;
 
     for (const todoDatum of this.unprocessed) {
@@ -45,7 +45,7 @@ export default class TodoMatcher {
     return found;
   }
 
-  fuzzyMatch(todoDataToFind: TodoData): TodoData | undefined {
+  fuzzyMatch(todoDataToFind: TodoDataV1): TodoDataV1 | undefined {
     let found;
 
     for (const todoDatum of this.unprocessed) {

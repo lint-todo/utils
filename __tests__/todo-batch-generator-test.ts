@@ -2,7 +2,7 @@ import { subDays } from 'date-fns';
 import { getDatePart } from '../src/date-utils';
 import TodoBatchGenerator from '../src/todo-batch-generator';
 import TodoMatcher from '../src/todo-matcher';
-import { TodoData, TodoFilePathHash } from '../src/types';
+import { TodoDataV1, TodoFilePathHash } from '../src/types';
 import { buildTodoDataForTesting } from './__utils__/build-todo-data';
 import { getFixture } from './__utils__/get-fixture';
 import { createTmpDir } from './__utils__/tmp-dir';
@@ -68,7 +68,7 @@ describe('todo-batch-generator', () => {
       getFixture('new-batches', tmp)
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const expiredTodo: TodoData = expiredBatches
+    const expiredTodo: TodoDataV1 = expiredBatches
       .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
       .find('cc71e5f9')!;
 
@@ -90,7 +90,7 @@ describe('todo-batch-generator', () => {
       getFixture('existing-batches', tmp)
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const expiredTodo: TodoData = existingBatches
+    const expiredTodo: TodoDataV1 = existingBatches
       .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
       .find('cc71e5f9')!;
 

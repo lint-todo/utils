@@ -13,7 +13,7 @@ import {
 import {
   TodoFileHash,
   LintResult,
-  TodoData,
+  TodoDataV1,
   TodoBatchCounts,
   WriteTodoOptions,
   TodoFilePathHash,
@@ -64,7 +64,7 @@ export function getTodoStorageDirPath(baseDir: string): string {
  * @param todoData - The linting data for an individual violation.
  * @returns - The todo file path for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object.
  */
-export function todoFilePathFor(todoData: TodoData): string {
+export function todoFilePathFor(todoData: TodoDataV1): string {
   return posix.join(todoDirFor(todoData.filePath), todoFileNameFor(todoData));
 }
 
@@ -84,7 +84,7 @@ export function todoDirFor(filePath: string): string {
  * @param todoData - The linting data for an individual violation.
  * @returns - The todo file name for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object.
  */
-export function todoFileNameFor(todoData: TodoData): string {
+export function todoFileNameFor(todoData: TodoDataV1): string {
   const hashParams = `${todoData.engine}${todoData.ruleId}${todoData.line}${todoData.column}`;
 
   return createHash('sha256').update(hashParams).digest('hex').slice(0, 8);
@@ -219,7 +219,7 @@ export function getTodoBatchesSync(
  */
 export function applyTodoChanges(
   todoStorageDir: string,
-  add: Map<TodoFileHash, TodoData>,
+  add: Map<TodoFileHash, TodoDataV1>,
   remove: Set<TodoFileHash>
 ): void {
   for (const [fileHash, todoDatum] of add) {

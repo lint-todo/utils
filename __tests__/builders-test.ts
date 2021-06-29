@@ -2,7 +2,7 @@
 import { ESLint, Linter } from 'eslint';
 import { differenceInDays } from 'date-fns';
 import { buildTodoDatum, buildTodoData, getDatePart } from '../src';
-import { TemplateLintMessage, TemplateLintResult, TodoData } from '../src/types';
+import { TemplateLintMessage, TemplateLintResult, TodoDataV1 } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePath } from './__utils__/update-path';
 import { getFixture } from './__utils__/get-fixture';
@@ -86,7 +86,7 @@ describe('builders', () => {
       const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
         daysToDecay: { warn: 30 },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -95,7 +95,7 @@ describe('builders', () => {
       const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
         daysToDecay: { error: 30 },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -107,7 +107,7 @@ describe('builders', () => {
           error: 60,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(60);
@@ -119,7 +119,7 @@ describe('builders', () => {
       const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
         daysToDecay: { warn: 30 },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(todoDatum.createdDate).toEqual(getDatePart(new Date(2015, 1, 23)).getTime());
 
@@ -193,7 +193,7 @@ describe('builders', () => {
           warn: 30,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -204,7 +204,7 @@ describe('builders', () => {
           error: 30,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -216,7 +216,7 @@ describe('builders', () => {
           error: 60,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(60);
