@@ -1,6 +1,14 @@
 import { isAbsolute, relative } from 'path';
 import slash = require('slash');
-import { DaysToDecay, LintMessage, LintResult, TodoConfig, TodoDataV1 } from './types';
+import {
+  DaysToDecay,
+  LintMessage,
+  LintResult,
+  TodoConfig,
+  TodoData,
+  TodoDataV1,
+  TodoDataV2,
+} from './types';
 import { getDatePart } from './date-utils';
 
 /**
@@ -76,6 +84,49 @@ export function buildTodoDatum(
   }
 
   return todoDatum;
+}
+
+export function normalizeToV2(todoDatum: TodoData): TodoDataV2 {
+  // if we have a range property, we're already in V2 format
+  if (todoDatum.hasOwnProperty('range')) {
+    return <TodoDataV2>todoDatum;
+  }
+
+  const todoDatumV1 = <TodoDataV1>todoDatum;
+
+  const todoDatumV2: TodoDataV2 = {
+    engine: todoDatumV1.engine,
+    filePath: todoDatumV1.filePath,
+    ruleId: todoDatumV1.ruleId,
+    range: getRange(todoDatumV1),
+    source: '',
+    createdDate: todoDatumV1.createdDate,
+  };
+
+  if (todoDatumV1.warnDate) {
+    todoDatumV2.warnDate = todoDatumV1.warnDate;
+  }
+
+  if (todoDatumV1.errorDate) {
+    todoDatumV2.errorDate = todoDatumV1.errorDate;
+  }
+
+  return todoDatumV2;
+}
+
+function getRange(todoDatum: TodoDataV1) {
+  return {
+    start: {
+      line: todoDatum.line,
+      column: todoDatum.column,
+    },
+    end: {
+      // eslint-disable-next-line unicorn/no-null
+      line: null,
+      // eslint-disable-next-line unicorn/no-null
+      column: null,
+    },
+  };
 }
 
 function getDaysToDecay(ruleId: string, todoConfig?: TodoConfig) {

@@ -81,17 +81,26 @@ export interface TodoDataV2 {
   engine: 'eslint' | 'ember-template-lint' | string;
   filePath: string;
   ruleId: string;
-  range: {
-    startLine: number;
-    endLine: number | null;
-    startColumn: number;
-    endColumn: number | null;
-  };
+  range: Range;
   source: string;
   createdDate: number;
   warnDate?: number;
   errorDate?: number;
 }
+
+export type TodoData = TodoDataV1 | TodoDataV2;
+
+export type Range = {
+  start: {
+    line: number;
+    column: number;
+  };
+
+  end: {
+    line: number | null;
+    column: number | null;
+  };
+};
 
 export type LintTodoPackageJson = PackageJson & {
   lintTodo?: TodoConfig | TodoConfigByEngine;
