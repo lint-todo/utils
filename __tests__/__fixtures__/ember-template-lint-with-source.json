@@ -1,0 +1,17 @@
+[
+  {
+    "messages": [
+      {
+        "rule": "no-bare-strings",
+        "severity": 2,
+        "filePath": "{{path}}/app/components/foo.hbs",
+        "message": "Non-translated string used",
+        "line": 3,
+        "column": 5,
+        "source": "I'm a bad bad bare string"
+      }
+    ],
+    "errorCount": 1,
+    "filePath": "{{path}}/app/components/foo.hbs"
+  }
+]

@@ -2,11 +2,18 @@
 import { ESLint, Linter } from 'eslint';
 import { differenceInDays } from 'date-fns';
 import { buildTodoDatum, buildTodoData, getDatePart } from '../src';
-import { TemplateLintMessage, TemplateLintResult, TodoDataV1, TodoDataV2 } from '../src/types';
+import {
+  LintMessage,
+  LintResult,
+  TemplateLintMessage,
+  TemplateLintResult,
+  TodoDataV1,
+  TodoDataV2,
+} from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePath } from './__utils__/update-path';
 import { getFixture } from './__utils__/get-fixture';
-import { normalizeToV2 } from '../src/builders';
+import { buildTodoDatumV2, normalizeToV2 } from '../src/builders';
 
 describe('builders', () => {
   let tmp: string;
@@ -126,6 +133,33 @@ describe('builders', () => {
 
       process.env.TODO_CREATED_DATE = '';
     });
+
+    it('can build todo data with the correct range and source', () => {
+      const lintResult = getFixture('eslint-with-source', tmp)[0];
+      const lintMessage: LintMessage = lintResult.messages[0];
+
+      const todoData = buildTodoDatumV2(tmp, lintResult, lintMessage);
+
+      expect(todoData).toMatchInlineSnapshot(`
+        Object {
+          "createdDate": 1624924800000,
+          "engine": "eslint",
+          "filePath": "app/components/foo.js",
+          "range": Object {
+            "end": Object {
+              "column": 12,
+              "line": 7,
+            },
+            "start": Object {
+              "column": 9,
+              "line": 7,
+            },
+          },
+          "ruleId": "no-unused-vars",
+          "source": "foo",
+        }
+      `);
+    });
   });
 
   describe('ember-template-lint', () => {
@@ -222,6 +256,33 @@ describe('builders', () => {
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(60);
     });
+
+    it('can build todo data with the correct range and source', () => {
+      const lintResult = getFixture('ember-template-lint-with-source', tmp)[0];
+      const lintMessage: LintMessage = lintResult.messages[0];
+
+      const todoData = buildTodoDatumV2(tmp, lintResult, lintMessage);
+
+      expect(todoData).toMatchInlineSnapshot(`
+        Object {
+          "createdDate": 1624924800000,
+          "engine": "ember-template-lint",
+          "filePath": "app/components/foo.hbs",
+          "range": Object {
+            "end": Object {
+              "column": 5,
+              "line": 3,
+            },
+            "start": Object {
+              "column": 5,
+              "line": 3,
+            },
+          },
+          "ruleId": "no-bare-strings",
+          "source": "I'm a bad bad bare string",
+        }
+      `);
+    });
   });
 
   describe('normalizeToV2', () => {
@@ -242,8 +303,8 @@ describe('builders', () => {
           "filePath": "app/controllers/settings.js",
           "range": Object {
             "end": Object {
-              "column": null,
-              "line": null,
+              "column": 21,
+              "line": 25,
             },
             "start": Object {
               "column": 21,

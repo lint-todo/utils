@@ -32,6 +32,13 @@ export interface TemplateLintMessage {
 export type LintResult = ESLint.LintResult | TemplateLintResult;
 export type LintMessage = Linter.LintMessage | TemplateLintMessage;
 
+export type Location = {
+  line: number;
+  column: number;
+  endLine?: number;
+  endColumn?: number;
+};
+
 // This type is deprecated, but is still included here for backwards compatibility.
 /**
  * Represents the path to the todo file.
@@ -97,8 +104,8 @@ export type Range = {
   };
 
   end: {
-    line: number | null;
-    column: number | null;
+    line: number;
+    column: number;
   };
 };
 

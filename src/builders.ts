@@ -4,12 +4,16 @@ import {
   DaysToDecay,
   LintMessage,
   LintResult,
+  Location,
+  Range,
   TodoConfig,
   TodoData,
   TodoDataV1,
   TodoDataV2,
 } from './types';
 import { getDatePart } from './date-utils';
+
+const LINES_PATTERN = /(.*?(?:\r\n?|\n|$))/gm;
 
 /**
  * Adapts a list of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} to a map of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}, {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
@@ -109,12 +113,13 @@ export function buildTodoDatumV2(
     ? relative(baseDir, lintResult.filePath)
     : lintResult.filePath;
   const ruleId = getRuleId(lintMessage);
+  const range = getRange(lintMessage);
   const todoDatum: TodoDataV2 = {
     engine: getEngine(lintResult),
     filePath: slash(filePath),
     ruleId: getRuleId(lintMessage),
-    range: getRange(lintMessage),
-    source: '',
+    range,
+    source: getSource(lintResult, lintMessage, range),
     createdDate: createdDate.getTime(),
   };
 
@@ -133,7 +138,7 @@ export function buildTodoDatumV2(
 
 export function normalizeToV2(todoDatum: TodoData): TodoDataV2 {
   // if we have a range property, we're already in V2 format
-  if (todoDatum.hasOwnProperty('range')) {
+  if ('range' in todoDatum) {
     return <TodoDataV2>todoDatum;
   }
 
@@ -159,7 +164,7 @@ export function normalizeToV2(todoDatum: TodoData): TodoDataV2 {
   return todoDatumV2;
 }
 
-function getRange(loc: { line: number; column: number; endLine?: number; endColumn?: number }) {
+function getRange(loc: Location) {
   return {
     start: {
       line: loc.line,
@@ -167,11 +172,52 @@ function getRange(loc: { line: number; column: number; endLine?: number; endColu
     },
     end: {
       // eslint-disable-next-line unicorn/no-null
-      line: loc.endLine ?? null,
+      line: loc.endLine ?? loc.line,
       // eslint-disable-next-line unicorn/no-null
-      column: loc.endColumn ?? null,
+      column: loc.endColumn ?? loc.column,
     },
   };
+}
+
+function getSource(lintResult: LintResult, lintMessage: LintMessage, range: Range) {
+  if (lintResult.source) {
+    return getSourceForRange(lintResult.source.match(LINES_PATTERN) || [], range);
+  }
+
+  if (lintMessage.source) {
+    return lintMessage.source;
+  }
+
+  return '';
+}
+
+function getSourceForRange(source: string[], range: Range) {
+  const firstLine = range.start.line - 1;
+  const lastLine = range.end.line - 1;
+  let currentLine = firstLine - 1;
+  const firstColumn = range.start.column - 1;
+  const lastColumn = range.end.column - 1;
+  const string = [];
+  let line;
+
+  while (currentLine < lastLine) {
+    currentLine++;
+    line = source[currentLine];
+
+    if (currentLine === firstLine) {
+      if (firstLine === lastLine) {
+        string.push(line.slice(firstColumn, lastColumn));
+      } else {
+        string.push(line.slice(firstColumn));
+      }
+    } else if (currentLine === lastLine) {
+      string.push(line.slice(0, lastColumn));
+    } else {
+      string.push(line);
+    }
+  }
+
+  return string.join('');
 }
 
 function getDaysToDecay(ruleId: string, todoConfig?: TodoConfig) {
