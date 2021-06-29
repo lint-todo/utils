@@ -172,7 +172,7 @@ describe('io', () => {
           usedDeprecatedRules: [],
         },
       ];
-      debugger;
+
       const todoDir = getTodoStorageDirPath(tmp);
       const [added] = writeTodos(tmp, updatePaths<LintResult>(tmp, initialTodos));
       const initialFiles = readFiles(todoDir);
@@ -229,7 +229,6 @@ describe('io', () => {
     });
 
     it('does not remove old todos if todos no longer contains violations if shouldRemove returns false', async () => {
-      debugger;
       const fixture = getFixture('eslint-with-errors', tmp);
       const todoDir = getTodoStorageDirPath(tmp);
 
@@ -269,7 +268,6 @@ describe('io', () => {
     });
 
     it('updates todos for a specific filePath', async () => {
-      debugger;
       const todoDir = getTodoStorageDirPath(tmp);
       const [added] = writeTodos(tmp, getFixture('single-file-todo', tmp), {
         filePath: 'app/controllers/settings.js',
