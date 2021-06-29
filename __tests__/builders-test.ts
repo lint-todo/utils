@@ -2,10 +2,11 @@
 import { ESLint, Linter } from 'eslint';
 import { differenceInDays } from 'date-fns';
 import { buildTodoDatum, buildTodoData, getDatePart } from '../src';
-import { TemplateLintMessage, TemplateLintResult, TodoData } from '../src/types';
+import { TemplateLintMessage, TemplateLintResult, TodoDataV1, TodoDataV2 } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePath } from './__utils__/update-path';
 import { getFixture } from './__utils__/get-fixture';
+import { normalizeToV2 } from '../src/builders';
 
 describe('builders', () => {
   let tmp: string;
@@ -86,7 +87,7 @@ describe('builders', () => {
       const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
         daysToDecay: { warn: 30 },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -95,7 +96,7 @@ describe('builders', () => {
       const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
         daysToDecay: { error: 30 },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -107,7 +108,7 @@ describe('builders', () => {
           error: 60,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(60);
@@ -119,7 +120,7 @@ describe('builders', () => {
       const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
         daysToDecay: { warn: 30 },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(todoDatum.createdDate).toEqual(getDatePart(new Date(2015, 1, 23)).getTime());
 
@@ -193,7 +194,7 @@ describe('builders', () => {
           warn: 30,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -204,7 +205,7 @@ describe('builders', () => {
           error: 30,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -216,10 +217,83 @@ describe('builders', () => {
           error: 60,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(60);
+    });
+  });
+
+  describe('normalizeToV2', () => {
+    it('returns a v2 todo when a v1 is provided', () => {
+      const todoDatum: TodoDataV1 = {
+        engine: 'eslint',
+        filePath: 'app/controllers/settings.js',
+        ruleId: 'no-prototype-builtins',
+        line: 25,
+        column: 21,
+        createdDate: getDatePart(new Date('2021-01-01')).getTime(),
+      };
+
+      expect(normalizeToV2(todoDatum)).toMatchInlineSnapshot(`
+        Object {
+          "createdDate": 1609459200000,
+          "engine": "eslint",
+          "filePath": "app/controllers/settings.js",
+          "range": Object {
+            "end": Object {
+              "column": null,
+              "line": null,
+            },
+            "start": Object {
+              "column": 21,
+              "line": 25,
+            },
+          },
+          "ruleId": "no-prototype-builtins",
+          "source": "",
+        }
+      `);
+    });
+
+    it('returns a v2 todo when a v2 is provided', () => {
+      const todoDatum: TodoDataV2 = {
+        engine: 'eslint',
+        filePath: 'app/controllers/settings.js',
+        ruleId: 'no-prototype-builtins',
+        range: {
+          start: {
+            line: 25,
+            column: 21,
+          },
+          end: {
+            line: 25,
+            column: 29,
+          },
+        },
+        source: '',
+        createdDate: getDatePart(new Date('2021-01-01')).getTime(),
+      };
+
+      expect(normalizeToV2(todoDatum)).toMatchInlineSnapshot(`
+        Object {
+          "createdDate": 1609459200000,
+          "engine": "eslint",
+          "filePath": "app/controllers/settings.js",
+          "range": Object {
+            "end": Object {
+              "column": 29,
+              "line": 25,
+            },
+            "start": Object {
+              "column": 21,
+              "line": 25,
+            },
+          },
+          "ruleId": "no-prototype-builtins",
+          "source": "",
+        }
+      `);
     });
   });
 });
