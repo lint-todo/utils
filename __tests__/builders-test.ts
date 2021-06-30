@@ -9,10 +9,10 @@ import {
   TodoDataV1,
   TodoDataV2,
 } from '../src/types';
+import { normalizeToV2 } from '../src/builders';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePath } from './__utils__/update-path';
 import { getFixture } from './__utils__/get-fixture';
-import { buildTodoDatumV2, normalizeToV2 } from '../src/builders';
 
 describe('builders', () => {
   let tmp: string;
@@ -65,8 +65,16 @@ describe('builders', () => {
           engine: 'eslint',
           filePath: 'app/controllers/settings.js',
           ruleId: 'no-prototype-builtins',
-          line: 25,
-          column: 21,
+          range: {
+            start: {
+              line: 25,
+              column: 21,
+            },
+            end: {
+              line: 25,
+              column: 35,
+            },
+          },
         })
       );
     });
@@ -139,7 +147,7 @@ describe('builders', () => {
       const lintResult = getFixture('eslint-with-source', tmp)[0];
       const lintMessage: LintMessage = lintResult.messages[0];
 
-      const todoData = buildTodoDatumV2(tmp, lintResult, lintMessage);
+      const todoData = buildTodoDatum(tmp, lintResult, lintMessage);
 
       expect(todoData).toMatchInlineSnapshot(`
         Object {
@@ -199,8 +207,16 @@ describe('builders', () => {
           engine: 'ember-template-lint',
           filePath: 'app/templates/components/add-ssh-key.hbs',
           ruleId: 'require-input-label',
-          line: 3,
-          column: 4,
+          range: {
+            start: {
+              line: 3,
+              column: 4,
+            },
+            end: {
+              line: 3,
+              column: 4,
+            },
+          },
         })
       );
     });
@@ -264,7 +280,7 @@ describe('builders', () => {
       const lintResult = getFixture('ember-template-lint-with-source', tmp)[0];
       const lintMessage: LintMessage = lintResult.messages[0];
 
-      const todoData = buildTodoDatumV2(tmp, lintResult, lintMessage);
+      const todoData = buildTodoDatum(tmp, lintResult, lintMessage);
 
       expect(todoData).toMatchInlineSnapshot(`
         Object {

@@ -34,7 +34,7 @@ export function buildTodoData(
   const todoData = results.reduce((converted, lintResult) => {
     lintResult.messages.forEach((message: LintMessage) => {
       if (message.severity === 2) {
-        const todoDatum = buildTodoDatumV2(baseDir, lintResult, message, todoConfig);
+        const todoDatum = buildTodoDatum(baseDir, lintResult, message, todoConfig);
 
         converted.add(todoDatum);
       }
@@ -57,51 +57,6 @@ export function buildTodoData(
  * @returns - A {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object.
  */
 export function buildTodoDatum(
-  baseDir: string,
-  lintResult: LintResult,
-  lintMessage: LintMessage,
-  todoConfig?: TodoConfig
-): TodoDataV1 {
-  // Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
-  // provided that the fix is landed on the supported node versions of this lib
-  const createdDate = getCreatedDate();
-  const filePath = isAbsolute(lintResult.filePath)
-    ? relative(baseDir, lintResult.filePath)
-    : lintResult.filePath;
-  const ruleId = getRuleId(lintMessage);
-  const todoDatum: TodoDataV1 = {
-    engine: getEngine(lintResult),
-    filePath: slash(filePath),
-    ruleId: getRuleId(lintMessage),
-    line: lintMessage.line,
-    column: lintMessage.column,
-    createdDate: createdDate.getTime(),
-  };
-
-  const daysToDecay: DaysToDecay | undefined = getDaysToDecay(ruleId, todoConfig);
-
-  if (daysToDecay?.warn) {
-    todoDatum.warnDate = addDays(createdDate, daysToDecay.warn).getTime();
-  }
-
-  if (daysToDecay?.error) {
-    todoDatum.errorDate = addDays(createdDate, daysToDecay.error).getTime();
-  }
-
-  return todoDatum;
-}
-
-/**
- * Adapts an {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} to a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}. FilePaths are absolute
- * when received from a lint result, so they're converted to relative paths for stability in
- * serializing the contents to disc.
- *
- * @param lintResult - The lint result object.
- * @param lintMessage - A lint message object representing a specific violation for a file.
- * @param todoConfig - An object containing the warn or error days, in integers.
- * @returns - A {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object.
- */
-export function buildTodoDatumV2(
   baseDir: string,
   lintResult: LintResult,
   lintMessage: LintMessage,
