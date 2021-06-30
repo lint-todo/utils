@@ -277,7 +277,6 @@ describe('io', () => {
     });
 
     it('updates todos for a specific filePath', async () => {
-      debugger;
       const todoDir = getTodoStorageDirPath(tmp);
       const [added] = writeTodos(tmp, getFixture('single-file-todo', tmp), {
         filePath: 'app/controllers/settings.js',

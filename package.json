@@ -13,7 +13,8 @@
     "docs:update": "yarn build && node scripts/generate-api-docs.js",
     "lint": "eslint . --ext .ts",
     "prepare": "yarn build",
-    "test": "jest --no-cache"
+    "test": "yarn lint && yarn test:jest",
+    "test:jest": "jest --no-cache"
   },
   "dependencies": {
     "@types/eslint": "^7.2.12",
