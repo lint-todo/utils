@@ -157,7 +157,7 @@ describe('builders', () => {
             },
           },
           "ruleId": "no-unused-vars",
-          "source": "foo",
+          "source": "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33",
         }
       `);
     });
@@ -282,7 +282,7 @@ describe('builders', () => {
             },
           },
           "ruleId": "no-bare-strings",
-          "source": "I'm a bad bad bare string",
+          "source": "01aa3d7ff88426197cfc22dc02216cd1d6a1825a",
         }
       `);
     });

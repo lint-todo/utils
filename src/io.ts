@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { createHash } from 'crypto';
 import { posix } from 'path';
 import {
   existsSync,
@@ -21,7 +20,7 @@ import {
 } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
-import { normalizeToV2 } from './builders';
+import { generateHash, normalizeToV2 } from './builders';
 
 /**
  * Determines if the .lint-todo storage directory exists.
@@ -76,7 +75,7 @@ export function todoFilePathFor(todoData: TodoDataV2): string {
  * @returns - The todo directory for a specific filepath.
  */
 export function todoDirFor(filePath: string): string {
-  return createHash('sha1').update(filePath).digest('hex');
+  return generateHash(filePath);
 }
 
 /**
@@ -86,9 +85,9 @@ export function todoDirFor(filePath: string): string {
  * @returns - The todo file name for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object.
  */
 export function todoFileNameFor(todoData: TodoDataV2): string {
-  const hashParams = `${todoData.engine}${todoData.ruleId}${todoData.range.start.line}${todoData.range.start.column}`;
+  const fileContentsHash = `${todoData.engine}${todoData.ruleId}${todoData.range.start.line}${todoData.range.start.column}`;
 
-  return createHash('sha256').update(hashParams).digest('hex').slice(0, 8);
+  return generateHash(fileContentsHash, 'sha256').slice(0, 8);
 }
 
 /**

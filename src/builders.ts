@@ -1,4 +1,5 @@
 import { isAbsolute, relative } from 'path';
+import { createHash } from 'crypto';
 import slash = require('slash');
 import {
   DaysToDecay,
@@ -164,6 +165,10 @@ export function normalizeToV2(todoDatum: TodoData): TodoDataV2 {
   return todoDatumV2;
 }
 
+export function generateHash(input: string, algorithm = 'sha1'): string {
+  return createHash(algorithm).update(input).digest('hex');
+}
+
 function getRange(loc: Location) {
   return {
     start: {
@@ -181,11 +186,11 @@ function getRange(loc: Location) {
 
 function getSource(lintResult: LintResult, lintMessage: LintMessage, range: Range) {
   if (lintResult.source) {
-    return getSourceForRange(lintResult.source.match(LINES_PATTERN) || [], range);
+    return generateHash(getSourceForRange(lintResult.source.match(LINES_PATTERN) || [], range));
   }
 
   if (lintMessage.source) {
-    return lintMessage.source;
+    return generateHash(lintMessage.source);
   }
 
   return '';
