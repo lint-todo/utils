@@ -30,15 +30,16 @@ export default class TodoMatcher {
     let found;
 
     for (const todoDatum of this.unprocessed) {
+      const hasSource = todoDataToFind.source && todoDatum.source;
+      const matchesSource = hasSource && todoDataToFind.source === todoDatum.source;
+      const preserveV1Matching = true;
+
       if (
         todoDataToFind.engine === todoDatum.engine &&
         todoDataToFind.ruleId === todoDatum.ruleId &&
         todoDataToFind.range.start.line === todoDatum.range.start.line &&
         todoDataToFind.range.start.column === todoDatum.range.start.column &&
-        ((todoDataToFind.source &&
-          todoDatum.source &&
-          todoDataToFind.source === todoDatum.source) ||
-          true)
+        (matchesSource || preserveV1Matching)
       ) {
         found = todoDatum;
         this.unprocessed.delete(todoDatum);
@@ -53,12 +54,14 @@ export default class TodoMatcher {
     let found;
 
     for (const todoDatum of this.unprocessed) {
+      const hasSource = todoDataToFind.source && todoDatum.source;
+      const sourceMatches = todoDataToFind.source === todoDatum.source;
+
       if (
         todoDataToFind.engine === todoDatum.engine &&
         todoDataToFind.ruleId === todoDatum.ruleId &&
-        todoDataToFind.source &&
-        todoDatum.source &&
-        todoDataToFind.source === todoDatum.source
+        hasSource &&
+        sourceMatches
       ) {
         found = todoDatum;
         this.unprocessed.delete(todoDatum);
