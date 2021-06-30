@@ -12,6 +12,7 @@
       }
     ],
     "errorCount": 1,
-    "filePath": "{{path}}/app/components/foo.hbs"
+    "filePath": "{{path}}/app/components/foo.hbs",
+    "source": ""
   }
 ]

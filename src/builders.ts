@@ -27,20 +27,20 @@ export function buildTodoData(
   baseDir: string,
   lintResults: LintResult[],
   todoConfig?: TodoConfig
-): Set<TodoDataV1> {
+): Set<TodoDataV2> {
   const results = lintResults.filter((result) => result.messages.length > 0);
 
   const todoData = results.reduce((converted, lintResult) => {
     lintResult.messages.forEach((message: LintMessage) => {
       if (message.severity === 2) {
-        const todoDatum = buildTodoDatum(baseDir, lintResult, message, todoConfig);
+        const todoDatum = buildTodoDatumV2(baseDir, lintResult, message, todoConfig);
 
         converted.add(todoDatum);
       }
     });
 
     return converted;
-  }, new Set<TodoDataV1>());
+  }, new Set<TodoDataV2>());
 
   return todoData;
 }

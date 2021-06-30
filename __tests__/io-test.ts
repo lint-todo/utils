@@ -12,7 +12,7 @@ import {
   getDatePart,
   getTodoStorageDirPath,
 } from '../src';
-import { LintResult, TodoDataV1 } from '../src/types';
+import { LintResult, TodoDataV2 } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePaths } from './__utils__';
 import { getFixture } from './__utils__/get-fixture';
@@ -20,12 +20,21 @@ import { getTodoBatchesSync } from '../src/io';
 import TodoMatcher from '../src/todo-matcher';
 import { buildTodoDataForTesting } from './__utils__/build-todo-data';
 
-const TODO_DATA: TodoDataV1 = {
+const TODO_DATA: TodoDataV2 = {
   engine: 'eslint',
   filePath: 'app/controllers/settings.js',
   ruleId: 'no-prototype-builtins',
-  line: 25,
-  column: 21,
+  range: {
+    start: {
+      line: 25,
+      column: 21,
+    },
+    end: {
+      line: 25,
+      column: 21,
+    },
+  },
+  source: '',
   createdDate: getDatePart(new Date('12/11/2020')).getTime(),
 };
 
@@ -268,6 +277,7 @@ describe('io', () => {
     });
 
     it('updates todos for a specific filePath', async () => {
+      debugger;
       const todoDir = getTodoStorageDirPath(tmp);
       const [added] = writeTodos(tmp, getFixture('single-file-todo', tmp), {
         filePath: 'app/controllers/settings.js',
@@ -366,7 +376,7 @@ describe('io', () => {
         getFixture('new-batches', tmp)
       );
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const expiredTodo: TodoDataV1 = expiredBatches
+      const expiredTodo: TodoDataV2 = expiredBatches
         .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
         .find('cc71e5f9')!;
 
@@ -390,7 +400,7 @@ describe('io', () => {
         getFixture('existing-batches', tmp)
       );
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const expiredTodo: TodoDataV1 = existingBatches
+      const expiredTodo: TodoDataV2 = existingBatches
         .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
         .find('cc71e5f9')!;
 

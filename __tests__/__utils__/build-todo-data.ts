@@ -1,4 +1,4 @@
-import { buildTodoDatum } from '../../src/builders';
+import { buildTodoDatumV2 } from '../../src/builders';
 import { todoDirFor } from '../../src/io';
 import TodoMatcher from '../../src/todo-matcher';
 import { LintMessage, LintResult, TodoConfig, TodoFilePathHash } from '../../src/types';
@@ -13,7 +13,7 @@ export function buildTodoDataForTesting(
   const todoData = results.reduce((converted, lintResult) => {
     lintResult.messages.forEach((message: LintMessage) => {
       if (message.severity === 2) {
-        const todoDatum = buildTodoDatum(baseDir, lintResult, message, todoConfig);
+        const todoDatum = buildTodoDatumV2(baseDir, lintResult, message, todoConfig);
         const todoFilePathHash = todoDirFor(todoDatum.filePath);
 
         if (!converted.has(todoFilePathHash)) {

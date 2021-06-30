@@ -4,7 +4,6 @@ import { differenceInDays } from 'date-fns';
 import { buildTodoDatum, buildTodoData, getDatePart } from '../src';
 import {
   LintMessage,
-  LintResult,
   TemplateLintMessage,
   TemplateLintResult,
   TodoDataV1,
@@ -135,6 +134,8 @@ describe('builders', () => {
     });
 
     it('can build todo data with the correct range and source', () => {
+      process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
+
       const lintResult = getFixture('eslint-with-source', tmp)[0];
       const lintMessage: LintMessage = lintResult.messages[0];
 
@@ -142,7 +143,7 @@ describe('builders', () => {
 
       expect(todoData).toMatchInlineSnapshot(`
         Object {
-          "createdDate": 1624924800000,
+          "createdDate": 1424649600000,
           "engine": "eslint",
           "filePath": "app/components/foo.js",
           "range": Object {
@@ -258,6 +259,8 @@ describe('builders', () => {
     });
 
     it('can build todo data with the correct range and source', () => {
+      process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
+
       const lintResult = getFixture('ember-template-lint-with-source', tmp)[0];
       const lintMessage: LintMessage = lintResult.messages[0];
 
@@ -265,7 +268,7 @@ describe('builders', () => {
 
       expect(todoData).toMatchInlineSnapshot(`
         Object {
-          "createdDate": 1624924800000,
+          "createdDate": 1424649600000,
           "engine": "ember-template-lint",
           "filePath": "app/components/foo.hbs",
           "range": Object {

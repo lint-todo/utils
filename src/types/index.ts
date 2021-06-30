@@ -66,9 +66,9 @@ export type TodoFilePathHash = string;
 export type TodoFileHash = string;
 
 export type TodoBatches = {
-  add: Map<TodoFileHash, TodoDataV1>;
-  expired: Map<TodoFileHash, TodoDataV1>;
-  stable: Map<TodoFileHash, TodoDataV1>;
+  add: Map<TodoFileHash, TodoDataV2>;
+  expired: Map<TodoFileHash, TodoDataV2>;
+  stable: Map<TodoFileHash, TodoDataV2>;
   remove: Set<TodoFileHash>;
 };
 
@@ -143,5 +143,5 @@ export interface TodoConfigByEngine {
 export interface WriteTodoOptions {
   filePath: string;
   todoConfig: TodoConfig;
-  shouldRemove: (todoDatum: TodoDataV1) => boolean;
+  shouldRemove: (todoDatum: TodoDataV2) => boolean;
 }
