@@ -2,7 +2,14 @@
 import { ESLint, Linter } from 'eslint';
 import { differenceInDays } from 'date-fns';
 import { buildTodoDatum, buildTodoData, getDatePart } from '../src';
-import { TemplateLintMessage, TemplateLintResult, TodoData } from '../src/types';
+import {
+  LintMessage,
+  TemplateLintMessage,
+  TemplateLintResult,
+  TodoDataV1,
+  TodoDataV2,
+} from '../src/types';
+import { normalizeToV2 } from '../src/builders';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePath } from './__utils__/update-path';
 import { getFixture } from './__utils__/get-fixture';
@@ -58,8 +65,16 @@ describe('builders', () => {
           engine: 'eslint',
           filePath: 'app/controllers/settings.js',
           ruleId: 'no-prototype-builtins',
-          line: 25,
-          column: 21,
+          range: {
+            start: {
+              line: 25,
+              column: 21,
+            },
+            end: {
+              line: 25,
+              column: 35,
+            },
+          },
         })
       );
     });
@@ -86,7 +101,7 @@ describe('builders', () => {
       const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
         daysToDecay: { warn: 30 },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -95,7 +110,7 @@ describe('builders', () => {
       const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
         daysToDecay: { error: 30 },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -107,7 +122,7 @@ describe('builders', () => {
           error: 60,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(60);
@@ -119,11 +134,40 @@ describe('builders', () => {
       const todoData = buildTodoData(tmp, getFixture('eslint-single-error', tmp), {
         daysToDecay: { warn: 30 },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(todoDatum.createdDate).toEqual(getDatePart(new Date(2015, 1, 23)).getTime());
 
       process.env.TODO_CREATED_DATE = '';
+    });
+
+    it('can build todo data with the correct range and source', () => {
+      process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
+
+      const lintResult = getFixture('eslint-with-source', tmp)[0];
+      const lintMessage: LintMessage = lintResult.messages[0];
+
+      const todoData = buildTodoDatum(tmp, lintResult, lintMessage);
+
+      expect(todoData).toMatchInlineSnapshot(`
+        Object {
+          "createdDate": 1424649600000,
+          "engine": "eslint",
+          "filePath": "app/components/foo.js",
+          "range": Object {
+            "end": Object {
+              "column": 12,
+              "line": 7,
+            },
+            "start": Object {
+              "column": 9,
+              "line": 7,
+            },
+          },
+          "ruleId": "no-unused-vars",
+          "source": "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33",
+        }
+      `);
     });
   });
 
@@ -163,8 +207,16 @@ describe('builders', () => {
           engine: 'ember-template-lint',
           filePath: 'app/templates/components/add-ssh-key.hbs',
           ruleId: 'require-input-label',
-          line: 3,
-          column: 4,
+          range: {
+            start: {
+              line: 3,
+              column: 4,
+            },
+            end: {
+              line: 3,
+              column: 4,
+            },
+          },
         })
       );
     });
@@ -193,7 +245,7 @@ describe('builders', () => {
           warn: 30,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -204,7 +256,7 @@ describe('builders', () => {
           error: 30,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(30);
     });
@@ -216,10 +268,112 @@ describe('builders', () => {
           error: 60,
         },
       });
-      const todoDatum: TodoData = todoData.values().next().value;
+      const todoDatum: TodoDataV1 = todoData.values().next().value;
 
       expect(differenceInDays(todoDatum.warnDate!, todoDatum.createdDate)).toEqual(30);
       expect(differenceInDays(todoDatum.errorDate!, todoDatum.createdDate)).toEqual(60);
+    });
+
+    it('can build todo data with the correct range and source', () => {
+      process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
+
+      const lintResult = getFixture('ember-template-lint-with-source', tmp)[0];
+      const lintMessage: LintMessage = lintResult.messages[0];
+
+      const todoData = buildTodoDatum(tmp, lintResult, lintMessage);
+
+      expect(todoData).toMatchInlineSnapshot(`
+        Object {
+          "createdDate": 1424649600000,
+          "engine": "ember-template-lint",
+          "filePath": "app/components/foo.hbs",
+          "range": Object {
+            "end": Object {
+              "column": 5,
+              "line": 3,
+            },
+            "start": Object {
+              "column": 5,
+              "line": 3,
+            },
+          },
+          "ruleId": "no-bare-strings",
+          "source": "01aa3d7ff88426197cfc22dc02216cd1d6a1825a",
+        }
+      `);
+    });
+  });
+
+  describe('normalizeToV2', () => {
+    it('returns a v2 todo when a v1 is provided', () => {
+      const todoDatum: TodoDataV1 = {
+        engine: 'eslint',
+        filePath: 'app/controllers/settings.js',
+        ruleId: 'no-prototype-builtins',
+        line: 25,
+        column: 21,
+        createdDate: getDatePart(new Date('2021-01-01')).getTime(),
+      };
+
+      expect(normalizeToV2(todoDatum)).toMatchInlineSnapshot(`
+        Object {
+          "createdDate": 1609459200000,
+          "engine": "eslint",
+          "filePath": "app/controllers/settings.js",
+          "range": Object {
+            "end": Object {
+              "column": 21,
+              "line": 25,
+            },
+            "start": Object {
+              "column": 21,
+              "line": 25,
+            },
+          },
+          "ruleId": "no-prototype-builtins",
+          "source": "",
+        }
+      `);
+    });
+
+    it('returns a v2 todo when a v2 is provided', () => {
+      const todoDatum: TodoDataV2 = {
+        engine: 'eslint',
+        filePath: 'app/controllers/settings.js',
+        ruleId: 'no-prototype-builtins',
+        range: {
+          start: {
+            line: 25,
+            column: 21,
+          },
+          end: {
+            line: 25,
+            column: 29,
+          },
+        },
+        source: '',
+        createdDate: getDatePart(new Date('2021-01-01')).getTime(),
+      };
+
+      expect(normalizeToV2(todoDatum)).toMatchInlineSnapshot(`
+        Object {
+          "createdDate": 1609459200000,
+          "engine": "eslint",
+          "filePath": "app/controllers/settings.js",
+          "range": Object {
+            "end": Object {
+              "column": 29,
+              "line": 25,
+            },
+            "start": Object {
+              "column": 21,
+              "line": 25,
+            },
+          },
+          "ruleId": "no-prototype-builtins",
+          "source": "",
+        }
+      `);
     });
   });
 });

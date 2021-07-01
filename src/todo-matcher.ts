@@ -1,40 +1,45 @@
 import { todoFilePathFor, todoFileNameFor } from './io';
-import { TodoData, TodoFilePathHash } from './types';
+import { TodoDataV2, TodoFilePathHash } from './types';
 
 export default class TodoMatcher {
-  private unprocessed: Set<TodoData>;
+  private unprocessed: Set<TodoDataV2>;
 
   constructor() {
     this.unprocessed = new Set();
   }
 
-  unmatched(predicate: (todoDatum: TodoData) => boolean = () => false): string[] {
+  unmatched(predicate: (todoDatum: TodoDataV2) => boolean = () => false): string[] {
     return [...this.unprocessed]
       .filter((todoDatum) => predicate(todoDatum))
-      .map((todoDatum: TodoData) => {
+      .map((todoDatum: TodoDataV2) => {
         return todoFilePathFor(todoDatum);
       });
   }
 
-  add(todoDatum: TodoData): void {
+  add(todoDatum: TodoDataV2): void {
     this.unprocessed.add(todoDatum);
   }
 
-  find(todoFilePathHash: TodoFilePathHash): TodoData | undefined {
+  find(todoFilePathHash: TodoFilePathHash): TodoDataV2 | undefined {
     return [...this.unprocessed].find(
       (todoDatum) => todoFileNameFor(todoDatum) === todoFilePathHash
     );
   }
 
-  exactMatch(todoDataToFind: TodoData): TodoData | undefined {
+  exactMatch(todoDataToFind: TodoDataV2): TodoDataV2 | undefined {
     let found;
 
     for (const todoDatum of this.unprocessed) {
+      const hasSource = todoDataToFind.source && todoDatum.source;
+      const matchesSource = hasSource && todoDataToFind.source === todoDatum.source;
+      const preserveV1Matching = true;
+
       if (
         todoDataToFind.engine === todoDatum.engine &&
         todoDataToFind.ruleId === todoDatum.ruleId &&
-        todoDataToFind.line === todoDatum.line &&
-        todoDataToFind.column === todoDatum.column
+        todoDataToFind.range.start.line === todoDatum.range.start.line &&
+        todoDataToFind.range.start.column === todoDatum.range.start.column &&
+        (matchesSource || preserveV1Matching)
       ) {
         found = todoDatum;
         this.unprocessed.delete(todoDatum);
@@ -45,16 +50,18 @@ export default class TodoMatcher {
     return found;
   }
 
-  fuzzyMatch(todoDataToFind: TodoData): TodoData | undefined {
+  fuzzyMatch(todoDataToFind: TodoDataV2): TodoDataV2 | undefined {
     let found;
 
     for (const todoDatum of this.unprocessed) {
+      const hasSource = todoDataToFind.source && todoDatum.source;
+      const sourceMatches = todoDataToFind.source === todoDatum.source;
+
       if (
         todoDataToFind.engine === todoDatum.engine &&
         todoDataToFind.ruleId === todoDatum.ruleId &&
-        todoDataToFind.source !== undefined &&
-        todoDatum.source !== undefined &&
-        todoDataToFind.source === todoDatum.source
+        hasSource &&
+        sourceMatches
       ) {
         found = todoDatum;
         this.unprocessed.delete(todoDatum);

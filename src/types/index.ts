@@ -32,6 +32,13 @@ export interface TemplateLintMessage {
 export type LintResult = ESLint.LintResult | TemplateLintResult;
 export type LintMessage = Linter.LintMessage | TemplateLintMessage;
 
+export type Location = {
+  line: number;
+  column: number;
+  endLine?: number;
+  endColumn?: number;
+};
+
 // This type is deprecated, but is still included here for backwards compatibility.
 /**
  * Represents the path to the todo file.
@@ -59,12 +66,13 @@ export type TodoFilePathHash = string;
 export type TodoFileHash = string;
 
 export type TodoBatches = {
-  add: Map<TodoFileHash, TodoData>;
-  expired: Map<TodoFileHash, TodoData>;
-  stable: Map<TodoFileHash, TodoData>;
+  add: Map<TodoFileHash, TodoDataV2>;
+  expired: Map<TodoFileHash, TodoDataV2>;
+  stable: Map<TodoFileHash, TodoDataV2>;
   remove: Set<TodoFileHash>;
 };
-export interface TodoData {
+
+export interface TodoDataV1 {
   engine: 'eslint' | 'ember-template-lint';
   filePath: string;
   ruleId: string;
@@ -75,6 +83,31 @@ export interface TodoData {
   warnDate?: number;
   errorDate?: number;
 }
+
+export interface TodoDataV2 {
+  engine: 'eslint' | 'ember-template-lint' | string;
+  filePath: string;
+  ruleId: string;
+  range: Range;
+  source: string;
+  createdDate: number;
+  warnDate?: number;
+  errorDate?: number;
+}
+
+export type TodoData = TodoDataV1 | TodoDataV2;
+
+export type Range = {
+  start: {
+    line: number;
+    column: number;
+  };
+
+  end: {
+    line: number;
+    column: number;
+  };
+};
 
 export type LintTodoPackageJson = PackageJson & {
   lintTodo?: TodoConfig | TodoConfigByEngine;
@@ -110,5 +143,5 @@ export interface TodoConfigByEngine {
 export interface WriteTodoOptions {
   filePath: string;
   todoConfig: TodoConfig;
-  shouldRemove: (todoDatum: TodoData) => boolean;
+  shouldRemove: (todoDatum: TodoDataV2) => boolean;
 }

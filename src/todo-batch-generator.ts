@@ -5,7 +5,7 @@ import TodoMatcher from './todo-matcher';
 import {
   LintResult,
   TodoBatches,
-  TodoData,
+  TodoDataV2,
   TodoFileHash,
   TodoFilePathHash,
   WriteTodoOptions,
@@ -62,9 +62,9 @@ export default class TodoBatchGenerator {
     lintResults: LintResult[],
     existingTodos: Map<TodoFilePathHash, TodoMatcher>
   ): TodoBatches {
-    const add = new Map<TodoFileHash, TodoData>();
-    const expired = new Map<TodoFileHash, TodoData>();
-    const stable = new Map<TodoFileHash, TodoData>();
+    const add = new Map<TodoFileHash, TodoDataV2>();
+    const expired = new Map<TodoFileHash, TodoDataV2>();
+    const stable = new Map<TodoFileHash, TodoDataV2>();
     let remove = new Set<TodoFileHash>();
 
     const unmatched = buildTodoData(this.baseDir, lintResults, this.options?.todoConfig);

@@ -1,0 +1,24 @@
+[
+  {
+    "filePath": "{{path}}/app/components/foo.js",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'foo' is assigned a value but never used.",
+        "line": 7,
+        "column": 9,
+        "nodeType": "Identifier",
+        "messageId": "unusedVar",
+        "endLine": 7,
+        "endColumn": 12
+      }
+    ],
+    "errorCount": 1,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "source": "import Component from \"@glimmer/component\";\n\nexport default class FooComponent extends Component {\n  constructor() {\n    super();\n\n    let foo = true;\n\n    console.log(\"bar\");\n  }\n}\n",
+    "usedDeprecatedRules": []
+  }
+]

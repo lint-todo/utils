@@ -1,7 +1,20 @@
 import { isAbsolute, relative } from 'path';
+import { createHash } from 'crypto';
 import slash = require('slash');
-import { DaysToDecay, LintMessage, LintResult, TodoConfig, TodoData } from './types';
+import {
+  DaysToDecay,
+  LintMessage,
+  LintResult,
+  Location,
+  Range,
+  TodoConfig,
+  TodoData,
+  TodoDataV1,
+  TodoDataV2,
+} from './types';
 import { getDatePart } from './date-utils';
+
+const LINES_PATTERN = /(.*?(?:\r\n?|\n|$))/gm;
 
 /**
  * Adapts a list of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} to a map of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}, {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
@@ -15,7 +28,7 @@ export function buildTodoData(
   baseDir: string,
   lintResults: LintResult[],
   todoConfig?: TodoConfig
-): Set<TodoData> {
+): Set<TodoDataV2> {
   const results = lintResults.filter((result) => result.messages.length > 0);
 
   const todoData = results.reduce((converted, lintResult) => {
@@ -28,7 +41,7 @@ export function buildTodoData(
     });
 
     return converted;
-  }, new Set<TodoData>());
+  }, new Set<TodoDataV2>());
 
   return todoData;
 }
@@ -48,7 +61,7 @@ export function buildTodoDatum(
   lintResult: LintResult,
   lintMessage: LintMessage,
   todoConfig?: TodoConfig
-): TodoData {
+): TodoDataV2 {
   // Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
   // provided that the fix is landed on the supported node versions of this lib
   const createdDate = getCreatedDate();
@@ -56,12 +69,13 @@ export function buildTodoDatum(
     ? relative(baseDir, lintResult.filePath)
     : lintResult.filePath;
   const ruleId = getRuleId(lintMessage);
-  const todoDatum: TodoData = {
+  const range = getRange(lintMessage);
+  const todoDatum: TodoDataV2 = {
     engine: getEngine(lintResult),
     filePath: slash(filePath),
     ruleId: getRuleId(lintMessage),
-    line: lintMessage.line,
-    column: lintMessage.column,
+    range,
+    source: getSource(lintResult, lintMessage, range),
     createdDate: createdDate.getTime(),
   };
 
@@ -76,6 +90,94 @@ export function buildTodoDatum(
   }
 
   return todoDatum;
+}
+
+export function normalizeToV2(todoDatum: TodoData): TodoDataV2 {
+  // if we have a range property, we're already in V2 format
+  if ('range' in todoDatum) {
+    return <TodoDataV2>todoDatum;
+  }
+
+  const todoDatumV1 = <TodoDataV1>todoDatum;
+
+  const todoDatumV2: TodoDataV2 = {
+    engine: todoDatumV1.engine,
+    filePath: todoDatumV1.filePath,
+    ruleId: todoDatumV1.ruleId,
+    range: getRange(todoDatumV1),
+    source: '',
+    createdDate: todoDatumV1.createdDate,
+  };
+
+  if (todoDatumV1.warnDate) {
+    todoDatumV2.warnDate = todoDatumV1.warnDate;
+  }
+
+  if (todoDatumV1.errorDate) {
+    todoDatumV2.errorDate = todoDatumV1.errorDate;
+  }
+
+  return todoDatumV2;
+}
+
+export function generateHash(input: string, algorithm = 'sha1'): string {
+  return createHash(algorithm).update(input).digest('hex');
+}
+
+function getRange(loc: Location) {
+  return {
+    start: {
+      line: loc.line,
+      column: loc.column,
+    },
+    end: {
+      // eslint-disable-next-line unicorn/no-null
+      line: loc.endLine ?? loc.line,
+      // eslint-disable-next-line unicorn/no-null
+      column: loc.endColumn ?? loc.column,
+    },
+  };
+}
+
+function getSource(lintResult: LintResult, lintMessage: LintMessage, range: Range) {
+  if (lintResult.source) {
+    return generateHash(getSourceForRange(lintResult.source.match(LINES_PATTERN) || [], range));
+  }
+
+  if (lintMessage.source) {
+    return generateHash(lintMessage.source);
+  }
+
+  return '';
+}
+
+function getSourceForRange(source: string[], range: Range) {
+  const firstLine = range.start.line - 1;
+  const lastLine = range.end.line - 1;
+  let currentLine = firstLine - 1;
+  const firstColumn = range.start.column - 1;
+  const lastColumn = range.end.column - 1;
+  const string = [];
+  let line;
+
+  while (currentLine < lastLine) {
+    currentLine++;
+    line = source[currentLine];
+
+    if (currentLine === firstLine) {
+      if (firstLine === lastLine) {
+        string.push(line.slice(firstColumn, lastColumn));
+      } else {
+        string.push(line.slice(firstColumn));
+      }
+    } else if (currentLine === lastLine) {
+      string.push(line.slice(0, lastColumn));
+    } else {
+      string.push(line);
+    }
+  }
+
+  return string.join('');
 }
 
 function getDaysToDecay(ruleId: string, todoConfig?: TodoConfig) {

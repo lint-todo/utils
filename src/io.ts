@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { createHash } from 'crypto';
 import { posix } from 'path';
 import {
   existsSync,
@@ -13,7 +12,7 @@ import {
 import {
   TodoFileHash,
   LintResult,
-  TodoData,
+  TodoDataV2,
   TodoBatchCounts,
   WriteTodoOptions,
   TodoFilePathHash,
@@ -21,6 +20,7 @@ import {
 } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
+import { generateHash, normalizeToV2 } from './builders';
 
 /**
  * Determines if the .lint-todo storage directory exists.
@@ -64,7 +64,7 @@ export function getTodoStorageDirPath(baseDir: string): string {
  * @param todoData - The linting data for an individual violation.
  * @returns - The todo file path for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object.
  */
-export function todoFilePathFor(todoData: TodoData): string {
+export function todoFilePathFor(todoData: TodoDataV2): string {
   return posix.join(todoDirFor(todoData.filePath), todoFileNameFor(todoData));
 }
 
@@ -75,7 +75,7 @@ export function todoFilePathFor(todoData: TodoData): string {
  * @returns - The todo directory for a specific filepath.
  */
 export function todoDirFor(filePath: string): string {
-  return createHash('sha1').update(filePath).digest('hex');
+  return generateHash(filePath);
 }
 
 /**
@@ -84,10 +84,10 @@ export function todoDirFor(filePath: string): string {
  * @param todoData - The linting data for an individual violation.
  * @returns - The todo file name for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object.
  */
-export function todoFileNameFor(todoData: TodoData): string {
-  const hashParams = `${todoData.engine}${todoData.ruleId}${todoData.line}${todoData.column}`;
+export function todoFileNameFor(todoData: TodoDataV2): string {
+  const fileContentsHash = `${todoData.engine}${todoData.ruleId}${todoData.range.start.line}${todoData.range.start.column}`;
 
-  return createHash('sha256').update(hashParams).digest('hex').slice(0, 8);
+  return generateHash(fileContentsHash, 'sha256').slice(0, 8);
 }
 
 /**
@@ -147,7 +147,7 @@ export function readTodos(baseDir: string): Map<TodoFilePathHash, TodoMatcher> {
 
     for (const todoFileHash of todoFileHashes) {
       const todoDatum = readJSONSync(posix.join(todoStorageDir, todoFileDir, todoFileHash));
-      matcher!.add(todoDatum);
+      matcher!.add(normalizeToV2(todoDatum));
     }
   }
 
@@ -180,7 +180,7 @@ export function readTodosForFilePath(
 
     for (const fileName of fileNames) {
       const todoDatum = readJSONSync(posix.join(todoFilePathDir, fileName));
-      matcher?.add(todoDatum);
+      matcher?.add(normalizeToV2(todoDatum));
     }
   } catch (error) {
     if (error.code === 'ENOENT') {
@@ -219,7 +219,7 @@ export function getTodoBatchesSync(
  */
 export function applyTodoChanges(
   todoStorageDir: string,
-  add: Map<TodoFileHash, TodoData>,
+  add: Map<TodoFileHash, TodoDataV2>,
   remove: Set<TodoFileHash>
 ): void {
   for (const [fileHash, todoDatum] of add) {

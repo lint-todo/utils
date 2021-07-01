@@ -32,8 +32,8 @@
         "column": 101,
         "nodeType": "CallExpression",
         "messageId": "prototypeBuildIn",
-        "endLine": 32,
-        "endColumn": 48
+        "endLine": 50,
+        "endColumn": 110
       }
     ],
     "errorCount": 3,
