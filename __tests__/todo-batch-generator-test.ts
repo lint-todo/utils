@@ -127,4 +127,58 @@ describe('todo-batch-generator', () => {
         ]
       `);
   });
+
+  it('creates stable batches for fuzzy matches', () => {
+    process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
+
+    const lintResults = getFixture('eslint-exact-matches', tmp);
+    let existingBatches: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
+      tmp,
+      lintResults
+    );
+
+    const todoBatchGenerator = new TodoBatchGenerator(tmp, { shouldRemove: () => true });
+    let counts = todoBatchGenerator.generate(lintResults, existingBatches);
+
+    expect(counts.add.size).toEqual(0);
+    expect(counts.remove.size).toEqual(0);
+    expect(counts.stable.size).toEqual(4);
+    expect(counts.expired.size).toEqual(0);
+
+    const lintResultsWithChangedLineCol = getFixture('eslint-fuzzy-matches', tmp);
+    existingBatches = buildTodoDataForTesting(tmp, lintResults);
+    counts = todoBatchGenerator.generate(lintResultsWithChangedLineCol, existingBatches);
+
+    expect(counts.add.size).toEqual(0);
+    expect(counts.remove.size).toEqual(0);
+    expect(counts.stable.size).toEqual(4);
+    expect(counts.expired.size).toEqual(0);
+  });
+
+  it('creates add batch for matches when source changes', () => {
+    process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
+
+    const lintResults = getFixture('eslint-exact-matches', tmp);
+    let existingBatches: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
+      tmp,
+      lintResults
+    );
+
+    const todoBatchGenerator = new TodoBatchGenerator(tmp, { shouldRemove: () => true });
+    let counts = todoBatchGenerator.generate(lintResults, existingBatches);
+
+    expect(counts.add.size).toEqual(0);
+    expect(counts.remove.size).toEqual(0);
+    expect(counts.stable.size).toEqual(4);
+    expect(counts.expired.size).toEqual(0);
+
+    const lintResultsWithSourceChanged = getFixture('eslint-no-fuzzy-source-changed', tmp);
+    existingBatches = buildTodoDataForTesting(tmp, lintResults);
+    counts = todoBatchGenerator.generate(lintResultsWithSourceChanged, existingBatches);
+
+    expect(counts.add.size).toEqual(0);
+    expect(counts.remove.size).toEqual(0);
+    expect(counts.stable.size).toEqual(4);
+    expect(counts.expired.size).toEqual(0);
+  });
 });
