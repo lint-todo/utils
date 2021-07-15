@@ -113,12 +113,7 @@ export function writeTodos(
   const existing: Map<TodoFilePathHash, TodoMatcher> = options.filePath
     ? readTodosForFilePath(baseDir, options.filePath)
     : readTodos(baseDir);
-  const { add, remove, stable, expired } = getTodoBatchesSync(
-    baseDir,
-    lintResults,
-    existing,
-    options
-  );
+  const { add, remove, stable, expired } = getTodoBatches(baseDir, lintResults, existing, options);
 
   applyTodoChanges(todoStorageDir, add, remove);
 
@@ -194,13 +189,13 @@ export function readTodosForFilePath(
 }
 
 /**
- * Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).
+ * Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).
  *
  * @param lintResults - The linting data for all violations.
  * @param existing - Existing todo lint data.
  * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
  */
-export function getTodoBatchesSync(
+export function getTodoBatches(
   baseDir: string,
   lintResults: LintResult[],
   existing: Map<TodoFilePathHash, TodoMatcher>,

@@ -16,7 +16,7 @@ import { LintResult, TodoDataV2 } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePaths } from './__utils__';
 import { getFixture } from './__utils__/get-fixture';
-import { getTodoBatchesSync } from '../src/io';
+import { getTodoBatches } from '../src/io';
 import TodoMatcher from '../src/todo-matcher';
 import { buildTodoDataForTesting } from './__utils__/build-todo-data';
 
@@ -332,9 +332,9 @@ describe('io', () => {
     });
   });
 
-  describe('getTodoBatchesSync', () => {
+  describe('getTodoBatches', () => {
     it('creates items to add', async () => {
-      const { add } = getTodoBatchesSync(tmp, getFixture('new-batches', tmp), new Map(), {
+      const { add } = getTodoBatches(tmp, getFixture('new-batches', tmp), new Map(), {
         shouldRemove: () => true,
       });
 
@@ -351,7 +351,7 @@ describe('io', () => {
     });
 
     it('creates items to delete', async () => {
-      const { remove } = getTodoBatchesSync(
+      const { remove } = getTodoBatches(
         tmp,
         [],
         buildTodoDataForTesting(tmp, getFixture('new-batches', tmp)),
@@ -383,7 +383,7 @@ describe('io', () => {
       expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
       // eslint-disable-next-line unicorn/no-unreadable-array-destructuring
-      const { expired } = getTodoBatchesSync(tmp, getFixture('new-batches', tmp), expiredBatches, {
+      const { expired } = getTodoBatches(tmp, getFixture('new-batches', tmp), expiredBatches, {
         shouldRemove: () => true,
       });
 
@@ -406,7 +406,7 @@ describe('io', () => {
 
       expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
-      const { add, remove, stable, expired } = getTodoBatchesSync(
+      const { add, remove, stable, expired } = getTodoBatches(
         tmp,
         getFixture('new-batches', tmp),
         existingBatches,
