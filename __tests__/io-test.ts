@@ -36,6 +36,7 @@ const TODO_DATA: TodoDataV2 = {
   },
   source: '',
   createdDate: getDatePart(new Date('12/11/2020')).getTime(),
+  fileFormat: 2,
 };
 
 function readFiles(todoStorageDir: string) {

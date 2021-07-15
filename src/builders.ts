@@ -11,6 +11,7 @@ import {
   TodoData,
   TodoDataV1,
   TodoDataV2,
+  TodoFileFormat,
 } from './types';
 import { getDatePart } from './date-utils';
 
@@ -77,6 +78,7 @@ export function buildTodoDatum(
     range,
     source: getSource(lintResult, lintMessage, range),
     createdDate: createdDate.getTime(),
+    fileFormat: TodoFileFormat.Version2,
   };
 
   const daysToDecay: DaysToDecay | undefined = getDaysToDecay(ruleId, todoConfig);
@@ -95,6 +97,8 @@ export function buildTodoDatum(
 export function normalizeToV2(todoDatum: TodoData): TodoDataV2 {
   // if we have a range property, we're already in V2 format
   if ('range' in todoDatum) {
+    todoDatum.fileFormat = TodoFileFormat.Version2;
+
     return <TodoDataV2>todoDatum;
   }
 
@@ -107,6 +111,7 @@ export function normalizeToV2(todoDatum: TodoData): TodoDataV2 {
     range: getRange(todoDatumV1),
     source: '',
     createdDate: todoDatumV1.createdDate,
+    fileFormat: TodoFileFormat.Version1,
   };
 
   if (todoDatumV1.warnDate) {

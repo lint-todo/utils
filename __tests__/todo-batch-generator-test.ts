@@ -63,19 +63,19 @@ describe('todo-batch-generator', () => {
   });
 
   it('creates items to expire', async () => {
-    const expiredBatches: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
+    const expiredTodos: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
       tmp,
       getFixture('new-batches', tmp)
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const expiredTodo: TodoDataV2 = expiredBatches
+    const expiredTodo: TodoDataV2 = expiredTodos
       .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
       .find('cc71e5f9')!;
 
     expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
     const todoBatchGenerator = new TodoBatchGenerator(tmp, { shouldRemove: () => true });
-    const { expired } = todoBatchGenerator.generate(getFixture('new-batches', tmp), expiredBatches);
+    const { expired } = todoBatchGenerator.generate(getFixture('new-batches', tmp), expiredTodos);
 
     expect([...expired.keys()]).toMatchInlineSnapshot(`
       Array [
@@ -85,12 +85,12 @@ describe('todo-batch-generator', () => {
   });
 
   it('creates all batches', async () => {
-    const existingBatches: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
+    const existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
       tmp,
       getFixture('existing-batches', tmp)
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const expiredTodo: TodoDataV2 = existingBatches
+    const expiredTodo: TodoDataV2 = existingTodos
       .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
       .find('cc71e5f9')!;
 
@@ -99,7 +99,7 @@ describe('todo-batch-generator', () => {
     const todoBatchGenerator = new TodoBatchGenerator(tmp, { shouldRemove: () => true });
     const { add, remove, stable, expired } = todoBatchGenerator.generate(
       getFixture('new-batches', tmp),
-      existingBatches
+      existingTodos
     );
 
     expect([...add.keys()]).toMatchInlineSnapshot(`
@@ -132,13 +132,13 @@ describe('todo-batch-generator', () => {
     process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
 
     const lintResults = getFixture('eslint-exact-matches', tmp);
-    let existingBatches: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
+    let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
       tmp,
       lintResults
     );
 
     const todoBatchGenerator = new TodoBatchGenerator(tmp, { shouldRemove: () => true });
-    let counts = todoBatchGenerator.generate(lintResults, existingBatches);
+    let counts = todoBatchGenerator.generate(lintResults, existingTodos);
 
     expect(counts.add.size).toEqual(0);
     expect(counts.remove.size).toEqual(0);
@@ -146,8 +146,8 @@ describe('todo-batch-generator', () => {
     expect(counts.expired.size).toEqual(0);
 
     const lintResultsWithChangedLineCol = getFixture('eslint-fuzzy-matches', tmp);
-    existingBatches = buildTodoDataForTesting(tmp, lintResults);
-    counts = todoBatchGenerator.generate(lintResultsWithChangedLineCol, existingBatches);
+    existingTodos = buildTodoDataForTesting(tmp, lintResults);
+    counts = todoBatchGenerator.generate(lintResultsWithChangedLineCol, existingTodos);
 
     expect(counts.add.size).toEqual(0);
     expect(counts.remove.size).toEqual(0);
@@ -158,14 +158,14 @@ describe('todo-batch-generator', () => {
   it('creates add batch for matches when source changes', () => {
     process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
 
-    const lintResults = getFixture('eslint-exact-matches', tmp);
-    let existingBatches: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
+    const lintResults = getFixture('eslint-no-fuzzy-source-prechange', tmp);
+    let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
       tmp,
       lintResults
     );
 
     const todoBatchGenerator = new TodoBatchGenerator(tmp, { shouldRemove: () => true });
-    let counts = todoBatchGenerator.generate(lintResults, existingBatches);
+    let counts = todoBatchGenerator.generate(lintResults, existingTodos);
 
     expect(counts.add.size).toEqual(0);
     expect(counts.remove.size).toEqual(0);
@@ -173,12 +173,12 @@ describe('todo-batch-generator', () => {
     expect(counts.expired.size).toEqual(0);
 
     const lintResultsWithSourceChanged = getFixture('eslint-no-fuzzy-source-changed', tmp);
-    existingBatches = buildTodoDataForTesting(tmp, lintResults);
-    counts = todoBatchGenerator.generate(lintResultsWithSourceChanged, existingBatches);
+    existingTodos = buildTodoDataForTesting(tmp, lintResults);
+    counts = todoBatchGenerator.generate(lintResultsWithSourceChanged, existingTodos);
 
-    expect(counts.add.size).toEqual(0);
-    expect(counts.remove.size).toEqual(0);
-    expect(counts.stable.size).toEqual(4);
+    expect(counts.add.size).toEqual(1);
+    expect(counts.remove.size).toEqual(1);
+    expect(counts.stable.size).toEqual(3);
     expect(counts.expired.size).toEqual(0);
   });
 });
