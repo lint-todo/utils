@@ -12,7 +12,7 @@ import {
   getDatePart,
   getTodoStorageDirPath,
 } from '../src';
-import { LintResult, TodoDataV2 } from '../src/types';
+import { LintResult, TodoDataV2, TodoFilePathHash } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePaths } from './__utils__';
 import { getFixture } from './__utils__/get-fixture';
@@ -333,6 +333,21 @@ describe('io', () => {
   });
 
   describe('getTodoBatches', () => {
+    it('generates no batches when lint results are empty', () => {
+      const counts = getTodoBatches(tmp, [], new Map(), {
+        shouldRemove: () => true,
+      });
+
+      expect(counts).toMatchInlineSnapshot(`
+      Object {
+        "add": Map {},
+        "expired": Map {},
+        "remove": Set {},
+        "stable": Map {},
+      }
+    `);
+    });
+
     it('creates items to add', async () => {
       const { add } = getTodoBatches(tmp, getFixture('new-batches', tmp), new Map(), {
         shouldRemove: () => true,
@@ -350,7 +365,7 @@ describe('io', () => {
       `);
     });
 
-    it('creates items to delete', async () => {
+    it('creates items to remove', async () => {
       const { remove } = getTodoBatches(
         tmp,
         [],
@@ -371,7 +386,7 @@ describe('io', () => {
     });
 
     it('creates items to expire', async () => {
-      const expiredBatches: Map<string, TodoMatcher> = buildTodoDataForTesting(
+      const expiredBatches: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
         tmp,
         getFixture('new-batches', tmp)
       );
@@ -395,7 +410,7 @@ describe('io', () => {
     });
 
     it('creates all batches', async () => {
-      const existingBatches: Map<string, TodoMatcher> = buildTodoDataForTesting(
+      const existingBatches: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
         tmp,
         getFixture('existing-batches', tmp)
       );
@@ -437,6 +452,64 @@ describe('io', () => {
           "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9",
         ]
       `);
+    });
+
+    it('creates stable batches for fuzzy matches', () => {
+      process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
+
+      const lintResults = getFixture('eslint-exact-matches', tmp);
+      let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
+        tmp,
+        lintResults
+      );
+
+      let counts = getTodoBatches(tmp, lintResults, existingTodos, { shouldRemove: () => true });
+
+      expect(counts.add.size).toEqual(0);
+      expect(counts.remove.size).toEqual(0);
+      expect(counts.stable.size).toEqual(4);
+      expect(counts.expired.size).toEqual(0);
+
+      const lintResultsWithChangedLineCol = getFixture('eslint-fuzzy-matches', tmp);
+      existingTodos = buildTodoDataForTesting(tmp, lintResults);
+      counts = getTodoBatches(tmp, lintResultsWithChangedLineCol, existingTodos, {
+        shouldRemove: () => true,
+      });
+
+      expect(counts.add.size).toEqual(0);
+      expect(counts.remove.size).toEqual(0);
+      expect(counts.stable.size).toEqual(4);
+      expect(counts.expired.size).toEqual(0);
+    });
+
+    it('creates add batch for matches when source changes', () => {
+      process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
+
+      const lintResults = getFixture('eslint-no-fuzzy-source-prechange', tmp);
+      let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
+        tmp,
+        lintResults
+      );
+
+      let counts = getTodoBatches(tmp, lintResults, existingTodos, {
+        shouldRemove: () => true,
+      });
+
+      expect(counts.add.size).toEqual(0);
+      expect(counts.remove.size).toEqual(0);
+      expect(counts.stable.size).toEqual(4);
+      expect(counts.expired.size).toEqual(0);
+
+      const lintResultsWithSourceChanged = getFixture('eslint-no-fuzzy-source-changed', tmp);
+      existingTodos = buildTodoDataForTesting(tmp, lintResults);
+      counts = getTodoBatches(tmp, lintResultsWithSourceChanged, existingTodos, {
+        shouldRemove: () => true,
+      });
+
+      expect(counts.add.size).toEqual(1);
+      expect(counts.remove.size).toEqual(1);
+      expect(counts.stable.size).toEqual(3);
+      expect(counts.expired.size).toEqual(0);
     });
   });
 });
