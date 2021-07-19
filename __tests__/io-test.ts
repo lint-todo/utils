@@ -1,5 +1,5 @@
 import { existsSync, readdir, readdirSync, statSync } from 'fs-extra';
-import { posix } from 'path';
+import { join, posix } from 'path';
 import { subDays } from 'date-fns';
 import {
   buildTodoData,
@@ -16,7 +16,7 @@ import { LintResult, TodoDataV2, TodoFilePathHash } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { updatePaths } from './__utils__';
 import { getFixture } from './__utils__/get-fixture';
-import { getTodoBatches } from '../src/io';
+import { getTodoBatches, readTodos } from '../src/io';
 import TodoMatcher from '../src/todo-matcher';
 import { buildTodoDataForTesting } from './__utils__/build-todo-data';
 
@@ -339,13 +339,13 @@ describe('io', () => {
       });
 
       expect(counts).toMatchInlineSnapshot(`
-      Object {
-        "add": Map {},
-        "expired": Map {},
-        "remove": Set {},
-        "stable": Map {},
-      }
-    `);
+              Object {
+                "add": Map {},
+                "expired": Map {},
+                "remove": Set {},
+                "stable": Map {},
+              }
+          `);
     });
 
     it('creates items to add', async () => {
@@ -510,6 +510,51 @@ describe('io', () => {
       expect(counts.remove.size).toEqual(1);
       expect(counts.stable.size).toEqual(3);
       expect(counts.expired.size).toEqual(0);
+    });
+
+    ['v1', 'v2'].forEach((version) => {
+      describe(`using ${version} todo data`, () => {
+        it('creates all batches', async () => {
+          const fixtureDir = join(__dirname, '__fixtures__', version);
+          const existingBatches: Map<TodoFilePathHash, TodoMatcher> = readTodos(fixtureDir);
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const expiredTodo: TodoDataV2 = existingBatches
+            .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
+            .find('092271fa')!;
+
+          expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
+
+          const { add, remove, stable, expired } = getTodoBatches(
+            tmp,
+            getFixture('eslint-existing-todo-changes', tmp),
+            existingBatches,
+            { shouldRemove: () => true }
+          );
+
+          expect([...add.keys()]).toMatchInlineSnapshot(`
+            Array [
+              "0a1e71cf4d0931e81f494d5a73a550016814e15a/f65a0d1a",
+            ]
+          `);
+          expect([...remove.keys()]).toMatchInlineSnapshot(`
+            Array [
+              "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0",
+            ]
+          `);
+          expect([...stable.keys()]).toMatchInlineSnapshot(`
+            Array [
+              "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839",
+              "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25",
+              "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
+            ]
+          `);
+          expect([...expired.keys()]).toMatchInlineSnapshot(`
+            Array [
+              "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
+            ]
+          `);
+        });
+      });
     });
   });
 });
