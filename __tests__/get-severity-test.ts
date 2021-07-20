@@ -1,16 +1,27 @@
-import { TodoDataV1, getDatePart, getSeverity, Severity } from '../src';
+import { TodoDataV2, getDatePart, getSeverity, Severity } from '../src';
 import { subDays, addDays } from 'date-fns';
 
 describe('getSeverity', () => {
-  let todo: TodoDataV1;
+  let todo: TodoDataV2;
 
   beforeEach(() => {
     todo = {
       engine: 'eslint',
       filePath: 'app/controllers/settings.js',
       ruleId: 'no-prototype-builtins',
-      line: 25,
-      column: 21,
+      range: {
+        start: {
+          line: 25,
+          column: 21,
+        },
+        end: {
+          line: 25,
+          column: 21,
+        },
+      },
+      source: '',
+      fileFormat: 2,
+
       createdDate: getDatePart(new Date()).getTime(),
     };
   });

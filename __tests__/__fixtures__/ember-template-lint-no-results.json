@@ -1,41 +1,38 @@
-{
-  "errorCount": 143,
-  "results": [
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/search.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/settings.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/signin.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/travisci-vs-jenkins/index.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/travisci-vs-jenkins/thank-you.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/unsubscribe.hbs",
-      "source": ""
-    }
-  ]
-}
+[
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/search.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/settings.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/signin.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/travisci-vs-jenkins/index.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/travisci-vs-jenkins/thank-you.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/unsubscribe.hbs",
+    "source": ""
+  }
+]

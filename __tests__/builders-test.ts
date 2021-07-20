@@ -153,6 +153,7 @@ describe('builders', () => {
         Object {
           "createdDate": 1424649600000,
           "engine": "eslint",
+          "fileFormat": 2,
           "filePath": "app/components/foo.js",
           "range": Object {
             "end": Object {
@@ -286,6 +287,7 @@ describe('builders', () => {
         Object {
           "createdDate": 1424649600000,
           "engine": "ember-template-lint",
+          "fileFormat": 2,
           "filePath": "app/components/foo.hbs",
           "range": Object {
             "end": Object {
@@ -313,12 +315,14 @@ describe('builders', () => {
         line: 25,
         column: 21,
         createdDate: getDatePart(new Date('2021-01-01')).getTime(),
+        fileFormat: 1,
       };
 
       expect(normalizeToV2(todoDatum)).toMatchInlineSnapshot(`
         Object {
           "createdDate": 1609459200000,
           "engine": "eslint",
+          "fileFormat": 1,
           "filePath": "app/controllers/settings.js",
           "range": Object {
             "end": Object {
@@ -353,12 +357,14 @@ describe('builders', () => {
         },
         source: '',
         createdDate: getDatePart(new Date('2021-01-01')).getTime(),
+        fileFormat: 2,
       };
 
       expect(normalizeToV2(todoDatum)).toMatchInlineSnapshot(`
         Object {
           "createdDate": 1609459200000,
           "engine": "eslint",
+          "fileFormat": 2,
           "filePath": "app/controllers/settings.js",
           "range": Object {
             "end": Object {

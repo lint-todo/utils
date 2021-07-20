@@ -54,8 +54,8 @@ have a todo lint violation.</p>
 <dt><a href="#readTodosForFilePath">readTodosForFilePath(todoStorageDir, filePath)</a> ⇒</dt>
 <dd><p>Reads todo files in the .lint-todo directory for a specific filePath.</p>
 </dd>
-<dt><a href="#getTodoBatchesSync">getTodoBatchesSync(lintResults, existing)</a> ⇒</dt>
-<dd><p>Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).</p>
+<dt><a href="#getTodoBatches">getTodoBatches(lintResults, existing)</a> ⇒</dt>
+<dd><p>Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).</p>
 </dd>
 <dt><a href="#applyTodoChanges">applyTodoChanges(todoStorageDir, add, remove)</a></dt>
 <dd><p>Applies todo changes, either adding or removing, based on batches from <code>getTodoBatches</code>.</p>
@@ -233,10 +233,10 @@ Reads todo files in the .lint-todo directory for a specific filePath.
 | todoStorageDir | The .lint-todo storage directory. |
 | filePath | The relative file path of the file to return todo items for. |
 
-<a name="getTodoBatchesSync"></a>
+<a name="getTodoBatches"></a>
 
-## getTodoBatchesSync(lintResults, existing) ⇒
-Gets 3 maps containing todo items to add, remove, or those that are stable (not to be modified).
+## getTodoBatches(lintResults, existing) ⇒
+Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).
 
 **Kind**: global function  
 **Returns**: - A [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) of [TodoFileHash](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35)/[TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36).  

@@ -1,5 +1,41 @@
 import { todoFilePathFor, todoFileNameFor } from './io';
-import { TodoDataV2, TodoFilePathHash } from './types';
+import { TodoFileFormat, TodoDataV2, TodoFilePathHash } from './types';
+
+type TodoExactMatcher = {
+  match: (first: TodoDataV2, second: TodoDataV2) => boolean;
+};
+
+const ExactMatchers = new Map<TodoFileFormat, TodoExactMatcher>([
+  [
+    TodoFileFormat.Version1,
+    {
+      match: (todoDataToFind: TodoDataV2, todoDatum: TodoDataV2) => {
+        return (
+          todoDataToFind.engine === todoDatum.engine &&
+          todoDataToFind.ruleId === todoDatum.ruleId &&
+          todoDataToFind.range.start.line === todoDatum.range.start.line &&
+          todoDataToFind.range.start.column === todoDatum.range.start.column
+        );
+      },
+    },
+  ],
+  [
+    TodoFileFormat.Version2,
+    {
+      match: (todoDataToFind: TodoDataV2, todoDatum: TodoDataV2) => {
+        return (
+          todoDataToFind.engine === todoDatum.engine &&
+          todoDataToFind.ruleId === todoDatum.ruleId &&
+          todoDataToFind.range.start.line === todoDatum.range.start.line &&
+          todoDataToFind.range.start.column === todoDatum.range.start.column &&
+          todoDataToFind.range.end.line === todoDatum.range.end.line &&
+          todoDataToFind.range.end.column === todoDatum.range.end.column &&
+          todoDataToFind.source === todoDatum.source
+        );
+      },
+    },
+  ],
+]);
 
 export default class TodoMatcher {
   private unprocessed: Set<TodoDataV2>;
@@ -30,17 +66,7 @@ export default class TodoMatcher {
     let found;
 
     for (const todoDatum of this.unprocessed) {
-      const hasSource = todoDataToFind.source && todoDatum.source;
-      const matchesSource = hasSource && todoDataToFind.source === todoDatum.source;
-      const preserveV1Matching = true;
-
-      if (
-        todoDataToFind.engine === todoDatum.engine &&
-        todoDataToFind.ruleId === todoDatum.ruleId &&
-        todoDataToFind.range.start.line === todoDatum.range.start.line &&
-        todoDataToFind.range.start.column === todoDatum.range.start.column &&
-        (matchesSource || preserveV1Matching)
-      ) {
+      if (ExactMatchers.get(todoDatum.fileFormat)?.match(todoDataToFind, todoDatum)) {
         found = todoDatum;
         this.unprocessed.delete(todoDatum);
         break;

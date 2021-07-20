@@ -1,0 +1,66 @@
+[
+  {
+    "filePath": "{{path}}/app/components/foo.hbs",
+    "messages": [
+      {
+        "rule": "no-html-comments",
+        "severity": 2,
+        "filePath": "{{path}}/app/components/foo.hbs",
+        "message": "HTML comment detected",
+        "line": 5,
+        "column": 0,
+        "source": "<!-- And I'm a comment! -->",
+        "fix": {
+          "text": "{{! And I'm a comment! }}"
+        }
+      },
+      {
+        "rule": "no-bare-strings",
+        "severity": 2,
+        "filePath": "{{path}}/app/components/foo.hbs",
+        "message": "Non-translated string used",
+        "line": 3,
+        "column": 5,
+        "source": "I'm a bad bad bare string"
+      }
+    ],
+    "errorCount": 2,
+    "warningCount": 0,
+    "todoCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "fixableTodoCount": 0
+  },
+  {
+    "filePath": "{{path}}/app/templates/application.hbs",
+    "messages": [
+      {
+        "rule": "no-html-comments",
+        "severity": 2,
+        "filePath": "{{path}}/app/templates/application.hbs",
+        "message": "HTML comment detected",
+        "line": 4,
+        "column": 34,
+        "source": "<!-- bad comment -->",
+        "fix": {
+          "text": "{{! bad comment }}"
+        }
+      },
+      {
+        "rule": "no-bare-strings",
+        "severity": 2,
+        "filePath": "{{path}}/app/templates/application.hbs",
+        "message": "Non-translated string used",
+        "line": 4,
+        "column": 5,
+        "source": "This is a bare string!!"
+      }
+    ],
+    "errorCount": 2,
+    "warningCount": 0,
+    "todoCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "fixableTodoCount": 0
+  }
+]

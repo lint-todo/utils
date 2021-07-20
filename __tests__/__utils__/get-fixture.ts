@@ -10,5 +10,5 @@ export function getFixture<T extends ESLint.LintResult | TemplateLintResult>(
 ): T[] {
   const fixture = readJsonSync(resolve(join('./__tests__/__fixtures__/', `${fileName}.json`)));
 
-  return updatePaths(tmp, 'results' in fixture ? fixture.results : fixture);
+  return updatePaths(tmp, fixture);
 }

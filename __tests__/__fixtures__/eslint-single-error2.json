@@ -1,20 +1,18 @@
-{
-  "results": [
-    {
-      "filePath": "{{path}}/app/initializers/tracer.js",
-      "messages": [
-        {
-          "ruleId": "no-redeclare",
-          "severity": 2,
-          "message": "'window' is already defined as a built-in global variable.",
-          "line": 1,
-          "column": 11,
-          "nodeType": "Block",
-          "messageId": "redeclaredAsBuiltin",
-          "endLine": 1,
-          "endColumn": 17
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "filePath": "{{path}}/app/initializers/tracer.js",
+    "messages": [
+      {
+        "ruleId": "no-redeclare",
+        "severity": 2,
+        "message": "'window' is already defined as a built-in global variable.",
+        "line": 1,
+        "column": 11,
+        "nodeType": "Block",
+        "messageId": "redeclaredAsBuiltin",
+        "endLine": 1,
+        "endColumn": 17
+      }
+    ]
+  }
+]

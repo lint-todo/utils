@@ -1,0 +1,79 @@
+[
+  {
+    "filePath": "{{path}}/lint-app/app/components/foo.js",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'bar1' is assigned a value but never used.",
+        "line": 7,
+        "column": 9,
+        "nodeType": "Identifier",
+        "messageId": "unusedVar",
+        "endLine": 7,
+        "endColumn": 13
+      }
+    ],
+    "errorCount": 1,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "source": "import Component from \"@glimmer/component\";\n\nexport default class FooComponent extends Component {\n  constructor() {\n    super();\n\n    let bar1 = true;\n\n    console.log(\"bar\");\n  }\n}\n",
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "{{path}}/lint-app/app/utils/util.js",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'addOne' is defined but never used.",
+        "line": 1,
+        "column": 10,
+        "nodeType": "Identifier",
+        "messageId": "unusedVar",
+        "endLine": 1,
+        "endColumn": 16
+      },
+      {
+        "ruleId": "use-isnan",
+        "severity": 2,
+        "message": "Use the isNaN function to compare with NaN.",
+        "line": 2,
+        "column": 7,
+        "nodeType": "BinaryExpression",
+        "messageId": "comparisonWithNaN",
+        "endLine": 2,
+        "endColumn": 15
+      }
+    ],
+    "errorCount": 2,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "source": "function addOne(i) {\n  if (i != NaN) {\n    return i++;\n  }\n  return;\n}\n",
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "{{path}}/lint-app/rule-config.js",
+    "messages": [
+      {
+        "ruleId": "no-undef",
+        "severity": 2,
+        "message": "'module' is not defined.",
+        "line": 1,
+        "column": 1,
+        "nodeType": "Identifier",
+        "messageId": "undef",
+        "endLine": 1,
+        "endColumn": 7
+      }
+    ],
+    "errorCount": 1,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "source": "module.exports = {\n  'no-html-comments': { warn: 5, error: 10 },\n}\n",
+    "usedDeprecatedRules": []
+  }
+]
