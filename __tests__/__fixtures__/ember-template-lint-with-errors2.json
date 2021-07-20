@@ -1,11 +1,11 @@
 [
   {
-    "filePath": "app/components/foo.hbs",
+    "filePath": "{{path}}/app/components/foo.hbs",
     "messages": [
       {
         "rule": "no-html-comments",
         "severity": 2,
-        "filePath": "app/components/foo.hbs",
+        "filePath": "{{path}}/app/components/foo.hbs",
         "message": "HTML comment detected",
         "line": 5,
         "column": 0,
@@ -17,7 +17,7 @@
       {
         "rule": "no-bare-strings",
         "severity": 2,
-        "filePath": "app/components/foo.hbs",
+        "filePath": "{{path}}/app/components/foo.hbs",
         "message": "Non-translated string used",
         "line": 3,
         "column": 5,
@@ -32,12 +32,12 @@
     "fixableTodoCount": 0
   },
   {
-    "filePath": "app/templates/application.hbs",
+    "filePath": "{{path}}/app/templates/application.hbs",
     "messages": [
       {
         "rule": "no-html-comments",
         "severity": 2,
-        "filePath": "app/templates/application.hbs",
+        "filePath": "{{path}}/app/templates/application.hbs",
         "message": "HTML comment detected",
         "line": 4,
         "column": 34,
@@ -49,7 +49,7 @@
       {
         "rule": "no-bare-strings",
         "severity": 2,
-        "filePath": "app/templates/application.hbs",
+        "filePath": "{{path}}/app/templates/application.hbs",
         "message": "Non-translated string used",
         "line": 4,
         "column": 5,

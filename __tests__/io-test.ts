@@ -512,48 +512,150 @@ describe('io', () => {
       expect(counts.expired.size).toEqual(0);
     });
 
-    ['v1', 'v2'].forEach((version) => {
-      describe(`using ${version} todo data`, () => {
-        it('creates all batches', async () => {
-          const fixtureDir = join(__dirname, '__fixtures__', version);
-          const existingBatches: Map<TodoFilePathHash, TodoMatcher> = readTodos(fixtureDir);
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const expiredTodo: TodoDataV2 = existingBatches
-            .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
-            .find('092271fa')!;
+    describe('v1 file format', () => {
+      it(`creates only stable and expired batches for exact match`, async () => {
+        const fixtureDir = join(__dirname, '__fixtures__', 'v1');
+        const existingBatches: Map<TodoFilePathHash, TodoMatcher> = readTodos(fixtureDir);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const expiredTodo: TodoDataV2 = existingBatches
+          .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
+          .find('0c1a00af')!;
 
-          expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
+        expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
-          const { add, remove, stable, expired } = getTodoBatches(
-            tmp,
-            getFixture('eslint-existing-todo-changes', tmp),
-            existingBatches,
-            { shouldRemove: () => true }
-          );
+        const { add, remove, stable, expired } = getTodoBatches(
+          tmp,
+          getFixture('eslint-with-errors-exact-match', tmp),
+          existingBatches,
+          { shouldRemove: () => true }
+        );
 
-          expect([...add.keys()]).toMatchInlineSnapshot(`
-            Array [
-              "0a1e71cf4d0931e81f494d5a73a550016814e15a/f65a0d1a",
-            ]
-          `);
-          expect([...remove.keys()]).toMatchInlineSnapshot(`
-            Array [
-              "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0",
-            ]
-          `);
-          expect([...stable.keys()]).toMatchInlineSnapshot(`
-            Array [
-              "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839",
-              "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25",
-              "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
-            ]
-          `);
-          expect([...expired.keys()]).toMatchInlineSnapshot(`
-            Array [
-              "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
-            ]
-          `);
-        });
+        expect([...add.keys()]).toMatchInlineSnapshot(`Array []`);
+        expect([...remove.keys()]).toMatchInlineSnapshot(`Array []`);
+        expect([...stable.keys()]).toMatchInlineSnapshot(`
+          Array [
+            "68e22b32dc9da5964fc73d75680c1cfad9532912/da773fcf",
+            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/fb219dc1",
+            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/ce6ecd57",
+            "b6f600233b5a01e7165bcaf27ea6730b6213f331/fb17ee16",
+          ]
+        `);
+        expect([...expired.keys()]).toMatchInlineSnapshot(`
+          Array [
+            "d47704143ff2aa8b05d66fc59e790e126b7b3603/0c1a00af",
+          ]
+        `);
+      });
+
+      it(`creates add and remove batches when fuzzy match doesn't match`, async () => {
+        const fixtureDir = join(__dirname, '__fixtures__', 'v1');
+        const existingBatches: Map<TodoFilePathHash, TodoMatcher> = readTodos(fixtureDir);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const expiredTodo: TodoDataV2 = existingBatches
+          .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
+          .find('0c1a00af')!;
+
+        expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
+
+        const { add, remove, stable, expired } = getTodoBatches(
+          tmp,
+          getFixture('eslint-with-errors-fuzzy-match', tmp),
+          existingBatches,
+          { shouldRemove: () => true }
+        );
+
+        expect([...add.keys()]).toMatchInlineSnapshot(`
+          Array [
+            "68e22b32dc9da5964fc73d75680c1cfad9532912/fdb13165",
+          ]
+        `);
+        expect([...remove.keys()]).toMatchInlineSnapshot(`
+          Array [
+            "68e22b32dc9da5964fc73d75680c1cfad9532912/da773fcf",
+          ]
+        `);
+        expect([...stable.keys()]).toMatchInlineSnapshot(`
+          Array [
+            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/fb219dc1",
+            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/ce6ecd57",
+            "b6f600233b5a01e7165bcaf27ea6730b6213f331/fb17ee16",
+          ]
+        `);
+        expect([...expired.keys()]).toMatchInlineSnapshot(`
+          Array [
+            "d47704143ff2aa8b05d66fc59e790e126b7b3603/0c1a00af",
+          ]
+        `);
+      });
+    });
+
+    describe('v2 file format', () => {
+      it(`creates only stable and expired batches for exact match`, async () => {
+        const fixtureDir = join(__dirname, '__fixtures__', 'v2');
+        const existingBatches: Map<TodoFilePathHash, TodoMatcher> = readTodos(fixtureDir);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const expiredTodo: TodoDataV2 = existingBatches
+          .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
+          .find('0c1a00af')!;
+
+        expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
+
+        const { add, remove, stable, expired } = getTodoBatches(
+          tmp,
+          getFixture('eslint-with-errors-exact-match', tmp),
+          existingBatches,
+          { shouldRemove: () => true }
+        );
+
+        expect([...add.keys()]).toMatchInlineSnapshot(`Array []`);
+        expect([...remove.keys()]).toMatchInlineSnapshot(`Array []`);
+        expect([...stable.keys()]).toMatchInlineSnapshot(`
+          Array [
+            "68e22b32dc9da5964fc73d75680c1cfad9532912/da773fcf",
+            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/fb219dc1",
+            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/ce6ecd57",
+            "b6f600233b5a01e7165bcaf27ea6730b6213f331/fb17ee16",
+          ]
+        `);
+        expect([...expired.keys()]).toMatchInlineSnapshot(`
+          Array [
+            "d47704143ff2aa8b05d66fc59e790e126b7b3603/0c1a00af",
+          ]
+        `);
+      });
+
+      it(`creates only stable and expired batches for fuzzy match`, async () => {
+        const fixtureDir = join(__dirname, '__fixtures__', 'v2');
+        const existingBatches: Map<TodoFilePathHash, TodoMatcher> = readTodos(fixtureDir);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const expiredTodo: TodoDataV2 = existingBatches
+          .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
+          .find('0c1a00af')!;
+
+        expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
+
+        const { add, remove, stable, expired } = getTodoBatches(
+          tmp,
+          getFixture('eslint-with-errors-fuzzy-match', tmp),
+          existingBatches,
+          { shouldRemove: () => true }
+        );
+
+        expect([...add.keys()]).toMatchInlineSnapshot(`Array []`);
+        expect([...remove.keys()]).toMatchInlineSnapshot(`Array []`);
+        expect([...stable.keys()]).toMatchInlineSnapshot(`
+          Array [
+            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/fb219dc1",
+            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/ce6ecd57",
+            "b6f600233b5a01e7165bcaf27ea6730b6213f331/fb17ee16",
+            "68e22b32dc9da5964fc73d75680c1cfad9532912/da773fcf",
+          ]
+        `);
+        expect([...expired.keys()]).toMatchInlineSnapshot(`
+          Array [
+            "d47704143ff2aa8b05d66fc59e790e126b7b3603/0c1a00af",
+          ]
+        `);
       });
     });
   });
