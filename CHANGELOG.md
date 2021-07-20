@@ -1,3 +1,22 @@
+## v10.0.0-beta.0 (2021-07-20)
+
+#### :boom: Breaking Change
+* [#264](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/264) Adding test cases for fuzzy matching ([@scalvert](https://github.com/scalvert))
+* [#252](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/252) Adding expanded todo batching functionality to account for fuzzy matching ([@scalvert](https://github.com/scalvert))
+* [#250](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/250) Renaming FilePath type to improve code readability ([@scalvert](https://github.com/scalvert))
+
+#### :rocket: Enhancement
+* [#264](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/264) Adding test cases for fuzzy matching ([@scalvert](https://github.com/scalvert))
+* [#257](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/257) Expands todo data into v2 format ([@scalvert](https://github.com/scalvert))
+* [#252](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/252) Adding expanded todo batching functionality to account for fuzzy matching ([@scalvert](https://github.com/scalvert))
+
+#### :house: Internal
+* [#250](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/250) Renaming FilePath type to improve code readability ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v9.1.2 (2021-06-10)
 
 
