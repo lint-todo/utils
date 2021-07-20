@@ -1,489 +1,486 @@
-{
-  "errorCount": 143,
-  "results": [
-    {
-      "messages": [
-        {
-          "rule": "require-input-label",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/add-ssh-key.hbs",
-          "message": "Input elements require a valid associated label.",
-          "line": 3,
-          "column": 4,
-          "source": ""
-        },
-        {
-          "rule": "require-input-label",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/add-ssh-key.hbs",
-          "message": "Input elements require a valid associated label.",
-          "line": 27,
-          "column": 8,
-          "source": ""
-        }
-      ],
-      "errorCount": 2,
-      "filePath": "{{path}}/app/templates/components/add-ssh-key.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "link-href-attributes",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/billing/billing-details.hbs",
-          "message": "a tags must have an href attribute",
-          "line": 96,
-          "column": 14,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/billing/billing-details.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 96,
-          "column": 64,
-          "source": ""
-        }
-      ],
-      "errorCount": 2,
-      "filePath": "{{path}}/app/templates/components/billing/billing-details.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "link-href-attributes",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/billing/contact-details.hbs",
-          "message": "a tags must have an href attribute",
-          "line": 76,
-          "column": 14,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/billing/contact-details.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 77,
-          "column": 16,
-          "source": ""
-        }
-      ],
-      "errorCount": 2,
-      "filePath": "{{path}}/app/templates/components/billing/contact-details.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/components/billing/education.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "link-href-attributes",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/billing/payment-details.hbs",
-          "message": "a tags must have an href attribute",
-          "line": 22,
-          "column": 16,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/billing/payment-details.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 22,
-          "column": 19,
-          "source": ""
-        }
-      ],
-      "errorCount": 2,
-      "filePath": "{{path}}/app/templates/components/billing/payment-details.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "link-href-attributes",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/billing/select-plan.hbs",
-          "message": "a tags must have an href attribute",
-          "line": 71,
-          "column": 12,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/billing/select-plan.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 42,
-          "column": 14,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/billing/select-plan.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 72,
-          "column": 14,
-          "source": ""
-        }
-      ],
-      "errorCount": 3,
-      "filePath": "{{path}}/app/templates/components/billing/select-plan.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "link-href-attributes",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/caches-item.hbs",
-          "message": "a tags must have an href attribute",
-          "line": 20,
-          "column": 2,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/caches-item.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 23,
-          "column": 4,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-link-title",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/caches-item.hbs",
-          "message": "Title attribute values should not be the same as the link text.",
-          "line": 20,
-          "column": 2,
-          "source": ""
-        }
-      ],
-      "errorCount": 3,
-      "filePath": "{{path}}/app/templates/components/caches-item.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "no-invalid-link-title",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/dashboard-row.hbs",
-          "message": "Title attribute values should not be the same as the link text.",
-          "line": 48,
-          "column": 12,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-link-title",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/dashboard-row.hbs",
-          "message": "Title attribute values should not be the same as the link text.",
-          "line": 74,
-          "column": 12,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-link-title",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/dashboard-row.hbs",
-          "message": "Title attribute values should not be the same as the link text.",
-          "line": 146,
-          "column": 20,
-          "source": ""
-        }
-      ],
-      "errorCount": 3,
-      "filePath": "{{path}}/app/templates/components/dashboard-row.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "link-href-attributes",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
-          "message": "a tags must have an href attribute",
-          "line": 45,
-          "column": 12,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 19,
-          "column": 51,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 45,
-          "column": 28,
-          "source": ""
-        }
-      ],
-      "errorCount": 3,
-      "filePath": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "require-input-label",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/env-var.hbs",
-          "message": "Input elements require a valid associated label.",
-          "line": 8,
-          "column": 2,
-          "source": ""
-        }
-      ],
-      "errorCount": 1,
-      "filePath": "{{path}}/app/templates/components/env-var.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "require-input-label",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/forms/form-checkbox.hbs",
-          "message": "Input elements require a valid associated label.",
-          "line": 2,
-          "column": 2,
-          "source": ""
-        }
-      ],
-      "errorCount": 1,
-      "filePath": "{{path}}/app/templates/components/forms/form-checkbox.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/forms/form-field.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 108,
-          "column": 34,
-          "source": ""
-        }
-      ],
-      "errorCount": 1,
-      "filePath": "{{path}}/app/templates/components/forms/form-field.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "link-href-attributes",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/github-apps-repository.hbs",
-          "message": "a tags must have an href attribute",
-          "line": 21,
-          "column": 2,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-link-title",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/github-apps-repository.hbs",
-          "message": "Title attribute values should not be the same as the link text.",
-          "line": 11,
-          "column": 2,
-          "source": ""
-        }
-      ],
-      "errorCount": 2,
-      "filePath": "{{path}}/app/templates/components/github-apps-repository.hbs",
-      "source": ""
-    },
-    {
-      "messages": [
-        {
-          "rule": "link-href-attributes",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "a tags must have an href attribute",
-          "line": 124,
-          "column": 8,
-          "source": ""
-        },
-        {
-          "rule": "link-href-attributes",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "a tags must have an href attribute",
-          "line": 130,
-          "column": 10,
-          "source": ""
-        },
-        {
-          "rule": "link-href-attributes",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "a tags must have an href attribute",
-          "line": 136,
-          "column": 12,
-          "source": ""
-        },
-        {
-          "rule": "link-href-attributes",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "a tags must have an href attribute",
-          "line": 143,
-          "column": 12,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 124,
-          "column": 58,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 130,
-          "column": 73,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 136,
-          "column": 77,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-interactive",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "Interaction added to non-interactive element",
-          "line": 143,
-          "column": 78,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-link-title",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "Title attribute values should not be the same as the link text.",
-          "line": 124,
-          "column": 8,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-link-title",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "Title attribute values should not be the same as the link text.",
-          "line": 130,
-          "column": 10,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-link-title",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "Title attribute values should not be the same as the link text.",
-          "line": 136,
-          "column": 12,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-link-title",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "Title attribute values should not be the same as the link text.",
-          "line": 143,
-          "column": 12,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-link-title",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "Title attribute values should not be the same as the link text.",
-          "line": 231,
-          "column": 10,
-          "source": ""
-        },
-        {
-          "rule": "no-invalid-link-title",
-          "severity": 2,
-          "moduleId": "{{path}}/app/templates/components/header-links.hbs",
-          "message": "Title attribute values should not be the same as the link text.",
-          "line": 242,
-          "column": 10,
-          "source": ""
-        }
-      ],
-      "errorCount": 14,
-      "filePath": "{{path}}/app/templates/components/header-links.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/search.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/settings.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/signin.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/travisci-vs-jenkins/index.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/travisci-vs-jenkins/thank-you.hbs",
-      "source": ""
-    },
-    {
-      "messages": [],
-      "errorCount": 0,
-      "filePath": "{{path}}/app/templates/unsubscribe.hbs",
-      "source": ""
-    }
-  ]
-}
+[
+  {
+    "messages": [
+      {
+        "rule": "require-input-label",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/add-ssh-key.hbs",
+        "message": "Input elements require a valid associated label.",
+        "line": 3,
+        "column": 4,
+        "source": ""
+      },
+      {
+        "rule": "require-input-label",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/add-ssh-key.hbs",
+        "message": "Input elements require a valid associated label.",
+        "line": 27,
+        "column": 8,
+        "source": ""
+      }
+    ],
+    "errorCount": 2,
+    "filePath": "{{path}}/app/templates/components/add-ssh-key.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "link-href-attributes",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/billing/billing-details.hbs",
+        "message": "a tags must have an href attribute",
+        "line": 96,
+        "column": 14,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/billing/billing-details.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 96,
+        "column": 64,
+        "source": ""
+      }
+    ],
+    "errorCount": 2,
+    "filePath": "{{path}}/app/templates/components/billing/billing-details.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "link-href-attributes",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/billing/contact-details.hbs",
+        "message": "a tags must have an href attribute",
+        "line": 76,
+        "column": 14,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/billing/contact-details.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 77,
+        "column": 16,
+        "source": ""
+      }
+    ],
+    "errorCount": 2,
+    "filePath": "{{path}}/app/templates/components/billing/contact-details.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/components/billing/education.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "link-href-attributes",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/billing/payment-details.hbs",
+        "message": "a tags must have an href attribute",
+        "line": 22,
+        "column": 16,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/billing/payment-details.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 22,
+        "column": 19,
+        "source": ""
+      }
+    ],
+    "errorCount": 2,
+    "filePath": "{{path}}/app/templates/components/billing/payment-details.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "link-href-attributes",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/billing/select-plan.hbs",
+        "message": "a tags must have an href attribute",
+        "line": 71,
+        "column": 12,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/billing/select-plan.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 42,
+        "column": 14,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/billing/select-plan.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 72,
+        "column": 14,
+        "source": ""
+      }
+    ],
+    "errorCount": 3,
+    "filePath": "{{path}}/app/templates/components/billing/select-plan.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "link-href-attributes",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/caches-item.hbs",
+        "message": "a tags must have an href attribute",
+        "line": 20,
+        "column": 2,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/caches-item.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 23,
+        "column": 4,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-link-title",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/caches-item.hbs",
+        "message": "Title attribute values should not be the same as the link text.",
+        "line": 20,
+        "column": 2,
+        "source": ""
+      }
+    ],
+    "errorCount": 3,
+    "filePath": "{{path}}/app/templates/components/caches-item.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "no-invalid-link-title",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/dashboard-row.hbs",
+        "message": "Title attribute values should not be the same as the link text.",
+        "line": 48,
+        "column": 12,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-link-title",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/dashboard-row.hbs",
+        "message": "Title attribute values should not be the same as the link text.",
+        "line": 74,
+        "column": 12,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-link-title",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/dashboard-row.hbs",
+        "message": "Title attribute values should not be the same as the link text.",
+        "line": 146,
+        "column": 20,
+        "source": ""
+      }
+    ],
+    "errorCount": 3,
+    "filePath": "{{path}}/app/templates/components/dashboard-row.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "link-href-attributes",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
+        "message": "a tags must have an href attribute",
+        "line": 45,
+        "column": 12,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 19,
+        "column": 51,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 45,
+        "column": 28,
+        "source": ""
+      }
+    ],
+    "errorCount": 3,
+    "filePath": "{{path}}/app/templates/components/dialogs/cancel-subscription-modal.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "require-input-label",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/env-var.hbs",
+        "message": "Input elements require a valid associated label.",
+        "line": 8,
+        "column": 2,
+        "source": ""
+      }
+    ],
+    "errorCount": 1,
+    "filePath": "{{path}}/app/templates/components/env-var.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "require-input-label",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/forms/form-checkbox.hbs",
+        "message": "Input elements require a valid associated label.",
+        "line": 2,
+        "column": 2,
+        "source": ""
+      }
+    ],
+    "errorCount": 1,
+    "filePath": "{{path}}/app/templates/components/forms/form-checkbox.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/forms/form-field.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 108,
+        "column": 34,
+        "source": ""
+      }
+    ],
+    "errorCount": 1,
+    "filePath": "{{path}}/app/templates/components/forms/form-field.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "link-href-attributes",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/github-apps-repository.hbs",
+        "message": "a tags must have an href attribute",
+        "line": 21,
+        "column": 2,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-link-title",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/github-apps-repository.hbs",
+        "message": "Title attribute values should not be the same as the link text.",
+        "line": 11,
+        "column": 2,
+        "source": ""
+      }
+    ],
+    "errorCount": 2,
+    "filePath": "{{path}}/app/templates/components/github-apps-repository.hbs",
+    "source": ""
+  },
+  {
+    "messages": [
+      {
+        "rule": "link-href-attributes",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "a tags must have an href attribute",
+        "line": 124,
+        "column": 8,
+        "source": ""
+      },
+      {
+        "rule": "link-href-attributes",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "a tags must have an href attribute",
+        "line": 130,
+        "column": 10,
+        "source": ""
+      },
+      {
+        "rule": "link-href-attributes",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "a tags must have an href attribute",
+        "line": 136,
+        "column": 12,
+        "source": ""
+      },
+      {
+        "rule": "link-href-attributes",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "a tags must have an href attribute",
+        "line": 143,
+        "column": 12,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 124,
+        "column": 58,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 130,
+        "column": 73,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 136,
+        "column": 77,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-interactive",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "Interaction added to non-interactive element",
+        "line": 143,
+        "column": 78,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-link-title",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "Title attribute values should not be the same as the link text.",
+        "line": 124,
+        "column": 8,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-link-title",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "Title attribute values should not be the same as the link text.",
+        "line": 130,
+        "column": 10,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-link-title",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "Title attribute values should not be the same as the link text.",
+        "line": 136,
+        "column": 12,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-link-title",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "Title attribute values should not be the same as the link text.",
+        "line": 143,
+        "column": 12,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-link-title",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "Title attribute values should not be the same as the link text.",
+        "line": 231,
+        "column": 10,
+        "source": ""
+      },
+      {
+        "rule": "no-invalid-link-title",
+        "severity": 2,
+        "moduleId": "{{path}}/app/templates/components/header-links.hbs",
+        "message": "Title attribute values should not be the same as the link text.",
+        "line": 242,
+        "column": 10,
+        "source": ""
+      }
+    ],
+    "errorCount": 14,
+    "filePath": "{{path}}/app/templates/components/header-links.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/search.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/settings.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/signin.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/travisci-vs-jenkins/index.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/travisci-vs-jenkins/thank-you.hbs",
+    "source": ""
+  },
+  {
+    "messages": [],
+    "errorCount": 0,
+    "filePath": "{{path}}/app/templates/unsubscribe.hbs",
+    "source": ""
+  }
+]

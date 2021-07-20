@@ -1,28 +1,28 @@
 [
   {
-    "filePath": "{{path}}/lint-app/app/components/foo.js",
+    "filePath": "/Users/scalvert/workspace/personal/test-bed/lint-app/app/components/foo.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
         "severity": 2,
-        "message": "'foo' is assigned a value but never used.",
+        "message": "'foo1' is assigned a value but never used.",
         "line": 7,
         "column": 9,
         "nodeType": "Identifier",
         "messageId": "unusedVar",
         "endLine": 7,
-        "endColumn": 12
+        "endColumn": 13
       }
     ],
     "errorCount": 1,
     "warningCount": 0,
     "fixableErrorCount": 0,
     "fixableWarningCount": 0,
-    "source": "import Component from \"@glimmer/component\";\n\nexport default class FooComponent extends Component {\n  constructor() {\n    super();\n\n    let foo = true;\n\n    console.log(\"bar\");\n  }\n}\n",
+    "source": "import Component from \"@glimmer/component\";\n\nexport default class FooComponent extends Component {\n  constructor() {\n    super();\n\n    let foo1 = true;\n\n    console.log(\"bar\");\n  }\n}\n",
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "{{path}}/lint-app/app/utils/util.js",
+    "filePath": "/Users/scalvert/workspace/personal/test-bed/lint-app/app/utils/util.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -55,7 +55,29 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "{{path}}/lint-app/rule-config.js",
+    "filePath": "/Users/scalvert/workspace/personal/test-bed/lint-app/json-formatter.js",
+    "messages": [
+      {
+        "ruleId": "no-undef",
+        "severity": 2,
+        "message": "'module' is not defined.",
+        "line": 18,
+        "column": 1,
+        "nodeType": "Identifier",
+        "messageId": "undef",
+        "endLine": 18,
+        "endColumn": 7
+      }
+    ],
+    "errorCount": 1,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "source": "class JsonRawPrinter {\n  constructor(options = {}) {\n    this.options = options;\n    this.console = options.console || console;\n  }\n\n  print(results) {\n    if (!this.options.hasResultData) {\n      return;\n    }\n\n    let json = JSON.stringify(results, null, 2);\n\n    this.console.log(json);\n  }\n}\n\nmodule.exports = JsonRawPrinter;\n",
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/scalvert/workspace/personal/test-bed/lint-app/rule-config.js",
     "messages": [
       {
         "ruleId": "no-undef",

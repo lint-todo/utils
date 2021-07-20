@@ -1,62 +1,50 @@
-{
-  "results": [
-    {
-      "filePath": "{{path}}/tests/unit/utils/job-config-language-test.js",
-      "messages": [],
-      "errorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0
-    },
-    {
-      "filePath": "{{path}}/tests/unit/utils/paginated-collection-test.js",
-      "messages": [],
-      "errorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0
-    },
-    {
-      "filePath": "{{path}}/tests/unit/utils/time-in-words-test.js",
-      "messages": [],
-      "errorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0
-    },
-    {
-      "filePath": "{{path}}/tests/unit/utils/ui-kit/assertions-test.js",
-      "messages": [],
-      "errorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0
-    },
-    {
-      "filePath": "{{path}}/tests/unit/utils/ui-kit/responsive-test.js",
-      "messages": [],
-      "errorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0
-    },
-    {
-      "filePath": "{{path}}/tests/unit/utils/vcs-test.js",
-      "messages": [],
-      "errorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0
-    }
-  ],
-  "errorCount": 40,
-  "warningCount": 3,
-  "fixableErrorCount": 8,
-  "fixableWarningCount": 0,
-  "usedDeprecatedRules": [
-    {
-      "ruleId": "no-spaced-func",
-      "replacedBy": ["func-call-spacing"]
-    }
-  ]
-}
+[
+  {
+    "filePath": "{{path}}/tests/unit/utils/job-config-language-test.js",
+    "messages": [],
+    "errorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0
+  },
+  {
+    "filePath": "{{path}}/tests/unit/utils/paginated-collection-test.js",
+    "messages": [],
+    "errorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0
+  },
+  {
+    "filePath": "{{path}}/tests/unit/utils/time-in-words-test.js",
+    "messages": [],
+    "errorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0
+  },
+  {
+    "filePath": "{{path}}/tests/unit/utils/ui-kit/assertions-test.js",
+    "messages": [],
+    "errorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0
+  },
+  {
+    "filePath": "{{path}}/tests/unit/utils/ui-kit/responsive-test.js",
+    "messages": [],
+    "errorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0
+  },
+  {
+    "filePath": "{{path}}/tests/unit/utils/vcs-test.js",
+    "messages": [],
+    "errorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0
+  }
+]
