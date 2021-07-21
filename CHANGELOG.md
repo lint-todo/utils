@@ -1,3 +1,12 @@
+## v10.0.0-beta.1 (2021-07-21)
+
+#### :bug: Bug Fix
+* [#268](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/268) Adds missing export to public API ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v10.0.0-beta.0 (2021-07-20)
 
 #### :boom: Breaking Change
