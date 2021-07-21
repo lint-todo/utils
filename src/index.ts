@@ -2,6 +2,7 @@ export { buildTodoData, buildTodoDatum } from './builders';
 export {
   applyTodoChanges,
   ensureTodoStorageDir,
+  getTodoBatches,
   getTodoStorageDirPath,
   readTodos,
   readTodosForFilePath,
