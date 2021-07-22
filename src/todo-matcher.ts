@@ -44,12 +44,16 @@ export default class TodoMatcher {
     this.unprocessed = new Set();
   }
 
-  unmatched(predicate: (todoDatum: TodoDataV2) => boolean = () => false): string[] {
-    return [...this.unprocessed]
-      .filter((todoDatum) => predicate(todoDatum))
-      .map((todoDatum: TodoDataV2) => {
-        return todoFilePathFor(todoDatum);
-      });
+  unmatched(
+    predicate: (todoDatum: TodoDataV2) => boolean = () => false
+  ): Map<TodoFilePathHash, TodoDataV2> {
+    return new Map(
+      [...this.unprocessed]
+        .filter((todoDatum) => predicate(todoDatum))
+        .map((todoDatum: TodoDataV2) => {
+          return [todoFilePathFor(todoDatum), todoDatum];
+        })
+    );
   }
 
   add(todoDatum: TodoDataV2): void {

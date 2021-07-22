@@ -65,7 +65,7 @@ export default class TodoBatchGenerator {
     const add = new Map<TodoFileHash, TodoDataV2>();
     const expired = new Map<TodoFileHash, TodoDataV2>();
     const stable = new Map<TodoFileHash, TodoDataV2>();
-    let remove = new Set<TodoFileHash>();
+    let remove = new Map<TodoFileHash, TodoDataV2>();
 
     const unmatched = buildTodoData(this.baseDir, lintResults, this.options?.todoConfig);
 
@@ -115,7 +115,7 @@ export default class TodoBatchGenerator {
     }
 
     for (const matcher of [...existingTodos.values()]) {
-      remove = new Set([...remove, ...matcher.unmatched(this.options?.shouldRemove)]);
+      remove = new Map([...remove, ...matcher.unmatched(this.options?.shouldRemove)]);
     }
 
     return {

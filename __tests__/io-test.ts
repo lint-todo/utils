@@ -339,13 +339,13 @@ describe('io', () => {
       });
 
       expect(counts).toMatchInlineSnapshot(`
-              Object {
-                "add": Map {},
-                "expired": Map {},
-                "remove": Set {},
-                "stable": Map {},
-              }
-          `);
+        Object {
+          "add": Map {},
+          "expired": Map {},
+          "remove": Map {},
+          "stable": Map {},
+        }
+      `);
     });
 
     it('creates items to add', async () => {

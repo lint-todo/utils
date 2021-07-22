@@ -215,7 +215,7 @@ export function getTodoBatches(
 export function applyTodoChanges(
   todoStorageDir: string,
   add: Map<TodoFileHash, TodoDataV2>,
-  remove: Set<TodoFileHash>
+  remove: Map<TodoFileHash, TodoDataV2>
 ): void {
   for (const [fileHash, todoDatum] of add) {
     const { dir } = posix.parse(fileHash);
@@ -224,7 +224,7 @@ export function applyTodoChanges(
     writeJsonSync(posix.join(todoStorageDir, `${fileHash}.json`), todoDatum);
   }
 
-  for (const fileHash of remove) {
+  for (const [fileHash] of remove) {
     const { dir } = posix.parse(fileHash);
     const todoDir = posix.join(todoStorageDir, dir);
 
