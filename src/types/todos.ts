@@ -37,7 +37,7 @@ export type TodoBatches = {
   add: Map<TodoFileHash, TodoDataV2>;
   expired: Map<TodoFileHash, TodoDataV2>;
   stable: Map<TodoFileHash, TodoDataV2>;
-  remove: Set<TodoFileHash>;
+  remove: Map<TodoFileHash, TodoDataV2>;
 };
 
 export enum TodoFileFormat {
