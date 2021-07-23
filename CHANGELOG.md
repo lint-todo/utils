@@ -1,3 +1,12 @@
+## v10.0.0-beta.2 (2021-07-23)
+
+#### :bug: Bug Fix
+* [#269](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/269) Converts the remove Set back to a Map, which is required for consumers ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v10.0.0-beta.1 (2021-07-21)
 
 #### :bug: Bug Fix
