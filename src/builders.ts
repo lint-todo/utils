@@ -18,7 +18,7 @@ import { getDatePart } from './date-utils';
 const LINES_PATTERN = /(.*?(?:\r\n?|\n|$))/gm;
 
 /**
- * Adapts a array of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} to a set of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}.
+ * Adapts an array of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} to a set of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param lintResults - A array of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} objects to convert to {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2} objects.
