@@ -18,10 +18,10 @@ Those utilities are:
 
 <dl>
 <dt><a href="#buildTodoData">buildTodoData(baseDir, lintResults, todoConfig)</a> ⇒</dt>
-<dd><p>Adapts a array of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a set of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61">TodoDataV2</a>.</p>
+<dd><p>Adapts an array of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a set of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61">TodoDataV2</a>.</p>
 </dd>
 <dt><a href="#buildTodoDatum">buildTodoDatum(lintResult, lintMessage, todoConfig)</a> ⇒</dt>
-<dd><p>Adapts an <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61">TodoDataV2</a>. FilePaths are absolute
+<dd><p>Adapts a <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61">TodoDataV2</a>. FilePaths are absolute
 when received from a lint result, so they&#39;re converted to relative paths for stability in
 serializing the contents to disc.</p>
 </dd>
@@ -91,7 +91,7 @@ Config values can be present in</p>
 <a name="buildTodoData"></a>
 
 ## buildTodoData(baseDir, lintResults, todoConfig) ⇒
-Adapts a array of [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31) to a set of [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61).
+Adapts an array of [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31) to a set of [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61).
 
 **Kind**: global function  
 **Returns**: - A Promise resolving to a [Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set) of [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61).  
@@ -99,13 +99,13 @@ Adapts a array of [LintResult](https://github.com/ember-template-lint/ember-temp
 | Param | Description |
 | --- | --- |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
-| lintResults | A array of [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31) objects to convert to [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61) objects. |
+| lintResults | An array of [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31) objects to convert to [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61) objects. |
 | todoConfig | An object containing the warn or error days, in integers. |
 
 <a name="buildTodoDatum"></a>
 
 ## buildTodoDatum(lintResult, lintMessage, todoConfig) ⇒
-Adapts an [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31) to a [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61). FilePaths are absolute
+Adapts a [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31) to a [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61). FilePaths are absolute
 when received from a lint result, so they're converted to relative paths for stability in
 serializing the contents to disc.
 
@@ -254,7 +254,7 @@ Reads todo files in the .lint-todo directory and returns Todo data in an array.
 Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).
 
 **Kind**: global function  
-**Returns**: - A object of [TodoBatches](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L36).  
+**Returns**: - An object of [TodoBatches](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L36).  
 
 | Param | Description |
 | --- | --- |
