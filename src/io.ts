@@ -208,7 +208,7 @@ export function readTodoData(baseDir: string): TodoDataV2[] {
  *
  * @param lintResults - The linting data for all violations.
  * @param existing - Existing todo lint data.
- * @returns - A object of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L36|TodoBatches}.
+ * @returns - An object of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L36|TodoBatches}.
  */
 export function getTodoBatches(
   baseDir: string,
