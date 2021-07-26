@@ -188,6 +188,15 @@ export function readTodosForFilePath(
   return existingTodos;
 }
 
+export function readTodoData(baseDir: string): TodoDataV2[] {
+  return [...readTodos(baseDir).values()].reduce(
+    (matcherResults: TodoDataV2[], matcher: TodoMatcher) => {
+      return [...matcherResults, ...matcher.unprocessed];
+    },
+    []
+  );
+}
+
 /**
  * Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).
  *

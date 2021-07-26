@@ -6,6 +6,7 @@ export {
   getTodoStorageDirPath,
   readTodos,
   readTodosForFilePath,
+  readTodoData,
   todoStorageDirExists,
   todoDirFor,
   todoFileNameFor,

@@ -38,7 +38,7 @@ const ExactMatchers = new Map<TodoFileFormat, TodoExactMatcher>([
 ]);
 
 export default class TodoMatcher {
-  private unprocessed: Set<TodoDataV2>;
+  unprocessed: Set<TodoDataV2>;
 
   constructor() {
     this.unprocessed = new Set();
