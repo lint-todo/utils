@@ -18,12 +18,12 @@ import { getDatePart } from './date-utils';
 const LINES_PATTERN = /(.*?(?:\r\n?|\n|$))/gm;
 
 /**
- * Adapts a list of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} to a map of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}, {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * Adapts an array of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} to a set of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @param lintResults - A list of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} objects to convert to {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} objects.
+ * @param lintResults - An array of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} objects to convert to {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2} objects.
  * @param todoConfig - An object containing the warn or error days, in integers.
- * @returns - A Promise resolving to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set|Set} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * @returns - A Promise resolving to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set|Set} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}.
  */
 export function buildTodoData(
   baseDir: string,
@@ -48,14 +48,14 @@ export function buildTodoData(
 }
 
 /**
- * Adapts an {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L32|LintResult} to a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}. FilePaths are absolute
+ * Adapts a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} to a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}. FilePaths are absolute
  * when received from a lint result, so they're converted to relative paths for stability in
  * serializing the contents to disc.
  *
  * @param lintResult - The lint result object.
  * @param lintMessage - A lint message object representing a specific violation for a file.
  * @param todoConfig - An object containing the warn or error days, in integers.
- * @returns - A {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object.
+ * @returns - A {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2} object.
  */
 export function buildTodoDatum(
   baseDir: string,
