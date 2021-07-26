@@ -62,7 +62,7 @@ export function getTodoStorageDirPath(baseDir: string): string {
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param todoData - The linting data for an individual violation.
- * @returns - The todo file path for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object.
+ * @returns - The todo file path for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2} object.
  */
 export function todoFilePathFor(todoData: TodoDataV2): string {
   return posix.join(todoDirFor(todoData.filePath), todoFileNameFor(todoData));
@@ -82,7 +82,7 @@ export function todoDirFor(filePath: string): string {
  * Generates a unique filename for a todo lint data.
  *
  * @param todoData - The linting data for an individual violation.
- * @returns - The todo file name for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData} object.
+ * @returns - The todo file name for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2} object.
  */
 export function todoFileNameFor(todoData: TodoDataV2): string {
   const fileContentsHash = `${todoData.engine}${todoData.ruleId}${todoData.range.start.line}${todoData.range.start.column}`;
@@ -124,7 +124,7 @@ export function writeTodos(
  * Reads all todo files in the .lint-todo directory.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L51|TodoFilePathHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
+ * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L26|TodoFilePathHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
 export function readTodos(baseDir: string): Map<TodoFilePathHash, TodoMatcher> {
   const existingTodos = new Map<TodoFilePathHash, TodoMatcher>();
@@ -154,7 +154,7 @@ export function readTodos(baseDir: string): Map<TodoFilePathHash, TodoMatcher> {
  *
  * @param todoStorageDir - The .lint-todo storage directory.
  * @param filePath - The relative file path of the file to return todo items for.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L51|TodoFilePathHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
+ * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L26|TodoFilePathHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
 export function readTodosForFilePath(
   baseDir: string,
@@ -188,6 +188,12 @@ export function readTodosForFilePath(
   return existingTodos;
 }
 
+/**
+ * Reads todo files in the .lint-todo directory and returns Todo data in an array.
+ *
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @returns An array of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}
+ */
 export function readTodoData(baseDir: string): TodoDataV2[] {
   return [...readTodos(baseDir).values()].reduce(
     (matcherResults: TodoDataV2[], matcher: TodoMatcher) => {
@@ -202,7 +208,7 @@ export function readTodoData(baseDir: string): TodoDataV2[] {
  *
  * @param lintResults - The linting data for all violations.
  * @param existing - Existing todo lint data.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L35|TodoFileHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/index.ts#L36|TodoData}.
+ * @returns - A object of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L36|TodoBatches}.
  */
 export function getTodoBatches(
   baseDir: string,
