@@ -1,3 +1,12 @@
+## v10.0.0-beta.3 (2021-07-26)
+
+#### :rocket: Enhancement
+* [#270](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/270) Adds new readTodoData API for convenience reading of TodoDataV2 ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v10.0.0-beta.2 (2021-07-23)
 
 #### :bug: Bug Fix
