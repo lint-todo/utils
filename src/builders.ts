@@ -11,6 +11,7 @@ import {
   TodoData,
   TodoDataV1,
   TodoDataV2,
+  TodoDates,
   TodoFileFormat,
 } from './types';
 import { getDatePart } from './date-utils';
@@ -65,31 +66,22 @@ export function buildTodoDatum(
 ): TodoDataV2 {
   // Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
   // provided that the fix is landed on the supported node versions of this lib
-  const createdDate = getCreatedDate();
   const filePath = isAbsolute(lintResult.filePath)
     ? relative(baseDir, lintResult.filePath)
     : lintResult.filePath;
   const ruleId = getRuleId(lintMessage);
   const range = getRange(lintMessage);
-  const todoDatum: TodoDataV2 = {
-    engine: getEngine(lintResult),
-    filePath: slash(filePath),
-    ruleId: getRuleId(lintMessage),
-    range,
-    source: getSource(lintResult, lintMessage, range),
-    createdDate: createdDate.getTime(),
-    fileFormat: TodoFileFormat.Version2,
-  };
-
-  const daysToDecay: DaysToDecay | undefined = getDaysToDecay(ruleId, todoConfig);
-
-  if (daysToDecay?.warn) {
-    todoDatum.warnDate = addDays(createdDate, daysToDecay.warn).getTime();
-  }
-
-  if (daysToDecay?.error) {
-    todoDatum.errorDate = addDays(createdDate, daysToDecay.error).getTime();
-  }
+  const todoDatum: TodoDataV2 = Object.assign(
+    {
+      engine: getEngine(lintResult),
+      filePath: slash(filePath),
+      ruleId: getRuleId(lintMessage),
+      range,
+      source: getSource(lintResult, lintMessage, range),
+      fileFormat: TodoFileFormat.Version2,
+    },
+    getTodoDates(ruleId, todoConfig)
+  );
 
   return todoDatum;
 }
@@ -127,6 +119,24 @@ export function normalizeToV2(todoDatum: TodoData): TodoDataV2 {
 
 export function generateHash(input: string, algorithm = 'sha1'): string {
   return createHash(algorithm).update(input).digest('hex');
+}
+
+function getTodoDates(ruleId: string, todoConfig?: TodoConfig): TodoDates {
+  const createdDate = getCreatedDate();
+  const todoDates: TodoDates = {
+    createdDate: createdDate.getTime(),
+  };
+  const daysToDecay: DaysToDecay | undefined = getDaysToDecay(ruleId, todoConfig);
+
+  if (daysToDecay?.warn) {
+    todoDates.warnDate = addDays(createdDate, daysToDecay.warn).getTime();
+  }
+
+  if (daysToDecay?.error) {
+    todoDates.errorDate = addDays(createdDate, daysToDecay.error).getTime();
+  }
+
+  return todoDates;
 }
 
 function getRange(loc: Location) {

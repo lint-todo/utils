@@ -72,6 +72,8 @@ export interface TodoDataV2 {
 
 export type TodoData = TodoDataV1 | TodoDataV2;
 
+export type TodoDates = Pick<TodoDataV2, 'createdDate' | 'errorDate' | 'warnDate'>;
+
 export type Range = {
   start: {
     line: number;
