@@ -11,7 +11,6 @@ import {
 } from 'fs-extra';
 import {
   TodoFileHash,
-  LintResult,
   TodoDataV2,
   TodoBatchCounts,
   WriteTodoOptions,
@@ -104,7 +103,7 @@ export function todoFileNameFor(todoData: TodoDataV2): string {
  */
 export function writeTodos(
   baseDir: string,
-  lintResults: LintResult[],
+  maybeTodos: Set<TodoDataV2>,
   options?: Partial<WriteTodoOptions>
 ): TodoBatchCounts {
   options = Object.assign({ shouldRemove: () => true }, options ?? {});
@@ -113,7 +112,7 @@ export function writeTodos(
   const existing: Map<TodoFilePathHash, TodoMatcher> = options.filePath
     ? readTodosForFilePath(baseDir, options.filePath)
     : readTodos(baseDir);
-  const { add, remove, stable, expired } = getTodoBatches(baseDir, lintResults, existing, options);
+  const { add, remove, stable, expired } = getTodoBatches(maybeTodos, existing, options);
 
   applyTodoChanges(todoStorageDir, add, remove);
 
@@ -206,18 +205,18 @@ export function readTodoData(baseDir: string): TodoDataV2[] {
 /**
  * Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).
  *
- * @param lintResults - The linting data for all violations.
+ * @param maybeTodos - The linting data for violations.
  * @param existing - Existing todo lint data.
+ * @param options - An object containing write options.
  * @returns - An object of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L36|TodoBatches}.
  */
 export function getTodoBatches(
-  baseDir: string,
-  lintResults: LintResult[],
+  maybeTodos: Set<TodoDataV2>,
   existing: Map<TodoFilePathHash, TodoMatcher>,
   options: Partial<WriteTodoOptions>
 ): TodoBatches {
-  const todoBatchGenerator = new TodoBatchGenerator(baseDir, options);
-  return todoBatchGenerator.generate(lintResults, existing);
+  const todoBatchGenerator = new TodoBatchGenerator(options);
+  return todoBatchGenerator.generate(maybeTodos, existing);
 }
 
 /**

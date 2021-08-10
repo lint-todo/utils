@@ -25,9 +25,9 @@
         "endColumn": 33
       },
       {
-        "ruleId": "no-prototype-builtins",
+        "ruleId": "no-unused-vars",
         "severity": 2,
-        "message": "Do not access Object.prototype method 'hasOwnProperty' from target object.",
+        "message": "'foo1' is assigned a value but never used.",
         "line": 50,
         "column": 101,
         "nodeType": "CallExpression",

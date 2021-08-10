@@ -7,6 +7,14 @@ export type Location = {
   endColumn?: number;
 };
 
+export interface GenericLintData {
+  engine: string;
+  filePath: string;
+  ruleId: string;
+  range: Range;
+  source: string;
+}
+
 // This type is deprecated, but is still included here for backwards compatibility.
 /**
  * Represents the path to the todo file.

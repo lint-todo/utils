@@ -2,7 +2,6 @@ import { existsSync, readdir, readdirSync, statSync } from 'fs-extra';
 import { join, posix } from 'path';
 import { subDays } from 'date-fns';
 import {
-  buildTodoData,
   ensureTodoStorageDir,
   todoDirFor,
   todoFileNameFor,
@@ -14,11 +13,15 @@ import {
 } from '../src';
 import { LintResult, TodoDataV2, TodoFilePathHash } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
-import { updatePaths } from './__utils__';
 import { getFixture } from './__utils__/get-fixture';
 import { getTodoBatches, readTodos } from '../src/io';
 import TodoMatcher from '../src/todo-matcher';
-import { buildTodoDataForTesting } from './__utils__/build-todo-data';
+import {
+  buildMaybeTodos,
+  buildExistingTodos,
+  buildMaybeTodosFromFixture,
+  buildExistingTodosFromFixture,
+} from './__utils__/build-todo-data';
 
 const TODO_DATA: TodoDataV2 = {
   engine: 'eslint',
@@ -52,6 +55,14 @@ function readFiles(todoStorageDir: string) {
   }
 
   return fileNames;
+}
+
+function chunk<T>(initial: Set<T>, firstChunk = 1): [Set<T>, Set<T>] {
+  const fixtureArr = [...initial];
+  const firstHalf = fixtureArr.slice(0, firstChunk);
+  const secondHalf = fixtureArr.slice(firstChunk, fixtureArr.length);
+
+  return [new Set(firstHalf), new Set(secondHalf)];
 }
 
 jest.setTimeout(100000);
@@ -125,7 +136,7 @@ describe('io', () => {
     it("creates .lint-todo directory if one doesn't exist", async () => {
       const todoDir = getTodoStorageDirPath(tmp);
 
-      writeTodos(tmp, []);
+      writeTodos(tmp, new Set());
 
       expect(existsSync(todoDir)).toEqual(true);
     });
@@ -133,14 +144,14 @@ describe('io', () => {
     it("doesn't write files when no todos provided", async () => {
       const todoDir = getTodoStorageDirPath(tmp);
 
-      writeTodos(tmp, []);
+      writeTodos(tmp, new Set());
 
       expect(readFiles(todoDir)).toHaveLength(0);
     });
 
     it('generates todos when todos provided', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodos(tmp, getFixture('eslint-with-errors', tmp));
+      const [added] = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'));
 
       expect(added).toEqual(18);
       expect(readFiles(todoDir)).toHaveLength(18);
@@ -184,7 +195,7 @@ describe('io', () => {
       ];
 
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodos(tmp, updatePaths<LintResult>(tmp, initialTodos));
+      const [added] = writeTodos(tmp, buildMaybeTodos(tmp, initialTodos));
       const initialFiles = readFiles(todoDir);
 
       expect(added).toEqual(2);
@@ -197,7 +208,7 @@ describe('io', () => {
         };
       });
 
-      writeTodos(tmp, getFixture('eslint-with-errors', tmp));
+      writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'));
 
       const subsequentFiles = readFiles(todoDir);
 
@@ -211,7 +222,7 @@ describe('io', () => {
     });
 
     it('removes old todos if todos no longer contains violations', async () => {
-      const fixture = getFixture('eslint-with-errors', tmp);
+      const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
       const todoDir = getTodoStorageDirPath(tmp);
 
       const [added] = writeTodos(tmp, fixture);
@@ -221,17 +232,16 @@ describe('io', () => {
       expect(added).toEqual(18);
       expect(initialFiles).toHaveLength(18);
 
-      const firstHalf = fixture.slice(0, 3);
-      const secondHalf = fixture.slice(3, fixture.length);
+      const [firstHalf, secondHalf] = chunk(fixture, 3);
 
-      const [, removed] = writeTodos(tmp, firstHalf);
+      const [, removed] = writeTodos(tmp, new Set(firstHalf));
 
       const subsequentFiles = readFiles(todoDir);
 
-      expect(removed).toEqual(11);
-      expect(subsequentFiles).toHaveLength(7);
+      expect(removed).toEqual(15);
+      expect(subsequentFiles).toHaveLength(3);
 
-      buildTodoData(tmp, secondHalf).forEach((todoDatum) => {
+      secondHalf.forEach((todoDatum) => {
         expect(!existsSync(posix.join(todoDir, `${todoFilePathFor(todoDatum)}.json`))).toEqual(
           true
         );
@@ -239,7 +249,7 @@ describe('io', () => {
     });
 
     it('does not remove old todos if todos no longer contains violations if shouldRemove returns false', async () => {
-      const fixture = getFixture('eslint-with-errors', tmp);
+      const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
       const todoDir = getTodoStorageDirPath(tmp);
 
       const [added] = writeTodos(tmp, fixture);
@@ -249,7 +259,7 @@ describe('io', () => {
       expect(added).toEqual(18);
       expect(initialFiles).toHaveLength(18);
 
-      const firstHalf = fixture.slice(0, 3);
+      const [firstHalf] = chunk(fixture, 3);
 
       const [, removed] = writeTodos(tmp, firstHalf, { shouldRemove: () => false });
 
@@ -263,7 +273,7 @@ describe('io', () => {
   describe('writeTodos for single file', () => {
     it('generates todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodos(tmp, getFixture('single-file-todo', tmp), {
+      const [added] = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
       });
 
@@ -279,7 +289,7 @@ describe('io', () => {
 
     it('updates todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodos(tmp, getFixture('single-file-todo', tmp), {
+      const [added] = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
       });
 
@@ -292,7 +302,7 @@ describe('io', () => {
         ]
       `);
 
-      const counts = writeTodos(tmp, getFixture('single-file-todo-updated', tmp), {
+      const counts = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo-updated'), {
         filePath: 'app/controllers/settings.js',
       });
 
@@ -301,14 +311,14 @@ describe('io', () => {
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839.json",
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25.json",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/ee492fc4.json",
+          "0a1e71cf4d0931e81f494d5a73a550016814e15a/d1917978.json",
         ]
       `);
     });
 
     it('deletes todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodos(tmp, getFixture('single-file-todo', tmp), {
+      const [added] = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
       });
 
@@ -321,9 +331,13 @@ describe('io', () => {
         ]
       `);
 
-      const [added2, removed2] = writeTodos(tmp, getFixture('single-file-no-errors', tmp), {
-        filePath: 'app/controllers/settings.js',
-      });
+      const [added2, removed2] = writeTodos(
+        tmp,
+        buildMaybeTodosFromFixture(tmp, 'single-file-no-errors'),
+        {
+          filePath: 'app/controllers/settings.js',
+        }
+      );
 
       expect(added2).toEqual(0);
       expect(removed2).toEqual(3);
@@ -334,7 +348,7 @@ describe('io', () => {
 
   describe('getTodoBatches', () => {
     it('generates no batches when lint results are empty', () => {
-      const counts = getTodoBatches(tmp, [], new Map(), {
+      const counts = getTodoBatches(new Set(), new Map(), {
         shouldRemove: () => true,
       });
 
@@ -349,7 +363,7 @@ describe('io', () => {
     });
 
     it('creates items to add', async () => {
-      const { add } = getTodoBatches(tmp, getFixture('new-batches', tmp), new Map(), {
+      const { add } = getTodoBatches(buildMaybeTodosFromFixture(tmp, 'new-batches'), new Map(), {
         shouldRemove: () => true,
       });
 
@@ -367,10 +381,11 @@ describe('io', () => {
 
     it('creates items to remove', async () => {
       const { remove } = getTodoBatches(
-        tmp,
-        [],
-        buildTodoDataForTesting(tmp, getFixture('new-batches', tmp)),
-        { shouldRemove: () => true }
+        new Set(),
+        buildExistingTodos(tmp, getFixture('new-batches', tmp, false)),
+        {
+          shouldRemove: () => true,
+        }
       );
 
       expect([...remove.keys()]).toMatchInlineSnapshot(`
@@ -386,9 +401,9 @@ describe('io', () => {
     });
 
     it('creates items to expire', async () => {
-      const expiredBatches: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
+      const expiredBatches: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodos(
         tmp,
-        getFixture('new-batches', tmp)
+        getFixture('new-batches', tmp, false)
       );
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const expiredTodo: TodoDataV2 = expiredBatches
@@ -398,9 +413,13 @@ describe('io', () => {
       expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
       // eslint-disable-next-line unicorn/no-unreadable-array-destructuring
-      const { expired } = getTodoBatches(tmp, getFixture('new-batches', tmp), expiredBatches, {
-        shouldRemove: () => true,
-      });
+      const { expired } = getTodoBatches(
+        buildMaybeTodosFromFixture(tmp, 'new-batches'),
+        expiredBatches,
+        {
+          shouldRemove: () => true,
+        }
+      );
 
       expect([...expired.keys()]).toMatchInlineSnapshot(`
         Array [
@@ -410,9 +429,9 @@ describe('io', () => {
     });
 
     it('creates all batches', async () => {
-      const existingBatches: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
+      const existingBatches: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodosFromFixture(
         tmp,
-        getFixture('existing-batches', tmp)
+        'existing-batches'
       );
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const expiredTodo: TodoDataV2 = existingBatches
@@ -422,8 +441,7 @@ describe('io', () => {
       expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
       const { add, remove, stable, expired } = getTodoBatches(
-        tmp,
-        getFixture('new-batches', tmp),
+        buildMaybeTodosFromFixture(tmp, 'new-batches'),
         existingBatches,
         { shouldRemove: () => true }
       );
@@ -457,22 +475,21 @@ describe('io', () => {
     it('creates stable batches for fuzzy matches', () => {
       process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
 
-      const lintResults = getFixture('eslint-exact-matches', tmp);
-      let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
-        tmp,
-        lintResults
-      );
+      const lintResults = getFixture('eslint-exact-matches', tmp, false);
+      let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodos(tmp, lintResults);
 
-      let counts = getTodoBatches(tmp, lintResults, existingTodos, { shouldRemove: () => true });
+      let counts = getTodoBatches(buildMaybeTodos(tmp, lintResults), existingTodos, {
+        shouldRemove: () => true,
+      });
 
       expect(counts.add.size).toEqual(0);
       expect(counts.remove.size).toEqual(0);
       expect(counts.stable.size).toEqual(4);
       expect(counts.expired.size).toEqual(0);
 
-      const lintResultsWithChangedLineCol = getFixture('eslint-fuzzy-matches', tmp);
-      existingTodos = buildTodoDataForTesting(tmp, lintResults);
-      counts = getTodoBatches(tmp, lintResultsWithChangedLineCol, existingTodos, {
+      const lintResultsWithChangedLineCol = getFixture('eslint-fuzzy-matches', tmp, false);
+      existingTodos = buildExistingTodos(tmp, lintResults);
+      counts = getTodoBatches(buildMaybeTodos(tmp, lintResultsWithChangedLineCol), existingTodos, {
         shouldRemove: () => true,
       });
 
@@ -485,13 +502,10 @@ describe('io', () => {
     it('creates add batch for matches when source changes', () => {
       process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
 
-      const lintResults = getFixture('eslint-no-fuzzy-source-prechange', tmp);
-      let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildTodoDataForTesting(
-        tmp,
-        lintResults
-      );
+      const lintResults = getFixture('eslint-no-fuzzy-source-prechange', tmp, false);
+      let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodos(tmp, lintResults);
 
-      let counts = getTodoBatches(tmp, lintResults, existingTodos, {
+      let counts = getTodoBatches(buildMaybeTodos(tmp, lintResults), existingTodos, {
         shouldRemove: () => true,
       });
 
@@ -500,9 +514,9 @@ describe('io', () => {
       expect(counts.stable.size).toEqual(4);
       expect(counts.expired.size).toEqual(0);
 
-      const lintResultsWithSourceChanged = getFixture('eslint-no-fuzzy-source-changed', tmp);
-      existingTodos = buildTodoDataForTesting(tmp, lintResults);
-      counts = getTodoBatches(tmp, lintResultsWithSourceChanged, existingTodos, {
+      const lintResultsWithSourceChanged = getFixture('eslint-no-fuzzy-source-changed', tmp, false);
+      existingTodos = buildExistingTodos(tmp, lintResults);
+      counts = getTodoBatches(buildMaybeTodos(tmp, lintResultsWithSourceChanged), existingTodos, {
         shouldRemove: () => true,
       });
 
@@ -524,8 +538,7 @@ describe('io', () => {
         expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
         const { add, remove, stable, expired } = getTodoBatches(
-          tmp,
-          getFixture('eslint-with-errors-exact-match', tmp),
+          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match'),
           existingBatches,
           { shouldRemove: () => true }
         );
@@ -558,8 +571,7 @@ describe('io', () => {
         expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
         const { add, remove, stable, expired } = getTodoBatches(
-          tmp,
-          getFixture('eslint-with-errors-fuzzy-match', tmp),
+          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-fuzzy-match'),
           existingBatches,
           { shouldRemove: () => true }
         );
@@ -591,19 +603,24 @@ describe('io', () => {
 
     describe('v2 file format', () => {
       it(`creates only stable and expired batches for exact match`, async () => {
-        const fixtureDir = join(__dirname, '__fixtures__', 'v2');
-        const existingBatches: Map<TodoFilePathHash, TodoMatcher> = readTodos(fixtureDir);
+        const [added] = writeTodos(
+          tmp,
+          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match')
+        );
+
+        expect(added).toEqual(5);
+
+        const existing: Map<TodoFilePathHash, TodoMatcher> = readTodos(tmp);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const expiredTodo: TodoDataV2 = existingBatches
+        const expiredTodo: TodoDataV2 = existing
           .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
           .find('0c1a00af')!;
 
         expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
         const { add, remove, stable, expired } = getTodoBatches(
-          tmp,
-          getFixture('eslint-with-errors-exact-match', tmp),
-          existingBatches,
+          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match'),
+          existing,
           { shouldRemove: () => true }
         );
 
@@ -625,19 +642,24 @@ describe('io', () => {
       });
 
       it(`creates only stable and expired batches for fuzzy match`, async () => {
-        const fixtureDir = join(__dirname, '__fixtures__', 'v2');
-        const existingBatches: Map<TodoFilePathHash, TodoMatcher> = readTodos(fixtureDir);
+        const [added] = writeTodos(
+          tmp,
+          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match')
+        );
+
+        expect(added).toEqual(5);
+
+        const existing: Map<TodoFilePathHash, TodoMatcher> = readTodos(tmp);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const expiredTodo: TodoDataV2 = existingBatches
+        const expiredTodo: TodoDataV2 = existing
           .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
           .find('0c1a00af')!;
 
         expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
         const { add, remove, stable, expired } = getTodoBatches(
-          tmp,
-          getFixture('eslint-with-errors-fuzzy-match', tmp),
-          existingBatches,
+          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-fuzzy-match'),
+          existing,
           { shouldRemove: () => true }
         );
 
