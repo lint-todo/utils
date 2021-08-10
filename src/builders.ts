@@ -14,8 +14,6 @@ import {
 } from './types';
 import { getDatePart } from './date-utils';
 
-// const LINES_PATTERN = /(.*?(?:\r\n?|\n|$))/gm;
-
 /**
  * Adapts a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} to a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}. FilePaths are absolute
  * when received from a lint result, so they're converted to relative paths for stability in
@@ -117,47 +115,6 @@ function getRange(loc: Location) {
   };
 }
 
-// function getSource(lintResult: LintResult, lintMessage: LintMessage, range: Range) {
-//   if (lintResult.source) {
-//     return generateHash(getSourceForRange(lintResult.source.match(LINES_PATTERN) || [], range));
-//   }
-
-//   if (lintMessage.source) {
-//     return generateHash(lintMessage.source);
-//   }
-
-//   return '';
-// }
-
-// function getSourceForRange(source: string[], range: Range) {
-//   const firstLine = range.start.line - 1;
-//   const lastLine = range.end.line - 1;
-//   let currentLine = firstLine - 1;
-//   const firstColumn = range.start.column - 1;
-//   const lastColumn = range.end.column - 1;
-//   const string = [];
-//   let line;
-
-//   while (currentLine < lastLine) {
-//     currentLine++;
-//     line = source[currentLine];
-
-//     if (currentLine === firstLine) {
-//       if (firstLine === lastLine) {
-//         string.push(line.slice(firstColumn, lastColumn));
-//       } else {
-//         string.push(line.slice(firstColumn));
-//       }
-//     } else if (currentLine === lastLine) {
-//       string.push(line.slice(0, lastColumn));
-//     } else {
-//       string.push(line);
-//     }
-//   }
-
-//   return string.join('');
-// }
-
 function getDaysToDecay(ruleId: string, todoConfig?: TodoConfig) {
   if (!todoConfig) {
     return;
@@ -169,19 +126,6 @@ function getDaysToDecay(ruleId: string, todoConfig?: TodoConfig) {
     return todoConfig.daysToDecay;
   }
 }
-
-// function getEngine(result: LintResult) {
-//   return result.filePath.endsWith('.js') ? 'eslint' : 'ember-template-lint';
-// }
-
-// function getRuleId(message: any) {
-//   if (typeof message.ruleId !== 'undefined') {
-//     return message.ruleId;
-//   } else if (typeof message.rule !== 'undefined') {
-//     return message.rule;
-//   }
-//   return '';
-// }
 
 function getCreatedDate(): Date {
   const date = process.env.TODO_CREATED_DATE ? new Date(process.env.TODO_CREATED_DATE) : new Date();
