@@ -1,4 +1,5 @@
 import { isAbsolute, relative } from 'path';
+import slash = require('slash');
 import { createHash } from 'crypto';
 import {
   DaysToDecay,
@@ -37,7 +38,11 @@ export function buildTodoDatum(
     : genericLintData.filePath;
   const todoDatum: TodoDataV2 = Object.assign(
     genericLintData,
-    { source: generateHash(genericLintData.source), filePath, fileFormat: TodoFileFormat.Version2 },
+    {
+      source: generateHash(genericLintData.source),
+      filePath: slash(filePath),
+      fileFormat: TodoFileFormat.Version2,
+    },
     getTodoDates(genericLintData.ruleId, todoConfig)
   );
 
