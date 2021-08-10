@@ -17,9 +17,6 @@ Those utilities are:
 ## Functions
 
 <dl>
-<dt><a href="#buildTodoData">buildTodoData(baseDir, lintResults, todoConfig)</a> ⇒</dt>
-<dd><p>Adapts an array of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a set of <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61">TodoDataV2</a>.</p>
-</dd>
 <dt><a href="#buildTodoDatum">buildTodoDatum(lintResult, lintMessage, todoConfig)</a> ⇒</dt>
 <dd><p>Adapts a <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61">TodoDataV2</a>. FilePaths are absolute
 when received from a lint result, so they&#39;re converted to relative paths for stability in
@@ -42,7 +39,7 @@ serializing the contents to disc.</p>
 <dt><a href="#todoFileNameFor">todoFileNameFor(todoData)</a> ⇒</dt>
 <dd><p>Generates a unique filename for a todo lint data.</p>
 </dd>
-<dt><a href="#writeTodos">writeTodos(baseDir, lintResults, options)</a> ⇒</dt>
+<dt><a href="#writeTodos">writeTodos(baseDir, maybeTodos, options)</a> ⇒</dt>
 <dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.</p>
 <p>Given a list of todo lint violations, this function will also delete existing files that no longer
@@ -57,7 +54,7 @@ have a todo lint violation.</p>
 <dt><a href="#readTodoData">readTodoData(baseDir)</a> ⇒</dt>
 <dd><p>Reads todo files in the .lint-todo directory and returns Todo data in an array.</p>
 </dd>
-<dt><a href="#getTodoBatches">getTodoBatches(lintResults, existing)</a> ⇒</dt>
+<dt><a href="#getTodoBatches">getTodoBatches(maybeTodos, existing, options)</a> ⇒</dt>
 <dd><p>Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).</p>
 </dd>
 <dt><a href="#applyTodoChanges">applyTodoChanges(todoStorageDir, add, remove)</a></dt>
@@ -87,20 +84,6 @@ Config values can be present in</p>
 <dd><p>Formats the date in short form, eg. 2021-01-01</p>
 </dd>
 </dl>
-
-<a name="buildTodoData"></a>
-
-## buildTodoData(baseDir, lintResults, todoConfig) ⇒
-Adapts an array of [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31) to a set of [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61).
-
-**Kind**: global function  
-**Returns**: - A Promise resolving to a [Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set) of [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61).  
-
-| Param | Description |
-| --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
-| lintResults | An array of [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31) objects to convert to [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61) objects. |
-| todoConfig | An object containing the warn or error days, in integers. |
 
 <a name="buildTodoDatum"></a>
 
@@ -195,7 +178,7 @@ Generates a unique filename for a todo lint data.
 
 <a name="writeTodos"></a>
 
-## writeTodos(baseDir, lintResults, options) ⇒
+## writeTodos(baseDir, maybeTodos, options) ⇒
 Writes files for todo lint violations. One file is generated for each violation, using a generated
 hash to identify each.
 
@@ -208,7 +191,7 @@ have a todo lint violation.
 | Param | Description |
 | --- | --- |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
-| lintResults | The raw linting data. |
+| maybeTodos | The linting data, converted to TodoDataV2 format. |
 | options | An object containing write options. |
 
 <a name="readTodos"></a>
@@ -250,7 +233,7 @@ Reads todo files in the .lint-todo directory and returns Todo data in an array.
 
 <a name="getTodoBatches"></a>
 
-## getTodoBatches(lintResults, existing) ⇒
+## getTodoBatches(maybeTodos, existing, options) ⇒
 Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).
 
 **Kind**: global function  
@@ -258,8 +241,9 @@ Gets 4 maps containing todo items to add, remove, those that are expired, or tho
 
 | Param | Description |
 | --- | --- |
-| lintResults | The linting data for all violations. |
+| maybeTodos | The linting data for violations. |
 | existing | Existing todo lint data. |
+| options | An object containing write options. |
 
 <a name="applyTodoChanges"></a>
 

@@ -45,7 +45,7 @@ export default class TodoBatchGenerator {
    * Exact matches match on engine, ruleID, line and column
    * Fuzzy matches match on engine, ruleID and source
    *
-   * @param lintResults - The raw linting data.
+   * @param maybeTodos - The linting data, converted to TodoDataV2 format.
    * @param existingTodos - Existing todo lint data.
    * @returns
    */

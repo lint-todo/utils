@@ -97,7 +97,7 @@ export function todoFileNameFor(todoData: TodoDataV2): string {
  * have a todo lint violation.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @param lintResults - The raw linting data.
+ * @param maybeTodos - The linting data, converted to TodoDataV2 format.
  * @param options - An object containing write options.
  * @returns - The counts of added and removed todos.
  */
