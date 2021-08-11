@@ -14,6 +14,7 @@ describe('builders', () => {
 
   describe('buildTodoDatum', () => {
     it('builds a todo from eslint result', () => {
+      const fakeLintResult = { fake: true };
       const todoDatum = buildTodoDatum(tmp, {
         engine: 'eslint',
         filePath: `${tmp}/app/controllers/settings.js`,
@@ -29,6 +30,7 @@ describe('builders', () => {
           },
         },
         source: '',
+        originalLintResult: fakeLintResult,
       });
 
       expect(todoDatum).toEqual(
@@ -46,11 +48,13 @@ describe('builders', () => {
               column: 35,
             },
           },
+          originalLintResult: fakeLintResult,
         })
       );
     });
 
     it('can build todo data from results with days to decay warn only', () => {
+      const fakeLintResult = { fake: true };
       const todoDatum = buildTodoDatum(
         tmp,
         {
@@ -68,6 +72,7 @@ describe('builders', () => {
             },
           },
           source: '',
+          originalLintResult: fakeLintResult,
         },
         {
           daysToDecay: { warn: 30 },
@@ -78,6 +83,7 @@ describe('builders', () => {
     });
 
     it('can build todo data from results with days to decay error only', () => {
+      const fakeLintResult = { fake: true };
       const todoDatum = buildTodoDatum(
         tmp,
         {
@@ -95,6 +101,7 @@ describe('builders', () => {
             },
           },
           source: '',
+          originalLintResult: fakeLintResult,
         },
         {
           daysToDecay: { error: 30 },
@@ -105,6 +112,7 @@ describe('builders', () => {
     });
 
     it('can build todo data from results with days to decay warn and error', () => {
+      const fakeLintResult = { fake: true };
       const todoDatum = buildTodoDatum(
         tmp,
         {
@@ -122,6 +130,7 @@ describe('builders', () => {
             },
           },
           source: '',
+          originalLintResult: fakeLintResult,
         },
         {
           daysToDecay: {
@@ -137,6 +146,7 @@ describe('builders', () => {
 
     it('can build todo data with a custom createdDate', () => {
       process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
+      const fakeLintResult = { fake: true };
       const todoDatum = buildTodoDatum(
         tmp,
         {
@@ -154,6 +164,7 @@ describe('builders', () => {
             },
           },
           source: '',
+          originalLintResult: fakeLintResult,
         },
         {
           daysToDecay: { warn: 30 },
@@ -167,6 +178,7 @@ describe('builders', () => {
     it('can build todo data with the correct range and source', () => {
       process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
 
+      const fakeLintResult = { fake: true };
       const todoData = buildTodoDatum(tmp, {
         engine: 'eslint',
         filePath: `${tmp}/app/components/foo.js`,
@@ -182,6 +194,7 @@ describe('builders', () => {
           },
         },
         source: 'foo',
+        originalLintResult: fakeLintResult,
       });
 
       expect(todoData).toMatchInlineSnapshot(`
@@ -190,6 +203,9 @@ describe('builders', () => {
           "engine": "eslint",
           "fileFormat": 2,
           "filePath": "app/components/foo.js",
+          "originalLintResult": Object {
+            "fake": true,
+          },
           "range": Object {
             "end": Object {
               "column": 12,
