@@ -1,3 +1,15 @@
+## v10.0.0-beta.4 (2021-08-11)
+
+#### :boom: Breaking Change
+* [#276](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/276) Change public API to take V2 format data over lint results ([@scalvert](https://github.com/scalvert))
+
+#### :rocket: Enhancement
+* [#277](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/277) Adds match agnostic lint result identity referencing ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v10.0.0-beta.3 (2021-07-26)
 
 #### :rocket: Enhancement
