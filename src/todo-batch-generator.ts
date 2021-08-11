@@ -3,6 +3,15 @@ import { todoDirFor, todoFilePathFor } from './io';
 import TodoMatcher from './todo-matcher';
 import { TodoBatches, TodoDataV2, TodoFileHash, TodoFilePathHash, WriteTodoOptions } from './types';
 
+function copyLintResult(todoDatum: TodoDataV2, unmatchedTodoData: TodoDataV2) {
+  // this is a key transfer of information that allows us to match the identify
+  // of the original lint result to the todo data. This is important as it allows
+  // us to subsequently modify the severity of the original lint result. This is
+  // only required for todo data that is generated for the stable batch, as those
+  // are the only ones that are use to match back to the original lint result.
+  todoDatum.originalLintResult = unmatchedTodoData.originalLintResult;
+}
+
 /**
  * Creates todo batches based on lint results.
  */
@@ -72,6 +81,7 @@ export default class TodoBatchGenerator {
           if (isExpired(todoDatum.errorDate) && this.options?.shouldRemove?.(todoDatum)) {
             expired.set(todoFilePath, todoDatum);
           } else {
+            copyLintResult(todoDatum, unmatchedTodoData);
             stable.set(todoFilePath, todoDatum);
           }
 
@@ -93,6 +103,7 @@ export default class TodoBatchGenerator {
           if (isExpired(todoDatum.errorDate) && this.options?.shouldRemove?.(todoDatum)) {
             expired.set(todoFilePath, todoDatum);
           } else {
+            copyLintResult(todoDatum, unmatchedTodoData);
             stable.set(todoFilePath, todoDatum);
           }
         } else {

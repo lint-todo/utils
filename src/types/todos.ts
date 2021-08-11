@@ -13,6 +13,7 @@ export interface GenericLintData {
   ruleId: string;
   range: Range;
   source: string;
+  originalLintResult: any;
 }
 
 // This type is deprecated, but is still included here for backwards compatibility.
@@ -76,6 +77,7 @@ export interface TodoDataV2 {
   source: string;
   warnDate?: number;
   errorDate?: number;
+  originalLintResult?: any;
 }
 
 export type TodoData = TodoDataV1 | TodoDataV2;

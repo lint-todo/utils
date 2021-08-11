@@ -34,6 +34,7 @@ export function buildMaybeTodos(
             ruleId: getRuleId(message),
             range,
             source: getSource(lintResult, message, range),
+            originalLintResult: message,
           },
           todoConfig
         );
@@ -72,6 +73,7 @@ export function buildExistingTodos(
             ruleId: getRuleId(message),
             range,
             source: getSource(lintResult, message, range),
+            originalLintResult: message,
           },
           todoConfig
         );
