@@ -6,9 +6,10 @@ import { TemplateLintResult } from '../../src/types';
 
 export function getFixture<T extends ESLint.LintResult | TemplateLintResult>(
   fileName: string,
-  tmp: string
+  tmp: string,
+  shouldUpdatePaths = true
 ): T[] {
   const fixture = readJsonSync(resolve(join('./__tests__/__fixtures__/', `${fileName}.json`)));
 
-  return updatePaths(tmp, fixture);
+  return shouldUpdatePaths ? updatePaths(tmp, fixture) : fixture;
 }

@@ -1,15 +1,7 @@
-import { buildTodoData } from './builders';
 import { isExpired } from './date-utils';
 import { todoDirFor, todoFilePathFor } from './io';
 import TodoMatcher from './todo-matcher';
-import {
-  LintResult,
-  TodoBatches,
-  TodoDataV2,
-  TodoFileHash,
-  TodoFilePathHash,
-  WriteTodoOptions,
-} from './types';
+import { TodoBatches, TodoDataV2, TodoFileHash, TodoFilePathHash, WriteTodoOptions } from './types';
 
 /**
  * Creates todo batches based on lint results.
@@ -18,10 +10,9 @@ export default class TodoBatchGenerator {
   /**
    * Create a TodoBatchGenerator
    *
-   * @param baseDir - The base directory that contains the .lint-todo storage directory.
    * @param options - An object containing write options.
    */
-  constructor(private baseDir: string, private options?: Partial<WriteTodoOptions>) {}
+  constructor(private options?: Partial<WriteTodoOptions>) {}
 
   /**
    * Matches todos to their associated {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2} object.
@@ -54,12 +45,12 @@ export default class TodoBatchGenerator {
    * Exact matches match on engine, ruleID, line and column
    * Fuzzy matches match on engine, ruleID and source
    *
-   * @param lintResults - The raw linting data.
+   * @param maybeTodos - The linting data, converted to TodoDataV2 format.
    * @param existingTodos - Existing todo lint data.
    * @returns
    */
   generate(
-    lintResults: LintResult[],
+    maybeTodos: Set<TodoDataV2>,
     existingTodos: Map<TodoFilePathHash, TodoMatcher>
   ): TodoBatches {
     const add = new Map<TodoFileHash, TodoDataV2>();
@@ -67,9 +58,9 @@ export default class TodoBatchGenerator {
     const stable = new Map<TodoFileHash, TodoDataV2>();
     let remove = new Map<TodoFileHash, TodoDataV2>();
 
-    const unmatched = buildTodoData(this.baseDir, lintResults, this.options?.todoConfig);
+    maybeTodos = new Set(maybeTodos);
 
-    for (const unmatchedTodoData of unmatched) {
+    for (const unmatchedTodoData of maybeTodos) {
       const todoFilePathHash = todoDirFor(unmatchedTodoData.filePath);
       const matcher = existingTodos.get(todoFilePathHash);
 
@@ -84,12 +75,12 @@ export default class TodoBatchGenerator {
             stable.set(todoFilePath, todoDatum);
           }
 
-          unmatched.delete(unmatchedTodoData);
+          maybeTodos.delete(unmatchedTodoData);
         }
       }
     }
 
-    for (const unmatchedTodoData of unmatched) {
+    for (const unmatchedTodoData of maybeTodos) {
       const todoFilePathHash = todoDirFor(unmatchedTodoData.filePath);
       const matcher = existingTodos.get(todoFilePathHash);
 
@@ -111,7 +102,7 @@ export default class TodoBatchGenerator {
         add.set(todoFilePathFor(unmatchedTodoData), unmatchedTodoData);
       }
 
-      unmatched.delete(unmatchedTodoData);
+      maybeTodos.delete(unmatchedTodoData);
     }
 
     for (const matcher of [...existingTodos.values()]) {
