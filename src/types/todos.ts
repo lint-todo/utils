@@ -100,7 +100,12 @@ export type LintTodoPackageJson = PackageJson & {
   lintTodo?: TodoConfig | TodoConfigByEngine;
 };
 
-export type TodoBatchCounts = [add: number, remove: number, stable: number, expired: number];
+export type TodoBatchCounts = {
+  addedCount: number;
+  removedCount: number;
+  stableCount: number;
+  expiredCount: number;
+};
 
 export type DaysToDecay = {
   warn?: number;
