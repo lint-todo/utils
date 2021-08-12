@@ -1,3 +1,12 @@
+## v10.0.0-beta.5 (2021-08-12)
+
+#### :boom: Breaking Change
+* [#279](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/279) Change return value of writeTodos to object ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v10.0.0-beta.4 (2021-08-11)
 
 #### :boom: Breaking Change
