@@ -151,9 +151,9 @@ describe('io', () => {
 
     it('generates todos when todos provided', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'));
+      const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'));
 
-      expect(added).toEqual(18);
+      expect(addedCount).toEqual(18);
       expect(readFiles(todoDir)).toHaveLength(18);
     });
 
@@ -195,10 +195,10 @@ describe('io', () => {
       ];
 
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodos(tmp, buildMaybeTodos(tmp, initialTodos));
+      const { addedCount } = writeTodos(tmp, buildMaybeTodos(tmp, initialTodos));
       const initialFiles = readFiles(todoDir);
 
-      expect(added).toEqual(2);
+      expect(addedCount).toEqual(2);
       expect(initialFiles).toHaveLength(2);
 
       const initialFileStats = initialFiles.map((file) => {
@@ -225,20 +225,20 @@ describe('io', () => {
       const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
       const todoDir = getTodoStorageDirPath(tmp);
 
-      const [added] = writeTodos(tmp, fixture);
+      const { addedCount } = writeTodos(tmp, fixture);
 
       const initialFiles = readFiles(todoDir);
 
-      expect(added).toEqual(18);
+      expect(addedCount).toEqual(18);
       expect(initialFiles).toHaveLength(18);
 
       const [firstHalf, secondHalf] = chunk(fixture, 3);
 
-      const [, removed] = writeTodos(tmp, new Set(firstHalf));
+      const { removedCount } = writeTodos(tmp, new Set(firstHalf));
 
       const subsequentFiles = readFiles(todoDir);
 
-      expect(removed).toEqual(15);
+      expect(removedCount).toEqual(15);
       expect(subsequentFiles).toHaveLength(3);
 
       secondHalf.forEach((todoDatum) => {
@@ -252,20 +252,20 @@ describe('io', () => {
       const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
       const todoDir = getTodoStorageDirPath(tmp);
 
-      const [added] = writeTodos(tmp, fixture);
+      const { addedCount } = writeTodos(tmp, fixture);
 
       const initialFiles = readFiles(todoDir);
 
-      expect(added).toEqual(18);
+      expect(addedCount).toEqual(18);
       expect(initialFiles).toHaveLength(18);
 
       const [firstHalf] = chunk(fixture, 3);
 
-      const [, removed] = writeTodos(tmp, firstHalf, { shouldRemove: () => false });
+      const { removedCount } = writeTodos(tmp, firstHalf, { shouldRemove: () => false });
 
       const subsequentFiles = readFiles(todoDir);
 
-      expect(removed).toEqual(0);
+      expect(removedCount).toEqual(0);
       expect(subsequentFiles).toHaveLength(18);
     });
   });
@@ -273,11 +273,11 @@ describe('io', () => {
   describe('writeTodos for single file', () => {
     it('generates todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
+      const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
       });
 
-      expect(added).toEqual(3);
+      expect(addedCount).toEqual(3);
       expect(readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
@@ -289,11 +289,11 @@ describe('io', () => {
 
     it('updates todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
+      const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
       });
 
-      expect(added).toEqual(3);
+      expect(addedCount).toEqual(3);
       expect(readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
@@ -306,7 +306,12 @@ describe('io', () => {
         filePath: 'app/controllers/settings.js',
       });
 
-      expect(counts).toStrictEqual([1, 1, 2, 0]);
+      expect(counts).toStrictEqual({
+        addedCount: 1,
+        expiredCount: 0,
+        removedCount: 1,
+        stableCount: 2,
+      });
       expect(readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839.json",
@@ -318,11 +323,11 @@ describe('io', () => {
 
     it('deletes todos for a specific filePath', async () => {
       const todoDir = getTodoStorageDirPath(tmp);
-      const [added] = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
+      const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
       });
 
-      expect(added).toEqual(3);
+      expect(addedCount).toEqual(3);
       expect(readFiles(todoDir)).toMatchInlineSnapshot(`
         Array [
           "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
@@ -331,7 +336,7 @@ describe('io', () => {
         ]
       `);
 
-      const [added2, removed2] = writeTodos(
+      const { addedCount: addedCount2, removedCount } = writeTodos(
         tmp,
         buildMaybeTodosFromFixture(tmp, 'single-file-no-errors'),
         {
@@ -339,8 +344,8 @@ describe('io', () => {
         }
       );
 
-      expect(added2).toEqual(0);
-      expect(removed2).toEqual(3);
+      expect(addedCount2).toEqual(0);
+      expect(removedCount).toEqual(3);
       expect(readFiles(todoDir)).toHaveLength(0);
       expect(await readdir(todoDir)).toHaveLength(0);
     });
@@ -603,12 +608,12 @@ describe('io', () => {
 
     describe('v2 file format', () => {
       it(`creates only stable and expired batches for exact match`, async () => {
-        const [added] = writeTodos(
+        const { addedCount } = writeTodos(
           tmp,
           buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match')
         );
 
-        expect(added).toEqual(5);
+        expect(addedCount).toEqual(5);
 
         const existing: Map<TodoFilePathHash, TodoMatcher> = readTodos(tmp);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -642,12 +647,12 @@ describe('io', () => {
       });
 
       it(`creates only stable and expired batches for fuzzy match`, async () => {
-        const [added] = writeTodos(
+        const { addedCount } = writeTodos(
           tmp,
           buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match')
         );
 
-        expect(added).toEqual(5);
+        expect(addedCount).toEqual(5);
 
         const existing: Map<TodoFilePathHash, TodoMatcher> = readTodos(tmp);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

@@ -116,7 +116,12 @@ export function writeTodos(
 
   applyTodoChanges(todoStorageDir, add, remove);
 
-  return [add.size, remove.size, stable.size, expired.size];
+  return {
+    addedCount: add.size,
+    removedCount: remove.size,
+    stableCount: stable.size,
+    expiredCount: expired.size,
+  };
 }
 
 /**
