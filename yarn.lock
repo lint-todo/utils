@@ -818,10 +818,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/fs-extra@^9.0.11":
-  version "9.0.11"
-  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-9.0.11.tgz#8cc99e103499eab9f347dbc6ca4e99fb8d2c2b87"
-  integrity sha512-mZsifGG4QeQ7hlkhO56u7zt/ycBgGxSVsFI/6lGTU34VtwkiqrrSDgw0+ygs8kFGWcXnFQWMrzF2h7TtDFNixA==
+"@types/fs-extra@^9.0.12":
+  version "9.0.12"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-9.0.12.tgz#9b8f27973df8a7a3920e8461517ebf8a7d4fdfaf"
+  integrity sha512-I+bsBr67CurCGnSenZZ7v94gd3tc3+Aj2taxMT4yu4ABLuOgOjeFxX3dokG24ztSRg5tnT00sL8BszO7gSMoIw==
   dependencies:
     "@types/node" "*"
 
@@ -6698,6 +6698,11 @@ tslib@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
   integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
+
+tslib@~2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.1.0.tgz#da60860f1c2ecaa5703ab7d39bc05b6bf988b97a"
+  integrity sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==
 
 tslib@~2.1.0:
   version "2.1.0"
