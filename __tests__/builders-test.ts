@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { differenceInDays } from 'date-fns';
 import { getDatePart } from '../src/date-utils';
-import { TodoDataV1, TodoDataV2 } from '../src/types';
-import { buildTodoDatum, normalizeToV2 } from '../src/builders';
+import { buildFromTodoOperations, buildTodoDatum, buildTodoOperations } from '../src/builders';
 import { createTmpDir } from './__utils__/tmp-dir';
+import { buildMaybeTodosFromFixture } from './__utils__/build-todo-data';
 
 describe('builders', () => {
   let tmp: string;
@@ -201,7 +201,6 @@ describe('builders', () => {
         Object {
           "createdDate": 1424649600000,
           "engine": "eslint",
-          "fileFormat": 2,
           "filePath": "app/components/foo.js",
           "originalLintResult": Object {
             "fake": true,
@@ -223,79 +222,176 @@ describe('builders', () => {
     });
   });
 
-  describe('normalizeToV2', () => {
-    it('returns a v2 todo when a v1 is provided', () => {
-      const todoDatum: TodoDataV1 = {
-        engine: 'eslint',
-        filePath: 'app/controllers/settings.js',
-        ruleId: 'no-prototype-builtins',
-        line: 25,
-        column: 21,
-        createdDate: getDatePart(new Date('2021-01-01')).getTime(),
-        fileFormat: 1,
-      };
+  describe('buildFromOperations', () => {
+    it('builds single todo from single add', () => {
+      const todoOperations: string[] = [
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+      ];
 
-      expect(normalizeToV2(todoDatum)).toMatchInlineSnapshot(`
-        Object {
-          "createdDate": 1609459200000,
-          "engine": "eslint",
-          "fileFormat": 1,
-          "filePath": "app/controllers/settings.js",
-          "range": Object {
-            "end": Object {
-              "column": 21,
-              "line": 25,
-            },
-            "start": Object {
-              "column": 21,
-              "line": 25,
+      const todos = buildFromTodoOperations(todoOperations);
+
+      expect(todos.size).toEqual(1);
+      expect(todos).toMatchInlineSnapshot(`
+        Map {
+          "addon/templates/components/foo.hbs" => TodoMatcher {
+            "unprocessed": Set {
+              Object {
+                "createdDate": 1629331200000,
+                "engine": "ember-template-lint",
+                "errorDate": 2493334800000,
+                "filePath": "addon/templates/components/foo.hbs",
+                "range": Object {
+                  "end": Object {
+                    "column": 8,
+                    "line": 174,
+                  },
+                  "start": Object {
+                    "column": 8,
+                    "line": 174,
+                  },
+                },
+                "ruleId": "no-implicit-this",
+                "source": "864e3ef2438ac413d96a032cdd141e567fcc04b3",
+                "warnDate": 2493248400000,
+              },
             },
           },
-          "ruleId": "no-prototype-builtins",
-          "source": "",
         }
       `);
     });
 
-    it('returns a v2 todo when a v2 is provided', () => {
-      const todoDatum: TodoDataV2 = {
-        engine: 'eslint',
-        filePath: 'app/controllers/settings.js',
-        ruleId: 'no-prototype-builtins',
-        range: {
-          start: {
-            line: 25,
-            column: 21,
-          },
-          end: {
-            line: 25,
-            column: 29,
-          },
-        },
-        source: '',
-        createdDate: getDatePart(new Date('2021-01-01')).getTime(),
-        fileFormat: 2,
-      };
+    it('builds single todo from single add with pipes in filePath', () => {
+      const todoOperations: string[] = [
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/fo|o.hbs',
+      ];
 
-      expect(normalizeToV2(todoDatum)).toMatchInlineSnapshot(`
-        Object {
-          "createdDate": 1609459200000,
-          "engine": "eslint",
-          "fileFormat": 2,
-          "filePath": "app/controllers/settings.js",
-          "range": Object {
-            "end": Object {
-              "column": 29,
-              "line": 25,
-            },
-            "start": Object {
-              "column": 21,
-              "line": 25,
+      const todos = buildFromTodoOperations(todoOperations);
+
+      expect(todos.size).toEqual(1);
+      expect(todos).toMatchInlineSnapshot(`
+        Map {
+          "addon/templates/components/fo|o.hbs" => TodoMatcher {
+            "unprocessed": Set {
+              Object {
+                "createdDate": 1629331200000,
+                "engine": "ember-template-lint",
+                "errorDate": 2493334800000,
+                "filePath": "addon/templates/components/fo|o.hbs",
+                "range": Object {
+                  "end": Object {
+                    "column": 8,
+                    "line": 174,
+                  },
+                  "start": Object {
+                    "column": 8,
+                    "line": 174,
+                  },
+                },
+                "ruleId": "no-implicit-this",
+                "source": "864e3ef2438ac413d96a032cdd141e567fcc04b3",
+                "warnDate": 2493248400000,
+              },
             },
           },
-          "ruleId": "no-prototype-builtins",
-          "source": "",
         }
+      `);
+    });
+
+    it('builds single todo from multiple identical adds', () => {
+      const todoOperations: string[] = [
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+      ];
+
+      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`
+        Map {
+          "addon/templates/components/foo.hbs" => TodoMatcher {
+            "unprocessed": Set {
+              Object {
+                "createdDate": 1629331200000,
+                "engine": "ember-template-lint",
+                "errorDate": 2493334800000,
+                "filePath": "addon/templates/components/foo.hbs",
+                "range": Object {
+                  "end": Object {
+                    "column": 8,
+                    "line": 174,
+                  },
+                  "start": Object {
+                    "column": 8,
+                    "line": 174,
+                  },
+                },
+                "ruleId": "no-implicit-this",
+                "source": "864e3ef2438ac413d96a032cdd141e567fcc04b3",
+                "warnDate": 2493248400000,
+              },
+            },
+          },
+        }
+      `);
+    });
+
+    it('builds empty todos from single add and remove', () => {
+      const todoOperations: string[] = [
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+      ];
+
+      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`Map {}`);
+    });
+
+    it('builds empty todos from single add and multiple identical removes', () => {
+      const todoOperations: string[] = [
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+      ];
+
+      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`Map {}`);
+    });
+  });
+
+  describe('buildTodoOperations', () => {
+    it('returns empty string when add and remove are empty', () => {
+      const ops = buildTodoOperations(new Set(), new Set());
+
+      expect(ops).toEqual('');
+    });
+
+    it('returns string containing adds', () => {
+      const todos = buildMaybeTodosFromFixture(tmp, 'new-batches');
+      const ops = buildTodoOperations(todos, new Set());
+
+      expect(ops).toMatchInlineSnapshot(`
+        "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        "
+      `);
+    });
+
+    it('returns string containing adds and removes', () => {
+      const todos = buildMaybeTodosFromFixture(tmp, 'new-batches');
+      const ops = buildTodoOperations(todos, todos);
+
+      expect(ops).toMatchInlineSnapshot(`
+        "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        remove|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        remove|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        remove|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        remove|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        "
       `);
     });
   });

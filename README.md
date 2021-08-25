@@ -17,26 +17,29 @@ Those utilities are:
 
 <dl>
 <dt><a href="#buildTodoDatum">buildTodoDatum(lintResult, lintMessage, todoConfig)</a> ⇒</dt>
-<dd><p>Adapts a <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61">TodoDataV2</a>. FilePaths are absolute
+<dd><p>Adapts a <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a <a href="https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61">TodoData</a>. FilePaths are absolute
 when received from a lint result, so they&#39;re converted to relative paths for stability in
 serializing the contents to disc.</p>
 </dd>
-<dt><a href="#todoStorageDirExists">todoStorageDirExists(baseDir)</a> ⇒</dt>
-<dd><p>Determines if the .lint-todo storage directory exists.</p>
+<dt><a href="#todoStorageFileExists">todoStorageFileExists(baseDir)</a> ⇒</dt>
+<dd><p>Determines if the .lint-todo storage file exists.</p>
 </dd>
-<dt><a href="#ensureTodoStorageDir">ensureTodoStorageDir(baseDir)</a> ⇒</dt>
-<dd><p>Creates, or ensures the creation of, the .lint-todo directory.</p>
+<dt><a href="#ensureTodoStorageFile">ensureTodoStorageFile(baseDir)</a> ⇒</dt>
+<dd><p>Creates, or ensures the creation of, the .lint-todo file.</p>
 </dd>
-<dt><a href="#getTodoStorageDirPath">getTodoStorageDirPath(baseDir)</a> ⇒</dt>
+<dt><a href="#getTodoStorageFilePath">getTodoStorageFilePath(baseDir)</a> ⇒</dt>
 <dd></dd>
-<dt><a href="#todoFilePathFor">todoFilePathFor(baseDir, todoData)</a> ⇒</dt>
-<dd><p>Creates a file path from the linting data. Excludes extension.</p>
+<dt><a href="#hasConflicts">hasConflicts(todoContents)</a> ⇒</dt>
+<dd><p>Determines if the .lint-todo storage file has conflicts.</p>
 </dd>
-<dt><a href="#todoDirFor">todoDirFor(filePath)</a> ⇒</dt>
-<dd><p>Creates a short hash for the todo&#39;s file path.</p>
+<dt><a href="#resolveConflicts">resolveConflicts(operations)</a> ⇒</dt>
+<dd><p>Resolves git conflicts in todo operations by removing any lines that match conflict markers.</p>
 </dd>
-<dt><a href="#todoFileNameFor">todoFileNameFor(todoData)</a> ⇒</dt>
-<dd><p>Generates a unique filename for a todo lint data.</p>
+<dt><a href="#readTodoStorageFile">readTodoStorageFile(todoStorageFilePath)</a> ⇒</dt>
+<dd><p>Reads the .lint-todo storage file.</p>
+</dd>
+<dt><a href="#writeTodoStorageFile">writeTodoStorageFile(todoStorageFilePath, operations)</a></dt>
+<dd><p>Writes the operations to the .lint-todo storage file to the path provided by todoStorageFilePath.</p>
 </dd>
 <dt><a href="#writeTodos">writeTodos(baseDir, maybeTodos, options)</a> ⇒</dt>
 <dd><p>Writes files for todo lint violations. One file is generated for each violation, using a generated
@@ -56,8 +59,17 @@ have a todo lint violation.</p>
 <dt><a href="#getTodoBatches">getTodoBatches(maybeTodos, existing, options)</a> ⇒</dt>
 <dd><p>Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).</p>
 </dd>
-<dt><a href="#applyTodoChanges">applyTodoChanges(todoStorageDir, add, remove)</a></dt>
+<dt><a href="#applyTodoChanges">applyTodoChanges(baseDir, add, remove, options)</a></dt>
 <dd><p>Applies todo changes, either adding or removing, based on batches from <code>getTodoBatches</code>.</p>
+</dd>
+<dt><a href="#ADD_OPERATIONS_ONLY">ADD_OPERATIONS_ONLY(operation)</a> ⇒</dt>
+<dd><p>Compact strategy to leave only add operations in the todo storage file.</p>
+</dd>
+<dt><a href="#EXCLUDE_EXPIRED">EXCLUDE_EXPIRED(operation)</a> ⇒</dt>
+<dd><p>Compact strategy to remove all expired operations from the todo storage file.</p>
+</dd>
+<dt><a href="#compactTodoStorageFile">compactTodoStorageFile(baseDir, compactStrategy)</a></dt>
+<dd><p>Compacts the .lint-todo storage file based on the compact strategy.</p>
 </dd>
 <dt><a href="#getTodoConfig">getTodoConfig(baseDir, engine, customDaysToDecay)</a> ⇒</dt>
 <dd><p>Gets the todo configuration.
@@ -87,12 +99,12 @@ Config values can be present in</p>
 <a name="buildTodoDatum"></a>
 
 ## buildTodoDatum(lintResult, lintMessage, todoConfig) ⇒
-Adapts a [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31) to a [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61). FilePaths are absolute
+Adapts a [LintResult](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31) to a [TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61). FilePaths are absolute
 when received from a lint result, so they're converted to relative paths for stability in
 serializing the contents to disc.
 
 **Kind**: global function  
-**Returns**: - A [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61) object.  
+**Returns**: - A [TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61) object.  
 
 | Param | Description |
 | --- | --- |
@@ -100,80 +112,87 @@ serializing the contents to disc.
 | lintMessage | A lint message object representing a specific violation for a file. |
 | todoConfig | An object containing the warn or error days, in integers. |
 
-<a name="todoStorageDirExists"></a>
+<a name="todoStorageFileExists"></a>
 
-## todoStorageDirExists(baseDir) ⇒
-Determines if the .lint-todo storage directory exists.
+## todoStorageFileExists(baseDir) ⇒
+Determines if the .lint-todo storage file exists.
 
 **Kind**: global function  
-**Returns**: - true if the todo storage directory exists, otherwise false.  
+**Returns**: - true if the todo storage file exists, otherwise false.  
 
 | Param | Description |
 | --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
+| baseDir | The base directory that contains the .lint-todo storage file. |
 
-<a name="ensureTodoStorageDir"></a>
+<a name="ensureTodoStorageFile"></a>
 
-## ensureTodoStorageDir(baseDir) ⇒
-Creates, or ensures the creation of, the .lint-todo directory.
+## ensureTodoStorageFile(baseDir) ⇒
+Creates, or ensures the creation of, the .lint-todo file.
 
 **Kind**: global function  
-**Returns**: - The todo storage directory path.  
+**Returns**: - The todo storage file path.  
 
 | Param | Description |
 | --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
+| baseDir | The base directory that contains the .lint-todo storage file. |
 
-<a name="getTodoStorageDirPath"></a>
+<a name="getTodoStorageFilePath"></a>
 
-## getTodoStorageDirPath(baseDir) ⇒
+## getTodoStorageFilePath(baseDir) ⇒
 **Kind**: global function  
-**Returns**: - The todo storage directory path.  
+**Returns**: - The todo storage file path.  
 
 | Param | Description |
 | --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
+| baseDir | The base directory that contains the .lint-todo storage file. |
 
-<a name="todoFilePathFor"></a>
+<a name="hasConflicts"></a>
 
-## todoFilePathFor(baseDir, todoData) ⇒
-Creates a file path from the linting data. Excludes extension.
+## hasConflicts(todoContents) ⇒
+Determines if the .lint-todo storage file has conflicts.
 
 **Kind**: global function  
-**Returns**: - The todo file path for a [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61) object.  
+**Returns**: true if the file has conflicts, otherwise false.  
 
 | Param | Description |
 | --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
-| todoData | The linting data for an individual violation. |
+| todoContents | The unparsed contents of the .lint-todo file. |
 
-**Example**  
-```js
-42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839
-```
-<a name="todoDirFor"></a>
+<a name="resolveConflicts"></a>
 
-## todoDirFor(filePath) ⇒
-Creates a short hash for the todo's file path.
+## resolveConflicts(operations) ⇒
+Resolves git conflicts in todo operations by removing any lines that match conflict markers.
 
 **Kind**: global function  
-**Returns**: - The todo directory for a specific filepath.  
+**Returns**: An array of string operations excluding any operations that were identified as git conflict lines.  
 
 | Param | Description |
 | --- | --- |
-| filePath | The filePath from linting data for an individual violation. |
+| operations | An array of string operations that are used to recreate todos. |
 
-<a name="todoFileNameFor"></a>
+<a name="readTodoStorageFile"></a>
 
-## todoFileNameFor(todoData) ⇒
-Generates a unique filename for a todo lint data.
+## readTodoStorageFile(todoStorageFilePath) ⇒
+Reads the .lint-todo storage file.
 
 **Kind**: global function  
-**Returns**: - The todo file name for a [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61) object.  
+**Returns**: A array of todo operations.  
 
 | Param | Description |
 | --- | --- |
-| todoData | The linting data for an individual violation. |
+| todoStorageFilePath | The .lint-todo storage file path. |
+
+<a name="writeTodoStorageFile"></a>
+
+## writeTodoStorageFile(todoStorageFilePath, operations)
+Writes the operations to the .lint-todo storage file to the path provided by todoStorageFilePath.
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| todoStorageFilePath | The .lint-todo storage file path. |
+| operations | An array of string operations that are used to recreate todos. |
 
 <a name="writeTodos"></a>
 
@@ -190,7 +209,7 @@ have a todo lint violation.
 | Param | Description |
 | --- | --- |
 | baseDir | The base directory that contains the .lint-todo storage directory. |
-| maybeTodos | The linting data, converted to TodoDataV2 format. |
+| maybeTodos | The linting data, converted to TodoData format. |
 | options | An object containing write options. |
 
 <a name="readTodos"></a>
@@ -199,7 +218,7 @@ have a todo lint violation.
 Reads all todo files in the .lint-todo directory.
 
 **Kind**: global function  
-**Returns**: - A [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) of [TodoFilePathHash](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L26)/[TodoMatcher](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4).  
+**Returns**: - A [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) of [FilePath](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L25)/[TodoMatcher](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4).  
 
 | Param | Description |
 | --- | --- |
@@ -211,7 +230,7 @@ Reads all todo files in the .lint-todo directory.
 Reads todo files in the .lint-todo directory for a specific filePath.
 
 **Kind**: global function  
-**Returns**: - A [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) of [TodoFilePathHash](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L26)/[TodoMatcher](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4).  
+**Returns**: - A [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) of [FilePath](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L25)/[TodoMatcher](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4).  
 
 | Param | Description |
 | --- | --- |
@@ -224,7 +243,7 @@ Reads todo files in the .lint-todo directory for a specific filePath.
 Reads todo files in the .lint-todo directory and returns Todo data in an array.
 
 **Kind**: global function  
-**Returns**: An array of [TodoDataV2](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61)  
+**Returns**: An array of [TodoData](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61)  
 
 | Param | Description |
 | --- | --- |
@@ -246,16 +265,53 @@ Gets 4 maps containing todo items to add, remove, those that are expired, or tho
 
 <a name="applyTodoChanges"></a>
 
-## applyTodoChanges(todoStorageDir, add, remove)
+## applyTodoChanges(baseDir, add, remove, options)
 Applies todo changes, either adding or removing, based on batches from `getTodoBatches`.
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| todoStorageDir | The .lint-todo storage directory. |
+| baseDir | The base directory that contains the .lint-todo storage directory. |
 | add | Batch of todos to add. |
 | remove | Batch of todos to remove. |
+| options | An object containing write options. |
+
+<a name="ADD_OPERATIONS_ONLY"></a>
+
+## ADD\_OPERATIONS\_ONLY(operation) ⇒
+Compact strategy to leave only add operations in the todo storage file.
+
+**Kind**: global function  
+**Returns**: True if the line matches an add operation, otherwise false.  
+
+| Param | Description |
+| --- | --- |
+| operation | The single line operation read from the todo storage file. |
+
+<a name="EXCLUDE_EXPIRED"></a>
+
+## EXCLUDE\_EXPIRED(operation) ⇒
+Compact strategy to remove all expired operations from the todo storage file.
+
+**Kind**: global function  
+**Returns**: True if the operation is not expired, otherwise false.  
+
+| Param | Description |
+| --- | --- |
+| operation | The single line operation read from the todo storage file. |
+
+<a name="compactTodoStorageFile"></a>
+
+## compactTodoStorageFile(baseDir, compactStrategy)
+Compacts the .lint-todo storage file based on the compact strategy.
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| baseDir | The base directory that contains the .lint-todo storage directory. |
+| compactStrategy | The strategy to use when compacting the storage file. Default: ADD_OPERATIONS_ONLY |
 
 <a name="getTodoConfig"></a>
 

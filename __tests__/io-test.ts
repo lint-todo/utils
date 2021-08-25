@@ -1,20 +1,18 @@
-import { existsSync, readdir, readdirSync, statSync } from 'fs-extra';
-import { join, posix } from 'path';
+import { existsSync } from 'fs-extra';
 import { subDays } from 'date-fns';
 import {
-  ensureTodoStorageDir,
-  todoDirFor,
-  todoFileNameFor,
-  todoFilePathFor,
-  todoStorageDirExists,
-  writeTodos,
   getDatePart,
-  getTodoStorageDirPath,
+  getTodoStorageFilePath,
+  getTodoBatches,
+  todoStorageFileExists,
+  readTodoData,
+  readTodos,
+  writeTodos,
+  getTodoConfig,
 } from '../src';
-import { LintResult, TodoDataV2, TodoFilePathHash } from '../src/types';
+import { FilePath, LintResult, Operation, OperationOrConflictLine, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { getFixture } from './__utils__/get-fixture';
-import { getTodoBatches, readTodos } from '../src/io';
 import TodoMatcher from '../src/todo-matcher';
 import {
   buildMaybeTodos,
@@ -22,40 +20,14 @@ import {
   buildMaybeTodosFromFixture,
   buildExistingTodosFromFixture,
 } from './__utils__/build-todo-data';
-
-const TODO_DATA: TodoDataV2 = {
-  engine: 'eslint',
-  filePath: 'app/controllers/settings.js',
-  ruleId: 'no-prototype-builtins',
-  range: {
-    start: {
-      line: 25,
-      column: 21,
-    },
-    end: {
-      line: 25,
-      column: 21,
-    },
-  },
-  source: '',
-  createdDate: getDatePart(new Date('12/11/2020')).getTime(),
-  fileFormat: 2,
-};
-
-function readFiles(todoStorageDir: string) {
-  const fileNames: string[] = [];
-  const todoFileDirs = readdirSync(todoStorageDir);
-
-  for (const todoFileDir of todoFileDirs) {
-    const files = readdirSync(posix.join(todoStorageDir, todoFileDir)).map((file) =>
-      posix.join(todoFileDir, file)
-    );
-
-    fileNames.push(...files);
-  }
-
-  return fileNames;
-}
+import {
+  compactTodoStorageFile,
+  ensureTodoStorageFile,
+  hasConflicts,
+  readTodoStorageFile,
+  resolveConflicts,
+  writeTodoStorageFile,
+} from '../src/io';
 
 function chunk<T>(initial: Set<T>, firstChunk = 1): [Set<T>, Set<T>] {
   const fixtureArr = [...initial];
@@ -63,6 +35,16 @@ function chunk<T>(initial: Set<T>, firstChunk = 1): [Set<T>, Set<T>] {
   const secondHalf = fixtureArr.slice(firstChunk, fixtureArr.length);
 
   return [new Set(firstHalf), new Set(secondHalf)];
+}
+
+function stableTodoFragment(todoData: Set<TodoData>) {
+  return [...todoData].map((todoDatum) => {
+    return {
+      filePath: todoDatum.filePath,
+      range: todoDatum.range,
+      source: todoDatum.source,
+    };
+  });
 }
 
 jest.setTimeout(100000);
@@ -74,87 +56,159 @@ describe('io', () => {
     tmp = createTmpDir();
   });
 
-  describe('todoStorageDirExists', () => {
-    it('returns false when directory does not exist', async () => {
-      expect(todoStorageDirExists(tmp)).toEqual(false);
+  describe('todoStorageFileExists', () => {
+    it('returns false when file does not exist', async () => {
+      expect(todoStorageFileExists(tmp)).toEqual(false);
     });
 
     it('returns true when directory exists sync', async () => {
-      ensureTodoStorageDir(tmp);
+      ensureTodoStorageFile(tmp);
 
-      expect(todoStorageDirExists(tmp)).toEqual(true);
+      expect(todoStorageFileExists(tmp)).toEqual(true);
     });
   });
 
-  describe('todoFileNameFor', () => {
-    it('can generate a unique hash for todo', () => {
-      const fileName = todoFileNameFor(TODO_DATA);
+  describe('compactTodoStorageFile', () => {
+    it('preserves existing file when no remove operations are present', () => {
+      const todoStorageFilePath = getTodoStorageFilePath(tmp);
+      const operations: Operation[] = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+      ];
 
-      expect(fileName).toEqual('6e3be839');
+      writeTodoStorageFile(todoStorageFilePath, operations);
+
+      compactTodoStorageFile(tmp);
+
+      expect(readTodoStorageFile(todoStorageFilePath)).toEqual(operations);
     });
 
-    it('generates idempotent file names', () => {
-      const fileName = todoFileNameFor(TODO_DATA);
-      const secondFileName = todoFileNameFor(TODO_DATA);
+    it('compacts existing file when remove operations are present', () => {
+      const todoStorageFilePath = getTodoStorageFilePath(tmp);
+      const addOperations: Operation[] = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+      ];
 
-      expect(fileName).toEqual('6e3be839');
-      expect(secondFileName).toEqual('6e3be839');
+      const removeOperations: Operation[] = [
+        'remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+      ];
+
+      writeTodoStorageFile(todoStorageFilePath, [...addOperations, ...removeOperations]);
+
+      compactTodoStorageFile(tmp);
+
+      expect(readTodoStorageFile(todoStorageFilePath)).toEqual(addOperations);
+    });
+
+    it('compacts existing file when interleaved remove operations are present', () => {
+      const todoStorageFilePath = getTodoStorageFilePath(tmp);
+      const operations: Operation[] = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+        'add|eslint|no-prototype-builtins|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+        'remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+      ];
+
+      writeTodoStorageFile(todoStorageFilePath, operations);
+
+      compactTodoStorageFile(tmp);
+
+      expect(readTodoStorageFile(todoStorageFilePath)).toEqual([
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+        'add|eslint|no-prototype-builtins|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+      ]);
     });
   });
 
-  describe('todoDirFor', () => {
-    it('can generate a unique dir hash for todo', () => {
-      const dir = todoDirFor(TODO_DATA.filePath);
+  describe('hasConflicts', () => {
+    it('returns false if no conflicts are detected', () => {
+      const noConflicts = `add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
+add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
+      `;
 
-      expect(dir).toEqual('0a1e71cf4d0931e81f494d5a73a550016814e15a');
+      expect(hasConflicts(noConflicts)).toEqual(false);
     });
 
-    it('generates idempotent dir names', () => {
-      const dir1 = todoDirFor(TODO_DATA.filePath);
-      const dir2 = todoDirFor(TODO_DATA.filePath);
+    it('returns true if conflicts are detected', () => {
+      const conflicts = `add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
+add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
+<<<<<<< .lint-todo
+add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
+=======
+remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
+>>>>>>> .lint-todo
+      `;
 
-      expect(dir1).toEqual(dir2);
+      expect(hasConflicts(conflicts)).toEqual(true);
     });
   });
 
-  describe('todoFilePathFor', () => {
-    it('can generate a unique file path for todo', () => {
-      const dir = todoFilePathFor(TODO_DATA);
+  describe('resolveConflicts', () => {
+    it('does not change operations when no conflicts are present', () => {
+      const operations: Operation[] = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+      ];
 
-      expect(dir).toEqual('0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839');
+      expect(resolveConflicts(operations)).toEqual(operations);
     });
 
-    it('generates idempotent file paths', () => {
-      const dir1 = todoFilePathFor(TODO_DATA);
-      const dir2 = todoFilePathFor(TODO_DATA);
+    it('resolves conflicts when detected', () => {
+      const operations: OperationOrConflictLine[] = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        '<<<<<<< .lint-todo',
+        'add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        '=======',
+        'remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        '>>>>>>> .lint-todo',
+      ];
 
-      expect(dir1).toEqual(dir2);
+      expect(resolveConflicts(operations)).toEqual([
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+      ]);
     });
   });
 
   describe('writeTodos', () => {
     it("creates .lint-todo directory if one doesn't exist", async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
+      const todoFile = getTodoStorageFilePath(tmp);
 
-      writeTodos(tmp, new Set());
+      writeTodos(tmp, new Set(), {
+        todoConfig: getTodoConfig(tmp, 'eslint'),
+      });
 
-      expect(existsSync(todoDir)).toEqual(true);
+      expect(existsSync(todoFile)).toEqual(true);
     });
 
     it("doesn't write files when no todos provided", async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
+      writeTodos(tmp, new Set(), {
+        todoConfig: getTodoConfig(tmp, 'eslint'),
+      });
 
-      writeTodos(tmp, new Set());
-
-      expect(readFiles(todoDir)).toHaveLength(0);
+      expect(readTodos(tmp).size).toEqual(0);
     });
 
     it('generates todos when todos provided', async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
-      const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'));
+      const { addedCount } = writeTodos(
+        tmp,
+        buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'),
+        {
+          todoConfig: getTodoConfig(tmp, 'eslint'),
+        }
+      );
 
       expect(addedCount).toEqual(18);
-      expect(readFiles(todoDir)).toHaveLength(18);
+      expect(readTodoData(tmp).size).toEqual(18);
     });
 
     it("generates todos only if previous todo doesn't exist", async () => {
@@ -194,116 +248,179 @@ describe('io', () => {
         },
       ];
 
-      const todoDir = getTodoStorageDirPath(tmp);
-      const { addedCount } = writeTodos(tmp, buildMaybeTodos(tmp, initialTodos));
-      const initialFiles = readFiles(todoDir);
+      const { addedCount } = writeTodos(tmp, buildMaybeTodos(tmp, initialTodos), {
+        todoConfig: getTodoConfig(tmp, 'eslint'),
+      });
 
       expect(addedCount).toEqual(2);
-      expect(initialFiles).toHaveLength(2);
-
-      const initialFileStats = initialFiles.map((file) => {
-        return {
-          fileName: file,
-          ctime: statSync(posix.join(todoDir, file)).ctime,
-        };
-      });
+      expect(readTodoData(tmp).size).toEqual(2);
 
       writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'));
 
-      const subsequentFiles = readFiles(todoDir);
+      const subsequentTodos = readTodoData(tmp);
 
-      expect(subsequentFiles).toHaveLength(18);
-
-      initialFileStats.forEach((initialFileStat) => {
-        const subsequentFile = statSync(posix.join(todoDir, initialFileStat.fileName));
-
-        expect(subsequentFile.ctime).toEqual(initialFileStat.ctime);
-      });
+      expect(subsequentTodos.size).toEqual(18);
     });
 
     it('removes old todos if todos no longer contains violations', async () => {
       const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
-      const todoDir = getTodoStorageDirPath(tmp);
-
-      const { addedCount } = writeTodos(tmp, fixture);
-
-      const initialFiles = readFiles(todoDir);
+      const { addedCount } = writeTodos(tmp, fixture, {
+        todoConfig: getTodoConfig(tmp, 'eslint'),
+      });
+      const initialTodos = readTodoData(tmp);
 
       expect(addedCount).toEqual(18);
-      expect(initialFiles).toHaveLength(18);
+      expect(initialTodos.size).toEqual(18);
 
-      const [firstHalf, secondHalf] = chunk(fixture, 3);
-
-      const { removedCount } = writeTodos(tmp, new Set(firstHalf));
-
-      const subsequentFiles = readFiles(todoDir);
+      const [firstHalf] = chunk(fixture, 3);
+      const { removedCount } = writeTodos(tmp, new Set(firstHalf), {
+        todoConfig: getTodoConfig(tmp, 'eslint'),
+      });
+      const subsequentTodos = readTodoData(tmp);
 
       expect(removedCount).toEqual(15);
-      expect(subsequentFiles).toHaveLength(3);
-
-      secondHalf.forEach((todoDatum) => {
-        expect(!existsSync(posix.join(todoDir, `${todoFilePathFor(todoDatum)}.json`))).toEqual(
-          true
-        );
-      });
+      expect(subsequentTodos.size).toEqual(3);
     });
 
     it('does not remove old todos if todos no longer contains violations if shouldRemove returns false', async () => {
       const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
-      const todoDir = getTodoStorageDirPath(tmp);
 
-      const { addedCount } = writeTodos(tmp, fixture);
+      const { addedCount } = writeTodos(tmp, fixture, {
+        todoConfig: getTodoConfig(tmp, 'eslint'),
+      });
 
-      const initialFiles = readFiles(todoDir);
+      const initialFiles = readTodoData(tmp);
 
       expect(addedCount).toEqual(18);
-      expect(initialFiles).toHaveLength(18);
+      expect(initialFiles.size).toEqual(18);
 
       const [firstHalf] = chunk(fixture, 3);
 
-      const { removedCount } = writeTodos(tmp, firstHalf, { shouldRemove: () => false });
+      const { removedCount } = writeTodos(tmp, firstHalf, {
+        todoConfig: getTodoConfig(tmp, 'eslint'),
+        shouldRemove: () => false,
+      });
 
-      const subsequentFiles = readFiles(todoDir);
+      const subsequentFiles = readTodoData(tmp);
 
       expect(removedCount).toEqual(0);
-      expect(subsequentFiles).toHaveLength(18);
+      expect(subsequentFiles.size).toEqual(18);
     });
   });
 
   describe('writeTodos for single file', () => {
     it('generates todos for a specific filePath', async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
       const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
+        todoConfig: getTodoConfig(tmp, 'eslint'),
       });
 
       expect(addedCount).toEqual(3);
-      expect(readFiles(todoDir)).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
         Array [
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839.json",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25.json",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
     });
 
     it('updates todos for a specific filePath', async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
       const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
+        todoConfig: getTodoConfig(tmp, 'eslint'),
       });
 
       expect(addedCount).toEqual(3);
-      expect(readFiles(todoDir)).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
         Array [
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839.json",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25.json",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
 
       const counts = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo-updated'), {
         filePath: 'app/controllers/settings.js',
+        todoConfig: getTodoConfig(tmp, 'eslint'),
       });
 
       expect(counts).toStrictEqual({
@@ -312,27 +429,105 @@ describe('io', () => {
         removedCount: 1,
         stableCount: 2,
       });
-      expect(readFiles(todoDir)).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
         Array [
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839.json",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25.json",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/d1917978.json",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 110,
+                "line": 50,
+              },
+              "start": Object {
+                "column": 101,
+                "line": 50,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
     });
 
     it('deletes todos for a specific filePath', async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
       const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
+        todoConfig: getTodoConfig(tmp, 'eslint'),
       });
 
       expect(addedCount).toEqual(3);
-      expect(readFiles(todoDir)).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
         Array [
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0.json",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839.json",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25.json",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
 
@@ -341,30 +536,65 @@ describe('io', () => {
         buildMaybeTodosFromFixture(tmp, 'single-file-no-errors'),
         {
           filePath: 'app/controllers/settings.js',
+          todoConfig: getTodoConfig(tmp, 'eslint'),
         }
       );
 
       expect(addedCount2).toEqual(0);
       expect(removedCount).toEqual(3);
-      expect(readFiles(todoDir)).toHaveLength(0);
-      expect(await readdir(todoDir)).toHaveLength(0);
+      expect(readTodoData(tmp).size).toEqual(0);
+    });
+  });
+
+  describe('readTodos', () => {
+    it('can read empty storage file', () => {
+      writeTodos(tmp, new Set(), {
+        todoConfig: getTodoConfig(tmp, 'eslint'),
+      });
+
+      expect(readTodos(tmp).size).toEqual(0);
+    });
+
+    it('can read storage file with adds only', () => {
+      const initialTodos = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
+      const { addedCount } = writeTodos(tmp, initialTodos, {
+        todoConfig: getTodoConfig(tmp, 'eslint'),
+      });
+
+      expect(readTodoData(tmp).size).toEqual(addedCount);
+    });
+
+    it('can read storage file with adds and removes', () => {
+      const initialTodos = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
+      const { addedCount } = writeTodos(tmp, initialTodos, {
+        todoConfig: getTodoConfig(tmp, 'eslint'),
+      });
+
+      expect(readTodoData(tmp).size).toEqual(addedCount);
+
+      const [firstChunk] = chunk(initialTodos, 2);
+
+      const { removedCount } = writeTodos(tmp, firstChunk, {
+        todoConfig: getTodoConfig(tmp, 'eslint'),
+      });
+
+      expect(readTodoStorageFile(getTodoStorageFilePath(tmp))).toHaveLength(
+        addedCount + removedCount
+      );
+      expect(readTodoData(tmp).size).toEqual(2);
     });
   });
 
   describe('getTodoBatches', () => {
     it('generates no batches when lint results are empty', () => {
-      const counts = getTodoBatches(new Set(), new Map(), {
+      const { add, remove, stable, expired } = getTodoBatches(new Set(), new Map(), {
         shouldRemove: () => true,
       });
 
-      expect(counts).toMatchInlineSnapshot(`
-        Object {
-          "add": Map {},
-          "expired": Map {},
-          "remove": Map {},
-          "stable": Map {},
-        }
-      `);
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`Array []`);
     });
 
     it('creates items to add', async () => {
@@ -372,14 +602,92 @@ describe('io', () => {
         shouldRemove: () => true,
       });
 
-      expect([...add.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`
         Array [
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 17,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 11,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 133,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 119,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
     });
@@ -393,27 +701,106 @@ describe('io', () => {
         }
       );
 
-      expect([...remove.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`
         Array [
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 17,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 11,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 133,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 119,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
     });
 
     it('creates items to expire', async () => {
-      const expiredBatches: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodos(
+      const expiredBatches: Map<FilePath, TodoMatcher> = buildExistingTodos(
         tmp,
         getFixture('new-batches', tmp, false)
       );
+
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const expiredTodo: TodoDataV2 = expiredBatches
-        .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
-        .find('cc71e5f9')!;
+      const expiredTodo: TodoData = expiredBatches
+        .get('app/controllers/settings.js')!
+        .find((todoDatum) => todoDatum.filePath)!;
 
       expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
@@ -426,22 +813,35 @@ describe('io', () => {
         }
       );
 
-      expect([...expired.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
         Array [
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
     });
 
     it('creates all batches', async () => {
-      const existingBatches: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodosFromFixture(
+      const existingBatches: Map<FilePath, TodoMatcher> = buildExistingTodosFromFixture(
         tmp,
         'existing-batches'
       );
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const expiredTodo: TodoDataV2 = existingBatches
-        .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
-        .find('cc71e5f9')!;
+      const expiredTodo: TodoData = existingBatches
+        .get('app/initializers/tracer.js')!
+        .find((todoDatum) => todoDatum.filePath)!;
 
       expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
@@ -451,28 +851,132 @@ describe('io', () => {
         { shouldRemove: () => true }
       );
 
-      expect([...add.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`
         Array [
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
-      expect([...remove.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`
         Array [
-          "07d3818b8afefcdd7db6d52743309fdbb85313f0/66256fb7",
-          "07d3818b8afefcdd7db6d52743309fdbb85313f0/8fd35486",
+          Object {
+            "filePath": "app/models/build.js",
+            "range": Object {
+              "end": Object {
+                "column": 64,
+                "line": 108,
+              },
+              "start": Object {
+                "column": 50,
+                "line": 108,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/models/build.js",
+            "range": Object {
+              "end": Object {
+                "column": 39,
+                "line": 120,
+              },
+              "start": Object {
+                "column": 25,
+                "line": 120,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
-      expect([...stable.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`
         Array [
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 133,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 119,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
-      expect([...expired.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
         Array [
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9",
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 17,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 11,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
     });
@@ -481,7 +985,7 @@ describe('io', () => {
       process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
 
       const lintResults = getFixture('eslint-exact-matches', tmp, false);
-      let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodos(tmp, lintResults);
+      let existingTodos: Map<FilePath, TodoMatcher> = buildExistingTodos(tmp, lintResults);
 
       let counts = getTodoBatches(buildMaybeTodos(tmp, lintResults), existingTodos, {
         shouldRemove: () => true,
@@ -508,7 +1012,7 @@ describe('io', () => {
       process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
 
       const lintResults = getFixture('eslint-no-fuzzy-source-prechange', tmp, false);
-      let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodos(tmp, lintResults);
+      let existingTodos: Map<FilePath, TodoMatcher> = buildExistingTodos(tmp, lintResults);
 
       let counts = getTodoBatches(buildMaybeTodos(tmp, lintResults), existingTodos, {
         shouldRemove: () => true,
@@ -531,159 +1035,212 @@ describe('io', () => {
       expect(counts.expired.size).toEqual(0);
     });
 
-    describe('v1 file format', () => {
-      it(`creates only stable and expired batches for exact match`, async () => {
-        const fixtureDir = join(__dirname, '__fixtures__', 'v1');
-        const existingBatches: Map<TodoFilePathHash, TodoMatcher> = readTodos(fixtureDir);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const expiredTodo: TodoDataV2 = existingBatches
-          .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
-          .find('0c1a00af')!;
+    it(`creates only stable and expired batches for exact match`, async () => {
+      const { addedCount } = writeTodos(
+        tmp,
+        buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match')
+      );
 
-        expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
+      expect(addedCount).toEqual(5);
 
-        const { add, remove, stable, expired } = getTodoBatches(
-          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match'),
-          existingBatches,
-          { shouldRemove: () => true }
-        );
+      const existing: Map<FilePath, TodoMatcher> = readTodos(tmp);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const expiredTodo: TodoData = existing
+        .get('app/components/foo.js')!
+        .find((todoDatum) => todoDatum.filePath)!;
 
-        expect([...add.keys()]).toMatchInlineSnapshot(`Array []`);
-        expect([...remove.keys()]).toMatchInlineSnapshot(`Array []`);
-        expect([...stable.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "68e22b32dc9da5964fc73d75680c1cfad9532912/da773fcf",
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/fb219dc1",
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/ce6ecd57",
-            "b6f600233b5a01e7165bcaf27ea6730b6213f331/fb17ee16",
-          ]
-        `);
-        expect([...expired.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "d47704143ff2aa8b05d66fc59e790e126b7b3603/0c1a00af",
-          ]
-        `);
-      });
+      expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
-      it(`creates add and remove batches when fuzzy match doesn't match`, async () => {
-        const fixtureDir = join(__dirname, '__fixtures__', 'v1');
-        const existingBatches: Map<TodoFilePathHash, TodoMatcher> = readTodos(fixtureDir);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const expiredTodo: TodoDataV2 = existingBatches
-          .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
-          .find('0c1a00af')!;
+      const { add, remove, stable, expired } = getTodoBatches(
+        buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match'),
+        existing,
+        { shouldRemove: () => true }
+      );
 
-        expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
-
-        const { add, remove, stable, expired } = getTodoBatches(
-          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-fuzzy-match'),
-          existingBatches,
-          { shouldRemove: () => true }
-        );
-
-        expect([...add.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "68e22b32dc9da5964fc73d75680c1cfad9532912/fdb13165",
-          ]
-        `);
-        expect([...remove.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "68e22b32dc9da5964fc73d75680c1cfad9532912/da773fcf",
-          ]
-        `);
-        expect([...stable.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/fb219dc1",
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/ce6ecd57",
-            "b6f600233b5a01e7165bcaf27ea6730b6213f331/fb17ee16",
-          ]
-        `);
-        expect([...expired.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "d47704143ff2aa8b05d66fc59e790e126b7b3603/0c1a00af",
-          ]
-        `);
-      });
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "filePath": "app/utils/util.js",
+            "range": Object {
+              "end": Object {
+                "column": 16,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 10,
+                "line": 1,
+              },
+            },
+            "source": "b618e5603b05243a5fe81039b3b18551e963f07f",
+          },
+          Object {
+            "filePath": "app/utils/util.js",
+            "range": Object {
+              "end": Object {
+                "column": 15,
+                "line": 2,
+              },
+              "start": Object {
+                "column": 7,
+                "line": 2,
+              },
+            },
+            "source": "b7c8adf0cc8799f2488de3116a72fc2bd326fc1f",
+          },
+          Object {
+            "filePath": "json-formatter.js",
+            "range": Object {
+              "end": Object {
+                "column": 7,
+                "line": 18,
+              },
+              "start": Object {
+                "column": 1,
+                "line": 18,
+              },
+            },
+            "source": "cfc137fb4c575a1564e767297c7f2b9dc4748a12",
+          },
+          Object {
+            "filePath": "rule-config.js",
+            "range": Object {
+              "end": Object {
+                "column": 7,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 1,
+                "line": 1,
+              },
+            },
+            "source": "cfc137fb4c575a1564e767297c7f2b9dc4748a12",
+          },
+        ]
+      `);
+      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "filePath": "app/components/foo.js",
+            "range": Object {
+              "end": Object {
+                "column": 13,
+                "line": 7,
+              },
+              "start": Object {
+                "column": 9,
+                "line": 7,
+              },
+            },
+            "source": "5ae05cec9a70e6badfa35fee65306763961f070e",
+          },
+        ]
+      `);
     });
 
-    describe('v2 file format', () => {
-      it(`creates only stable and expired batches for exact match`, async () => {
-        const { addedCount } = writeTodos(
-          tmp,
-          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match')
-        );
+    it(`creates only stable and expired batches for fuzzy match`, async () => {
+      const { addedCount } = writeTodos(
+        tmp,
+        buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match')
+      );
 
-        expect(addedCount).toEqual(5);
+      expect(addedCount).toEqual(5);
 
-        const existing: Map<TodoFilePathHash, TodoMatcher> = readTodos(tmp);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const expiredTodo: TodoDataV2 = existing
-          .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
-          .find('0c1a00af')!;
+      const existing: Map<FilePath, TodoMatcher> = readTodos(tmp);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const expiredTodo: TodoData = existing
+        .get('app/components/foo.js')!
+        .find((todoDatum) => todoDatum.filePath)!;
 
-        expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
+      expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
-        const { add, remove, stable, expired } = getTodoBatches(
-          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match'),
-          existing,
-          { shouldRemove: () => true }
-        );
+      const { add, remove, stable, expired } = getTodoBatches(
+        buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-fuzzy-match'),
+        existing,
+        { shouldRemove: () => true }
+      );
 
-        expect([...add.keys()]).toMatchInlineSnapshot(`Array []`);
-        expect([...remove.keys()]).toMatchInlineSnapshot(`Array []`);
-        expect([...stable.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "68e22b32dc9da5964fc73d75680c1cfad9532912/da773fcf",
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/fb219dc1",
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/ce6ecd57",
-            "b6f600233b5a01e7165bcaf27ea6730b6213f331/fb17ee16",
-          ]
-        `);
-        expect([...expired.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "d47704143ff2aa8b05d66fc59e790e126b7b3603/0c1a00af",
-          ]
-        `);
-      });
-
-      it(`creates only stable and expired batches for fuzzy match`, async () => {
-        const { addedCount } = writeTodos(
-          tmp,
-          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match')
-        );
-
-        expect(addedCount).toEqual(5);
-
-        const existing: Map<TodoFilePathHash, TodoMatcher> = readTodos(tmp);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const expiredTodo: TodoDataV2 = existing
-          .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
-          .find('0c1a00af')!;
-
-        expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
-
-        const { add, remove, stable, expired } = getTodoBatches(
-          buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-fuzzy-match'),
-          existing,
-          { shouldRemove: () => true }
-        );
-
-        expect([...add.keys()]).toMatchInlineSnapshot(`Array []`);
-        expect([...remove.keys()]).toMatchInlineSnapshot(`Array []`);
-        expect([...stable.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/fb219dc1",
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/ce6ecd57",
-            "b6f600233b5a01e7165bcaf27ea6730b6213f331/fb17ee16",
-            "68e22b32dc9da5964fc73d75680c1cfad9532912/da773fcf",
-          ]
-        `);
-        expect([...expired.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "d47704143ff2aa8b05d66fc59e790e126b7b3603/0c1a00af",
-          ]
-        `);
-      });
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "filePath": "app/utils/util.js",
+            "range": Object {
+              "end": Object {
+                "column": 16,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 10,
+                "line": 1,
+              },
+            },
+            "source": "b618e5603b05243a5fe81039b3b18551e963f07f",
+          },
+          Object {
+            "filePath": "app/utils/util.js",
+            "range": Object {
+              "end": Object {
+                "column": 15,
+                "line": 2,
+              },
+              "start": Object {
+                "column": 7,
+                "line": 2,
+              },
+            },
+            "source": "b7c8adf0cc8799f2488de3116a72fc2bd326fc1f",
+          },
+          Object {
+            "filePath": "json-formatter.js",
+            "range": Object {
+              "end": Object {
+                "column": 7,
+                "line": 18,
+              },
+              "start": Object {
+                "column": 1,
+                "line": 18,
+              },
+            },
+            "source": "cfc137fb4c575a1564e767297c7f2b9dc4748a12",
+          },
+          Object {
+            "filePath": "rule-config.js",
+            "range": Object {
+              "end": Object {
+                "column": 7,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 1,
+                "line": 1,
+              },
+            },
+            "source": "cfc137fb4c575a1564e767297c7f2b9dc4748a12",
+          },
+        ]
+      `);
+      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "filePath": "app/components/foo.js",
+            "range": Object {
+              "end": Object {
+                "column": 13,
+                "line": 7,
+              },
+              "start": Object {
+                "column": 9,
+                "line": 7,
+              },
+            },
+            "source": "5ae05cec9a70e6badfa35fee65306763961f070e",
+          },
+        ]
+      `);
     });
   });
 });
