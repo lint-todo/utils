@@ -1,37 +1,10 @@
-describe('merge conflict resolution', () => {
-  describe('with 2 existing todos and changes on the upstream branch', () => {
-    describe('when merging an upstream branch with empty todos', () => {
-      it.todo('results in empty todos');
-    });
-
-    describe('merging an upstream branch with the same todos', () => {
-      it.todo('results in a noop and results in the same 2 todos');
-    });
-
-    describe('merging an upstream branch with 1 new todo', () => {
-      it.todo('adds the new todo and results in 3 todos');
-    });
-
-    describe('merging an upstream branch that fixes an existing todo', () => {
-      it.todo('removes the fixed todo and results in 1 single remaining todo');
-    });
-
-    describe('merging an upstream branch that changes an existing todo', () => {
-      it.todo('updates the changed todo with the upstream changes and results in 2 todos');
-    });
-  });
-
-  describe('with changes on both branches', () => {
-    describe('updating the same todo on each branch', () => {
-      it.todo('merges remote and local changes');
-    });
-
-    describe('adding different new todos to each branch', () => {
-      it.todo('adds 2 new todos to the existing todos');
-    });
-
-    describe('removing different new todos to each branch', () => {
-      it.todo('adds 2 new todos to the existing todos');
-    });
+describe('merge-utils', () => {
+  describe('rebasing LOCAL with REMOTE', () => {
+    it.todo('clears all todos when the REMOTE has no todos');
+    it.todo('has no changes when the LOCAL and REMOTE todos are the same');
+    it.todo('adds any new REMOTE todos to the LOCAL todos');
+    it.todo('removes a subset of LOCAL todos that were removed on the REMOTE');
+    it.todo('adds a single todo when the same todo is added LOCALly and REMOTE');
+    it.todo('adds 2 new todos when both LOCAL and REMOTE branches have a unique new todo');
   });
 });
