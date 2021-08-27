@@ -1,8 +1,14 @@
 import { spawnSync } from 'child_process';
 import { TodoDataV2 } from './types';
 
+const NOTES_REF = 'todos';
+
 export function showNotes({ cwd = '.' }: { cwd: string }): Set<TodoDataV2> {
-  const { stdout, stderr, error } = spawnSync('git notes', ['show'], { shell: true, encoding: 'utf-8', cwd });
+  const { stdout, stderr, error } = spawnSync('git notes', ['--ref', NOTES_REF, 'show'], {
+    shell: true,
+    encoding: 'utf-8',
+    cwd,
+  });
 
   if (stderr || error) {
     console.warn(stderr || error);
@@ -15,7 +21,7 @@ export function showNotes({ cwd = '.' }: { cwd: string }): Set<TodoDataV2> {
 export function addNotes(todos: Set<TodoDataV2>, { cwd }: { cwd: string }): void {
   const message = [...todos].map((todo) => JSON.stringify(todo));
 
-  const { stderr, error } = spawnSync('git notes', ['add', '-f', '-m', JSON.stringify(message)], {
+  const { stderr, error } = spawnSync('git notes', ['--ref', NOTES_REF, 'add', '-f', '-m', JSON.stringify(message)], {
     shell: true,
     cwd,
     encoding: 'utf-8',
