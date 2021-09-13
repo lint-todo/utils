@@ -13,7 +13,6 @@ A collection of utilities to generate and store lint item metadata.
 Those utilities are:
 
 <!--DOCS_START-->
-
 ## Functions
 
 <dl>
