@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { posix } from 'path';
+import { EOL } from 'os';
 import {
   existsSync,
   ensureDirSync,
@@ -8,6 +9,7 @@ import {
   writeJsonSync,
   unlinkSync,
   rmdirSync,
+  readFileSync,
 } from 'fs-extra';
 import {
   TodoFileHash,
@@ -16,6 +18,7 @@ import {
   WriteTodoOptions,
   TodoFilePathHash,
   TodoBatches,
+  FilePath,
 } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
@@ -187,6 +190,24 @@ export function readTodosForFilePath(
     }
 
     throw error;
+  }
+
+  return existingTodos;
+}
+
+export function readTodoStorageFile(baseDir: string): Map<FilePath, TodoMatcher> {
+  const todoOperations = readFileSync(posix.join(baseDir, '.lint-todo'), {
+    encoding: 'utf-8',
+  }).split(EOL);
+
+  return buildFromTodoOperations(todoOperations);
+}
+
+export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath, TodoMatcher> {
+  const existingTodos = new Map<FilePath, TodoMatcher>();
+
+  for (const operation of todoOperations) {
+    console.log(operation);
   }
 
   return existingTodos;

@@ -14,7 +14,7 @@ import {
 import { LintResult, TodoDataV2, TodoFilePathHash } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { getFixture } from './__utils__/get-fixture';
-import { getTodoBatches, readTodos } from '../src/io';
+import { getTodoBatches, readTodos, buildFromTodoOperations } from '../src/io';
 import TodoMatcher from '../src/todo-matcher';
 import {
   buildMaybeTodos,
@@ -348,6 +348,34 @@ describe('io', () => {
       expect(removedCount).toEqual(3);
       expect(readFiles(todoDir)).toHaveLength(0);
       expect(await readdir(todoDir)).toHaveLength(0);
+    });
+  });
+
+  describe('readTodoStorageFile', () => {
+    it('can read empty storage file', () => {});
+
+    it('can read storage file with adds only', () => {});
+
+    it('can read storage file with adds and removes', () => {});
+  });
+
+  describe.only('buildFromOperations', () => {
+    it('builds single todo from single add', () => {
+      const todoOperations = [];
+
+      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot();
+    });
+
+    it('builds single todo from multiple identical adds', () => {
+      const todoOperations = [];
+
+      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot();
+    });
+
+    it('builds empty todos from single add and remove', () => {
+      const todoOperations = [];
+
+      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot();
     });
   });
 
