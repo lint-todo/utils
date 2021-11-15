@@ -1,4 +1,4 @@
-describe('merge-utils', () => {
+describe('storage-file-merge', () => {
   describe('rebasing LOCAL with REMOTE', () => {
     it.todo('clears all todos when the REMOTE has no todos');
     it.todo('has no changes when the LOCAL and REMOTE todos are the same');
