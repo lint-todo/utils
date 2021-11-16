@@ -14,7 +14,7 @@ import {
 import { LintResult, TodoDataV2, TodoFilePathHash } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { getFixture } from './__utils__/get-fixture';
-import { getTodoBatches, readTodos, buildFromTodoOperations } from '../src/io';
+import { getTodoBatches, readTodos } from '../src/io';
 import TodoMatcher from '../src/todo-matcher';
 import {
   buildMaybeTodos,
@@ -351,146 +351,13 @@ describe('io', () => {
     });
   });
 
-  describe('readTodoStorageFile', () => {
-    it('can read empty storage file', () => {});
+  // describe('readTodoStorageFile', () => {
+  //   it('can read empty storage file', () => {});
 
-    it('can read storage file with adds only', () => {});
+  //   it('can read storage file with adds only', () => {});
 
-    it('can read storage file with adds and removes', () => {});
-  });
-
-  describe('buildFromOperations', () => {
-    it('builds single todo from single add', () => {
-      const todoOperations: string[] = [
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-      ];
-
-      const todos = buildFromTodoOperations(todoOperations);
-
-      expect(todos.size).toEqual(1);
-      expect(todos).toMatchInlineSnapshot(`
-        Map {
-          "f6b7d2a5d29bdb971ef0d9d8c777ea89ea8d27de" => TodoMatcher {
-            "unprocessed": Set {
-              Object {
-                "createdDate": 1629331200000,
-                "engine": "ember-template-lint",
-                "errorDate": 2493334800000,
-                "fileFormat": 2,
-                "filePath": "addon/templates/components/foo.hbs",
-                "range": Object {
-                  "end": Object {
-                    "column": 8,
-                    "line": 174,
-                  },
-                  "start": Object {
-                    "column": 8,
-                    "line": 174,
-                  },
-                },
-                "ruleId": "no-implicit-this",
-                "source": "864e3ef2438ac413d96a032cdd141e567fcc04b3",
-                "warnDate": 2493248400000,
-              },
-            },
-          },
-        }
-      `);
-    });
-
-    it('builds single todo from single add with pipes in filePath', () => {
-      const todoOperations: string[] = [
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/fo|o.hbs',
-      ];
-
-      const todos = buildFromTodoOperations(todoOperations);
-
-      expect(todos.size).toEqual(1);
-      expect(todos).toMatchInlineSnapshot(`
-        Map {
-          "2baf456f196826debd81d0b5fd14ea8fcbfd702d" => TodoMatcher {
-            "unprocessed": Set {
-              Object {
-                "createdDate": 1629331200000,
-                "engine": "ember-template-lint",
-                "errorDate": 2493334800000,
-                "fileFormat": 2,
-                "filePath": "addon/templates/components/fo|o.hbs",
-                "range": Object {
-                  "end": Object {
-                    "column": 8,
-                    "line": 174,
-                  },
-                  "start": Object {
-                    "column": 8,
-                    "line": 174,
-                  },
-                },
-                "ruleId": "no-implicit-this",
-                "source": "864e3ef2438ac413d96a032cdd141e567fcc04b3",
-                "warnDate": 2493248400000,
-              },
-            },
-          },
-        }
-      `);
-    });
-
-    it('builds single todo from multiple identical adds', () => {
-      const todoOperations: string[] = [
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-      ];
-
-      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`
-        Map {
-          "f6b7d2a5d29bdb971ef0d9d8c777ea89ea8d27de" => TodoMatcher {
-            "unprocessed": Set {
-              Object {
-                "createdDate": 1629331200000,
-                "engine": "ember-template-lint",
-                "errorDate": 2493334800000,
-                "fileFormat": 2,
-                "filePath": "addon/templates/components/foo.hbs",
-                "range": Object {
-                  "end": Object {
-                    "column": 8,
-                    "line": 174,
-                  },
-                  "start": Object {
-                    "column": 8,
-                    "line": 174,
-                  },
-                },
-                "ruleId": "no-implicit-this",
-                "source": "864e3ef2438ac413d96a032cdd141e567fcc04b3",
-                "warnDate": 2493248400000,
-              },
-            },
-          },
-        }
-      `);
-    });
-
-    it('builds empty todos from single add and remove', () => {
-      const todoOperations: string[] = [
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-      ];
-
-      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`Map {}`);
-    });
-
-    it('builds empty todos from single add and multiple identical removes', () => {
-      const todoOperations: string[] = [
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-      ];
-
-      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`Map {}`);
-    });
-  });
+  //   it('can read storage file with adds and removes', () => {});
+  // });
 
   describe('getTodoBatches', () => {
     it('generates no batches when lint results are empty', () => {

@@ -10,6 +10,8 @@ import {
   unlinkSync,
   rmdirSync,
   readFileSync,
+  appendFileSync,
+  writeFileSync,
 } from 'fs-extra';
 import {
   TodoFileHash,
@@ -18,12 +20,15 @@ import {
   WriteTodoOptions,
   TodoFilePathHash,
   TodoBatches,
-  FilePath,
-  Operation,
 } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
-import { generateHash, normalizeToV2 } from './builders';
+import {
+  buildFromTodoOperations,
+  buildTodoOperations,
+  generateHash,
+  normalizeToV2,
+} from './builders';
 
 /**
  * Determines if the .lint-todo storage directory exists.
@@ -49,6 +54,7 @@ export function ensureTodoStorageDir(baseDir: string): string {
   return path;
 }
 
+// TODO: This should be renamed to getTodoStorageFilePath once we've converted over
 /**
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @returns - The todo storage directory path.
@@ -128,6 +134,27 @@ export function writeTodos(
   };
 }
 
+export function writeTodos2(
+  baseDir: string,
+  maybeTodos: Set<TodoDataV2>,
+  options?: Partial<WriteTodoOptions>
+): TodoBatchCounts {
+  options = Object.assign({ shouldRemove: () => true, overwrite: false }, options ?? {});
+
+  const todoStorageFilePath = getTodoStorageDirPath(baseDir);
+  const existing = readTodos2(baseDir);
+  const { add, remove, stable, expired } = getTodoBatches(maybeTodos, existing, options);
+
+  applyTodoChanges2(todoStorageFilePath, add, remove, options);
+
+  return {
+    addedCount: add.size,
+    removedCount: remove.size,
+    stableCount: stable.size,
+    expiredCount: expired.size,
+  };
+}
+
 /**
  * Reads all todo files in the .lint-todo directory.
  *
@@ -196,75 +223,26 @@ export function readTodosForFilePath(
   return existingTodos;
 }
 
-export function readTodoStorageFile(baseDir: string): Map<FilePath, TodoMatcher> {
-  const todoOperations = readFileSync(posix.join(baseDir, '.lint-todo'), {
+// TODO: change from using TodoFilePathHash to just FilePath, but do that once this is all working
+export function readTodos2(baseDir: string): Map<TodoFilePathHash, TodoMatcher> {
+  const todoOperations = readFileSync(getTodoStorageDirPath(baseDir), {
     encoding: 'utf-8',
   }).split(EOL);
 
   return buildFromTodoOperations(todoOperations);
 }
 
-export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath, TodoMatcher> {
-  const SEPARATOR = '|';
-  const existingTodos = new Map<FilePath, TodoMatcher>();
+export function readTodosForFilePath2(
+  baseDir: string,
+  filePath: string
+): Map<TodoFilePathHash, TodoMatcher> {
+  const todoOperations = readFileSync(getTodoStorageDirPath(baseDir), {
+    encoding: 'utf-8',
+  }).split(EOL);
 
-  for (const todoOperation of todoOperations) {
-    const [
-      operation,
-      engine,
-      ruleId,
-      line,
-      column,
-      endLine,
-      endColumn,
-      source,
-      fileFormat,
-      createdDate,
-      warnDate,
-      errorDate,
-      ...filePathSegments
-    ] = todoOperation.split(SEPARATOR);
-
-    // The only case where we need to join back on the separator is when the filePath itself
-    // contains a pipe ('|') char. Normal filePaths will simply join without the separator.
-    const filePath = filePathSegments.join(SEPARATOR);
-    const todoFileDir = todoDirFor(filePath);
-
-    if (!existingTodos.has(todoFileDir)) {
-      existingTodos.set(todoFileDir, new TodoMatcher());
-    }
-
-    const matcher = existingTodos.get(todoFileDir)!;
-
-    matcher.addOrRemove(<Operation>operation, {
-      engine,
-      ruleId,
-      filePath,
-      fileFormat: Number.parseInt(fileFormat, 10),
-      range: {
-        start: {
-          line: Number.parseInt(line, 10),
-          column: Number.parseInt(column, 10),
-        },
-        end: {
-          line: Number.parseInt(endLine, 10),
-          column: Number.parseInt(endColumn, 10),
-        },
-      },
-      source,
-      createdDate: Number.parseInt(createdDate, 10),
-      warnDate: Number.parseInt(warnDate, 10),
-      errorDate: Number.parseInt(errorDate, 10),
-    });
-  }
-
-  for (const [filePath, matcher] of existingTodos.entries()) {
-    if (matcher.unprocessed.size === 0) {
-      existingTodos.delete(filePath);
-    }
-  }
-
-  return existingTodos;
+  return buildFromTodoOperations(
+    todoOperations.filter((operation) => operation.includes(filePath))
+  );
 }
 
 /**
@@ -327,5 +305,20 @@ export function applyTodoChanges(
     if (readdirSync(todoDir).length === 0) {
       rmdirSync(todoDir);
     }
+  }
+}
+
+export function applyTodoChanges2(
+  todoStorageFilePath: string,
+  add: Map<TodoFileHash, TodoDataV2>,
+  remove: Map<TodoFileHash, TodoDataV2>,
+  options: Partial<WriteTodoOptions>
+): void {
+  const ops = buildTodoOperations(add, remove);
+
+  if (options.overwrite) {
+    writeFileSync(todoStorageFilePath, ops);
+  } else {
+    appendFileSync(todoStorageFilePath, ops);
   }
 }
