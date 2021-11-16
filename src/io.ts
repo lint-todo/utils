@@ -205,6 +205,7 @@ export function readTodoStorageFile(baseDir: string): Map<FilePath, TodoMatcher>
 }
 
 export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath, TodoMatcher> {
+  const SEPARATOR = '|';
   const existingTodos = new Map<FilePath, TodoMatcher>();
 
   for (const todoOperation of todoOperations) {
@@ -222,9 +223,11 @@ export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath,
       warnDate,
       errorDate,
       ...filePathSegments
-    ] = todoOperation.split('|');
+    ] = todoOperation.split(SEPARATOR);
 
-    const filePath = filePathSegments.join();
+    // The only case where we need to join back on the separator is when the filePath itself
+    // contains a pipe ('|') char. Normal filePaths will simply join without the separator.
+    const filePath = filePathSegments.join(SEPARATOR);
     const todoFileDir = todoDirFor(filePath);
 
     if (!existingTodos.has(todoFileDir)) {

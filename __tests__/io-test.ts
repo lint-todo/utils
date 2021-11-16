@@ -398,6 +398,44 @@ describe('io', () => {
       `);
     });
 
+    it('builds single todo from single add with pipes in filePath', () => {
+      const todoOperations: string[] = [
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/fo|o.hbs',
+      ];
+
+      const todos = buildFromTodoOperations(todoOperations);
+
+      expect(todos.size).toEqual(1);
+      expect(todos).toMatchInlineSnapshot(`
+        Map {
+          "2baf456f196826debd81d0b5fd14ea8fcbfd702d" => TodoMatcher {
+            "unprocessed": Set {
+              Object {
+                "createdDate": 1629331200000,
+                "engine": "ember-template-lint",
+                "errorDate": 2493334800000,
+                "fileFormat": 2,
+                "filePath": "addon/templates/components/fo|o.hbs",
+                "range": Object {
+                  "end": Object {
+                    "column": 8,
+                    "line": 174,
+                  },
+                  "start": Object {
+                    "column": 8,
+                    "line": 174,
+                  },
+                },
+                "ruleId": "no-implicit-this",
+                "source": "864e3ef2438ac413d96a032cdd141e567fcc04b3",
+                "warnDate": 2493248400000,
+              },
+            },
+          },
+        }
+      `);
+    });
+
     it('builds single todo from multiple identical adds', () => {
       const todoOperations: string[] = [
         'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
