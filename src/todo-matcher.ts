@@ -1,5 +1,5 @@
 import { todoFilePathFor, todoFileNameFor } from './io';
-import { TodoFileFormat, TodoDataV2, TodoFilePathHash } from './types';
+import { TodoFileFormat, TodoDataV2, TodoFilePathHash, Operation } from './types';
 
 type TodoExactMatcher = {
   match: (first: TodoDataV2, second: TodoDataV2) => boolean;
@@ -58,6 +58,30 @@ export default class TodoMatcher {
 
   add(todoDatum: TodoDataV2): void {
     this.unprocessed.add(todoDatum);
+  }
+
+  remove(todoDatum: TodoDataV2): void {
+    this.unprocessed.delete(todoDatum);
+  }
+
+  addOrRemove(operation: Operation, todoDatum: TodoDataV2): void {
+    if (operation === 'add' && !this.find2(todoDatum)) {
+      this.add(todoDatum);
+    }
+
+    if (operation === 'remove') {
+      const todoToRemove = this.find2(todoDatum);
+
+      if (todoToRemove) {
+        this.remove(todoToRemove);
+      }
+    }
+  }
+
+  find2(todoDatum: TodoDataV2): TodoDataV2 | undefined {
+    return [...this.unprocessed].find((unprocessedTodo) =>
+      ExactMatchers.get(2)?.match(unprocessedTodo, todoDatum)
+    );
   }
 
   find(todoFilePathHash: TodoFilePathHash): TodoDataV2 | undefined {

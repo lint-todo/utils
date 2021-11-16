@@ -19,6 +19,7 @@ import {
   TodoFilePathHash,
   TodoBatches,
   FilePath,
+  Operation,
 } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
@@ -206,8 +207,58 @@ export function readTodoStorageFile(baseDir: string): Map<FilePath, TodoMatcher>
 export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath, TodoMatcher> {
   const existingTodos = new Map<FilePath, TodoMatcher>();
 
-  for (const operation of todoOperations) {
-    console.log(operation);
+  for (const todoOperation of todoOperations) {
+    const [
+      operation,
+      engine,
+      ruleId,
+      line,
+      column,
+      endLine,
+      endColumn,
+      source,
+      fileFormat,
+      createdDate,
+      warnDate,
+      errorDate,
+      ...filePathSegments
+    ] = todoOperation.split('|');
+
+    const filePath = filePathSegments.join();
+    const todoFileDir = todoDirFor(filePath);
+
+    if (!existingTodos.has(todoFileDir)) {
+      existingTodos.set(todoFileDir, new TodoMatcher());
+    }
+
+    const matcher = existingTodos.get(todoFileDir);
+
+    matcher?.addOrRemove(<Operation>operation, {
+      engine,
+      ruleId,
+      filePath,
+      fileFormat: Number.parseInt(fileFormat, 10),
+      range: {
+        start: {
+          line: Number.parseInt(line, 10),
+          column: Number.parseInt(column, 10),
+        },
+        end: {
+          line: Number.parseInt(endLine, 10),
+          column: Number.parseInt(endColumn, 10),
+        },
+      },
+      source,
+      createdDate: Number.parseInt(createdDate, 10),
+      warnDate: Number.parseInt(warnDate, 10),
+      errorDate: Number.parseInt(errorDate, 10),
+    });
+  }
+
+  for (const [filePath, matcher] of existingTodos.entries()) {
+    if (matcher.unprocessed.size === 0) {
+      existingTodos.delete(filePath);
+    }
   }
 
   return existingTodos;

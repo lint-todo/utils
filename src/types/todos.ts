@@ -54,6 +54,8 @@ export enum TodoFileFormat {
   Version2 = 2,
 }
 
+export type Operation = 'add' | 'remove';
+
 export interface TodoDataV1 {
   engine: 'eslint' | 'ember-template-lint';
   filePath: string;
