@@ -12,6 +12,7 @@ import {
   readFileSync,
   appendFileSync,
   writeFileSync,
+  ensureFileSync,
 } from 'fs-extra';
 import {
   TodoFileHash,
@@ -37,7 +38,7 @@ import {
  * @returns - true if the todo storage directory exists, otherwise false.
  */
 export function todoStorageDirExists(baseDir: string): boolean {
-  return existsSync(getTodoStorageDirPath(baseDir));
+  return existsSync(getTodoStorageFilePath(baseDir));
 }
 
 /**
@@ -47,19 +48,42 @@ export function todoStorageDirExists(baseDir: string): boolean {
  * @returns - The todo storage directory path.
  */
 export function ensureTodoStorageDir(baseDir: string): string {
-  const path = getTodoStorageDirPath(baseDir);
+  const path = getTodoStorageFilePath(baseDir);
 
   ensureDirSync(path);
 
   return path;
 }
 
-// TODO: This should be renamed to getTodoStorageFilePath once we've converted over
 /**
- * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns - The todo storage directory path.
+ * Determines if the .lint-todo storage file exists.
+ *
+ * @param baseDir - The base directory that contains the .lint-todo storage file.
+ * @returns - true if the todo storage file exists, otherwise false.
  */
-export function getTodoStorageDirPath(baseDir: string): string {
+export function todoStorageFileExists(baseDir: string): boolean {
+  return existsSync(getTodoStorageFilePath(baseDir));
+}
+
+/**
+ * Creates, or ensures the creation of, the .lint-todo file.
+ *
+ * @param baseDir - The base directory that contains the .lint-todo storage file.
+ * @returns - The todo storage file path.
+ */
+export function ensureTodoStorageFile(baseDir: string): string {
+  const path = getTodoStorageFilePath(baseDir);
+
+  ensureFileSync(path);
+
+  return path;
+}
+
+/**
+ * @param baseDir - The base directory that contains the .lint-todo storage file.
+ * @returns - The todo storage file path.
+ */
+export function getTodoStorageFilePath(baseDir: string): string {
   return posix.join(baseDir, '.lint-todo');
 }
 
@@ -141,7 +165,7 @@ export function writeTodos2(
 ): TodoBatchCounts {
   options = Object.assign({ shouldRemove: () => true, overwrite: false }, options ?? {});
 
-  const todoStorageFilePath = getTodoStorageDirPath(baseDir);
+  const todoStorageFilePath = getTodoStorageFilePath(baseDir);
   const existing = readTodos2(baseDir);
   const { add, remove, stable, expired } = getTodoBatches(maybeTodos, existing, options);
 
@@ -225,7 +249,7 @@ export function readTodosForFilePath(
 
 // TODO: change from using TodoFilePathHash to just FilePath, but do that once this is all working
 export function readTodos2(baseDir: string): Map<TodoFilePathHash, TodoMatcher> {
-  const todoOperations = readFileSync(getTodoStorageDirPath(baseDir), {
+  const todoOperations = readFileSync(getTodoStorageFilePath(baseDir), {
     encoding: 'utf-8',
   }).split(EOL);
 
@@ -236,7 +260,7 @@ export function readTodosForFilePath2(
   baseDir: string,
   filePath: string
 ): Map<TodoFilePathHash, TodoMatcher> {
-  const todoOperations = readFileSync(getTodoStorageDirPath(baseDir), {
+  const todoOperations = readFileSync(getTodoStorageFilePath(baseDir), {
     encoding: 'utf-8',
   }).split(EOL);
 

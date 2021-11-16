@@ -7,9 +7,10 @@ import {
   todoFileNameFor,
   todoFilePathFor,
   todoStorageDirExists,
+  todoStorageFileExists,
   writeTodos,
   getDatePart,
-  getTodoStorageDirPath,
+  getTodoStorageFilePath,
 } from '../src';
 import { LintResult, TodoDataV2, TodoFilePathHash } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
@@ -86,6 +87,18 @@ describe('io', () => {
     });
   });
 
+  describe('todoStorageFileExists', () => {
+    it('returns false when file does not exist', async () => {
+      expect(todoStorageFileExists(tmp)).toEqual(false);
+    });
+
+    it('returns true when directory exists sync', async () => {
+      ensureTodoStorageDir(tmp);
+
+      expect(todoStorageDirExists(tmp)).toEqual(true);
+    });
+  });
+
   describe('todoFileNameFor', () => {
     it('can generate a unique hash for todo', () => {
       const fileName = todoFileNameFor(TODO_DATA);
@@ -134,7 +147,7 @@ describe('io', () => {
 
   describe('writeTodos', () => {
     it("creates .lint-todo directory if one doesn't exist", async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
+      const todoDir = getTodoStorageFilePath(tmp);
 
       writeTodos(tmp, new Set());
 
@@ -142,7 +155,7 @@ describe('io', () => {
     });
 
     it("doesn't write files when no todos provided", async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
+      const todoDir = getTodoStorageFilePath(tmp);
 
       writeTodos(tmp, new Set());
 
@@ -150,7 +163,7 @@ describe('io', () => {
     });
 
     it('generates todos when todos provided', async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
+      const todoDir = getTodoStorageFilePath(tmp);
       const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'));
 
       expect(addedCount).toEqual(18);
@@ -194,7 +207,7 @@ describe('io', () => {
         },
       ];
 
-      const todoDir = getTodoStorageDirPath(tmp);
+      const todoDir = getTodoStorageFilePath(tmp);
       const { addedCount } = writeTodos(tmp, buildMaybeTodos(tmp, initialTodos));
       const initialFiles = readFiles(todoDir);
 
@@ -223,7 +236,7 @@ describe('io', () => {
 
     it('removes old todos if todos no longer contains violations', async () => {
       const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
-      const todoDir = getTodoStorageDirPath(tmp);
+      const todoDir = getTodoStorageFilePath(tmp);
 
       const { addedCount } = writeTodos(tmp, fixture);
 
@@ -250,7 +263,7 @@ describe('io', () => {
 
     it('does not remove old todos if todos no longer contains violations if shouldRemove returns false', async () => {
       const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
-      const todoDir = getTodoStorageDirPath(tmp);
+      const todoDir = getTodoStorageFilePath(tmp);
 
       const { addedCount } = writeTodos(tmp, fixture);
 
@@ -272,7 +285,7 @@ describe('io', () => {
 
   describe('writeTodos for single file', () => {
     it('generates todos for a specific filePath', async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
+      const todoDir = getTodoStorageFilePath(tmp);
       const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
       });
@@ -288,7 +301,7 @@ describe('io', () => {
     });
 
     it('updates todos for a specific filePath', async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
+      const todoDir = getTodoStorageFilePath(tmp);
       const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
       });
@@ -322,7 +335,7 @@ describe('io', () => {
     });
 
     it('deletes todos for a specific filePath', async () => {
-      const todoDir = getTodoStorageDirPath(tmp);
+      const todoDir = getTodoStorageFilePath(tmp);
       const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
         filePath: 'app/controllers/settings.js',
       });
