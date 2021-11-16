@@ -234,9 +234,9 @@ export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath,
       existingTodos.set(todoFileDir, new TodoMatcher());
     }
 
-    const matcher = existingTodos.get(todoFileDir);
+    const matcher = existingTodos.get(todoFileDir)!;
 
-    matcher?.addOrRemove(<Operation>operation, {
+    matcher.addOrRemove(<Operation>operation, {
       engine,
       ruleId,
       filePath,
