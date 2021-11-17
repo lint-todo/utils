@@ -165,8 +165,10 @@ export function writeTodos2(
 ): TodoBatchCounts {
   options = Object.assign({ shouldRemove: () => true, overwrite: false }, options ?? {});
 
-  const todoStorageFilePath = getTodoStorageFilePath(baseDir);
-  const existing = readTodos2(baseDir);
+  const todoStorageFilePath: string = ensureTodoStorageFile(baseDir);
+  const existing: Map<TodoFilePathHash, TodoMatcher> = options.filePath
+    ? readTodosForFilePath2(baseDir, options.filePath)
+    : readTodos2(baseDir);
   const { add, remove, stable, expired } = getTodoBatches(maybeTodos, existing, options);
 
   applyTodoChanges2(todoStorageFilePath, add, remove, options);
@@ -285,6 +287,21 @@ export function readTodoData(baseDir: string): TodoDataV2[] {
 }
 
 /**
+ * Reads todo files in the .lint-todo directory and returns Todo data in an array.
+ *
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @returns An array of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}
+ */
+export function readTodoData2(baseDir: string): TodoDataV2[] {
+  return [...readTodos2(baseDir).values()].reduce(
+    (matcherResults: TodoDataV2[], matcher: TodoMatcher) => {
+      return [...matcherResults, ...matcher.unprocessed];
+    },
+    []
+  );
+}
+
+/**
  * Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).
  *
  * @param maybeTodos - The linting data for violations.
@@ -343,6 +360,6 @@ export function applyTodoChanges2(
   if (options.overwrite) {
     writeFileSync(todoStorageFilePath, ops);
   } else {
-    appendFileSync(todoStorageFilePath, ops);
+    appendFileSync(todoStorageFilePath, [EOL, ops].join(''));
   }
 }

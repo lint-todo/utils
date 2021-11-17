@@ -15,7 +15,7 @@ import {
 import { LintResult, TodoDataV2, TodoFilePathHash } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { getFixture } from './__utils__/get-fixture';
-import { getTodoBatches, readTodos } from '../src/io';
+import { getTodoBatches, readTodoData2, readTodos, readTodos2, writeTodos2 } from '../src/io';
 import TodoMatcher from '../src/todo-matcher';
 import {
   buildMaybeTodos,
@@ -283,6 +283,117 @@ describe('io', () => {
     });
   });
 
+  describe('writeTodos2', () => {
+    it("creates .lint-todo directory if one doesn't exist", async () => {
+      const todoFile = getTodoStorageFilePath(tmp);
+
+      writeTodos(tmp, new Set());
+
+      expect(existsSync(todoFile)).toEqual(true);
+    });
+
+    it("doesn't write files when no todos provided", async () => {
+      writeTodos2(tmp, new Set());
+
+      expect(readTodos2(tmp).size).toEqual(0);
+    });
+
+    it('generates todos when todos provided', async () => {
+      const { addedCount } = writeTodos2(
+        tmp,
+        buildMaybeTodosFromFixture(tmp, 'eslint-with-errors')
+      );
+
+      expect(addedCount).toEqual(18);
+      expect(readTodoData2(tmp)).toHaveLength(18);
+    });
+
+    it("generates todos only if previous todo doesn't exist", async () => {
+      const initialTodos: LintResult[] = [
+        {
+          filePath: '{{path}}/app/controllers/settings.js',
+          messages: [
+            {
+              ruleId: 'no-prototype-builtins',
+              severity: 2,
+              message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
+              line: 25,
+              column: 21,
+              nodeType: 'CallExpression',
+              messageId: 'prototypeBuildIn',
+              endLine: 25,
+              endColumn: 35,
+            },
+            {
+              ruleId: 'no-prototype-builtins',
+              severity: 2,
+              message: "Do not access Object.prototype method 'hasOwnProperty' from target object.",
+              line: 26,
+              column: 19,
+              nodeType: 'CallExpression',
+              messageId: 'prototypeBuildIn',
+              endLine: 26,
+              endColumn: 33,
+            },
+          ],
+          errorCount: 2,
+          warningCount: 0,
+          fixableErrorCount: 0,
+          fixableWarningCount: 0,
+          source: '',
+          usedDeprecatedRules: [],
+        },
+      ];
+
+      const { addedCount } = writeTodos2(tmp, buildMaybeTodos(tmp, initialTodos));
+
+      expect(addedCount).toEqual(2);
+      expect(readTodoData2(tmp)).toHaveLength(2);
+
+      writeTodos2(tmp, buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'));
+
+      const subsequentTodos = readTodoData2(tmp);
+
+      expect(subsequentTodos).toHaveLength(18);
+    });
+
+    it('removes old todos if todos no longer contains violations', async () => {
+      const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
+      const { addedCount } = writeTodos2(tmp, fixture);
+      const initialTodos = readTodoData2(tmp);
+
+      expect(addedCount).toEqual(18);
+      expect(initialTodos).toHaveLength(18);
+
+      const [firstHalf] = chunk(fixture, 3);
+      const { removedCount } = writeTodos2(tmp, new Set(firstHalf));
+      const subsequentTodos = readTodoData2(tmp);
+
+      expect(removedCount).toEqual(15);
+      expect(subsequentTodos).toHaveLength(3);
+    });
+
+    it('does not remove old todos if todos no longer contains violations if shouldRemove returns false', async () => {
+      const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
+
+      const { addedCount } = writeTodos2(tmp, fixture);
+
+      const initialFiles = readTodoData2(tmp);
+
+      expect(addedCount).toEqual(18);
+      expect(initialFiles).toHaveLength(18);
+
+      const [firstHalf] = chunk(fixture, 3);
+
+      const { removedCount } = writeTodos2(tmp, firstHalf, { shouldRemove: () => false });
+
+      const subsequentFiles = readTodoData2(tmp);
+
+      expect(removedCount).toEqual(0);
+      expect(subsequentFiles).toHaveLength(18);
+    });
+  });
+
   describe('writeTodos for single file', () => {
     it('generates todos for a specific filePath', async () => {
       const todoDir = getTodoStorageFilePath(tmp);
@@ -361,6 +472,311 @@ describe('io', () => {
       expect(removedCount).toEqual(3);
       expect(readFiles(todoDir)).toHaveLength(0);
       expect(await readdir(todoDir)).toHaveLength(0);
+    });
+  });
+
+  describe('writeTodos2 for single file', () => {
+    it('generates todos for a specific filePath', async () => {
+      const { addedCount } = writeTodos2(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
+        filePath: 'app/controllers/settings.js',
+      });
+
+      expect(addedCount).toEqual(3);
+      expect(readTodoData2(tmp)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "ruleId": "no-prototype-builtins",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "ruleId": "no-prototype-builtins",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "ruleId": "no-prototype-builtins",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+        ]
+      `);
+    });
+
+    it('updates todos for a specific filePath', async () => {
+      const { addedCount } = writeTodos2(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
+        filePath: 'app/controllers/settings.js',
+      });
+
+      expect(addedCount).toEqual(3);
+      expect(readTodoData2(tmp)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "ruleId": "no-prototype-builtins",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "ruleId": "no-prototype-builtins",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "ruleId": "no-prototype-builtins",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+        ]
+      `);
+
+      const counts = writeTodos2(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo-updated'), {
+        filePath: 'app/controllers/settings.js',
+      });
+
+      expect(counts).toStrictEqual({
+        addedCount: 1,
+        expiredCount: 0,
+        removedCount: 1,
+        stableCount: 2,
+      });
+      expect(readTodoData2(tmp)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "ruleId": "no-prototype-builtins",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "ruleId": "no-prototype-builtins",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 110,
+                "line": 50,
+              },
+              "start": Object {
+                "column": 101,
+                "line": 50,
+              },
+            },
+            "ruleId": "no-unused-vars",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+        ]
+      `);
+    });
+
+    it('deletes todos for a specific filePath', async () => {
+      const { addedCount } = writeTodos2(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
+        filePath: 'app/controllers/settings.js',
+      });
+
+      expect(addedCount).toEqual(3);
+      expect(readTodoData2(tmp)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "ruleId": "no-prototype-builtins",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "ruleId": "no-prototype-builtins",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+          Object {
+            "createdDate": 1637107200000,
+            "engine": "eslint",
+            "errorDate": NaN,
+            "fileFormat": 2,
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "ruleId": "no-prototype-builtins",
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "warnDate": NaN,
+          },
+        ]
+      `);
+
+      const { addedCount: addedCount2, removedCount } = writeTodos2(
+        tmp,
+        buildMaybeTodosFromFixture(tmp, 'single-file-no-errors'),
+        {
+          filePath: 'app/controllers/settings.js',
+        }
+      );
+
+      expect(addedCount2).toEqual(0);
+      expect(removedCount).toEqual(3);
+      expect(readTodoData2(tmp)).toHaveLength(0);
     });
   });
 
