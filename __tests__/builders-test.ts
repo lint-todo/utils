@@ -234,7 +234,7 @@ describe('builders', () => {
       expect(todos.size).toEqual(1);
       expect(todos).toMatchInlineSnapshot(`
         Map {
-          "f6b7d2a5d29bdb971ef0d9d8c777ea89ea8d27de" => TodoMatcher {
+          "addon/templates/components/foo.hbs" => TodoMatcher {
             "unprocessed": Set {
               Object {
                 "createdDate": 1629331200000,
@@ -272,7 +272,7 @@ describe('builders', () => {
       expect(todos.size).toEqual(1);
       expect(todos).toMatchInlineSnapshot(`
         Map {
-          "2baf456f196826debd81d0b5fd14ea8fcbfd702d" => TodoMatcher {
+          "addon/templates/components/fo|o.hbs" => TodoMatcher {
             "unprocessed": Set {
               Object {
                 "createdDate": 1629331200000,
@@ -308,7 +308,7 @@ describe('builders', () => {
 
       expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`
         Map {
-          "f6b7d2a5d29bdb971ef0d9d8c777ea89ea8d27de" => TodoMatcher {
+          "addon/templates/components/foo.hbs" => TodoMatcher {
             "unprocessed": Set {
               Object {
                 "createdDate": 1629331200000,

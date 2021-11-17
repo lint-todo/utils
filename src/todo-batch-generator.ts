@@ -1,7 +1,6 @@
 import { isExpired } from './date-utils';
-import { todoDirFor, todoFilePathFor } from './io';
 import TodoMatcher from './todo-matcher';
-import { TodoBatches, TodoDataV2, TodoFileHash, TodoFilePathHash, WriteTodoOptions } from './types';
+import { TodoBatches, TodoDataV2, FilePath, WriteTodoOptions } from './types';
 
 function copyLintResult(todoDatum: TodoDataV2, unmatchedTodoData: TodoDataV2) {
   // this is a key transfer of information that allows us to match the identify
@@ -58,31 +57,26 @@ export default class TodoBatchGenerator {
    * @param existingTodos - Existing todo lint data.
    * @returns
    */
-  generate(
-    maybeTodos: Set<TodoDataV2>,
-    existingTodos: Map<TodoFilePathHash, TodoMatcher>
-  ): TodoBatches {
-    const add = new Map<TodoFileHash, TodoDataV2>();
-    const expired = new Map<TodoFileHash, TodoDataV2>();
-    const stable = new Map<TodoFileHash, TodoDataV2>();
-    let remove = new Map<TodoFileHash, TodoDataV2>();
+  generate(maybeTodos: Set<TodoDataV2>, existingTodos: Map<FilePath, TodoMatcher>): TodoBatches {
+    const add = new Set<TodoDataV2>();
+    const expired = new Set<TodoDataV2>();
+    const stable = new Set<TodoDataV2>();
+    let remove = new Set<TodoDataV2>();
 
     maybeTodos = new Set(maybeTodos);
 
     for (const unmatchedTodoData of maybeTodos) {
-      const todoFilePathHash = todoDirFor(unmatchedTodoData.filePath);
-      const matcher = existingTodos.get(todoFilePathHash);
+      const matcher = existingTodos.get(unmatchedTodoData.filePath);
 
       if (matcher) {
         const todoDatum = matcher.exactMatch(unmatchedTodoData);
 
         if (todoDatum) {
-          const todoFilePath = todoFilePathFor(todoDatum);
           if (isExpired(todoDatum.errorDate) && this.options?.shouldRemove?.(todoDatum)) {
-            expired.set(todoFilePath, todoDatum);
+            expired.add(todoDatum);
           } else {
             copyLintResult(todoDatum, unmatchedTodoData);
-            stable.set(todoFilePath, todoDatum);
+            stable.add(todoDatum);
           }
 
           maybeTodos.delete(unmatchedTodoData);
@@ -91,33 +85,30 @@ export default class TodoBatchGenerator {
     }
 
     for (const unmatchedTodoData of maybeTodos) {
-      const todoFilePathHash = todoDirFor(unmatchedTodoData.filePath);
-      const matcher = existingTodos.get(todoFilePathHash);
+      const matcher = existingTodos.get(unmatchedTodoData.filePath);
 
       if (matcher) {
         const todoDatum = matcher.fuzzyMatch(unmatchedTodoData);
 
         if (todoDatum) {
-          const todoFilePath = todoFilePathFor(todoDatum);
-
           if (isExpired(todoDatum.errorDate) && this.options?.shouldRemove?.(todoDatum)) {
-            expired.set(todoFilePath, todoDatum);
+            expired.add(todoDatum);
           } else {
             copyLintResult(todoDatum, unmatchedTodoData);
-            stable.set(todoFilePath, todoDatum);
+            stable.add(todoDatum);
           }
         } else {
-          add.set(todoFilePathFor(unmatchedTodoData), unmatchedTodoData);
+          add.add(unmatchedTodoData);
         }
       } else {
-        add.set(todoFilePathFor(unmatchedTodoData), unmatchedTodoData);
+        add.add(unmatchedTodoData);
       }
 
       maybeTodos.delete(unmatchedTodoData);
     }
 
     for (const matcher of [...existingTodos.values()]) {
-      remove = new Map([...remove, ...matcher.unmatched(this.options?.shouldRemove)]);
+      remove = new Set([...remove, ...matcher.unmatched(this.options?.shouldRemove)]);
     }
 
     return {

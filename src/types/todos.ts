@@ -16,37 +16,19 @@ export interface GenericLintData {
   originalLintResult: any;
 }
 
-// This type is deprecated, but is still included here for backwards compatibility.
 /**
  * Represents the path to the todo file.
  *
- * @deprecated This type is deprecated in favor of the more descriptive TodoFileHash.
  * @example
- * 42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839
+ * app/settings/foo.js
  */
 export type FilePath = string;
 
-/**
- * Represents the hashed filePath of the todos, which is a directory that contains todo files.
- *
- * @example
- * 42b8532cff6da75c5e5895a6f33522bf37418d0c
- */
-export type TodoFilePathHash = string;
-
-/**
- * Represents the path to the todo file.
- *
- * @example
- * 42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839
- */
-export type TodoFileHash = string;
-
 export type TodoBatches = {
-  add: Map<TodoFileHash, TodoDataV2>;
-  expired: Map<TodoFileHash, TodoDataV2>;
-  stable: Map<TodoFileHash, TodoDataV2>;
-  remove: Map<TodoFileHash, TodoDataV2>;
+  add: Set<TodoDataV2>;
+  expired: Set<TodoDataV2>;
+  stable: Set<TodoDataV2>;
+  remove: Set<TodoDataV2>;
 };
 
 export enum TodoFileFormat {
@@ -55,19 +37,6 @@ export enum TodoFileFormat {
 }
 
 export type Operation = 'add' | 'remove';
-
-export interface TodoDataV1 {
-  engine: 'eslint' | 'ember-template-lint';
-  filePath: string;
-  ruleId: string;
-  line: number;
-  column: number;
-  createdDate: number;
-  fileFormat: TodoFileFormat;
-  source?: string;
-  warnDate?: number;
-  errorDate?: number;
-}
 
 export interface TodoDataV2 {
   engine: 'eslint' | 'ember-template-lint' | string;
@@ -81,8 +50,6 @@ export interface TodoDataV2 {
   errorDate?: number;
   originalLintResult?: any;
 }
-
-export type TodoData = TodoDataV1 | TodoDataV2;
 
 export type TodoDates = Pick<TodoDataV2, 'createdDate' | 'errorDate' | 'warnDate'>;
 

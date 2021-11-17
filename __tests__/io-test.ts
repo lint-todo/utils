@@ -14,7 +14,7 @@ import {
   readTodos,
   writeTodos,
 } from '../src';
-import { LintResult, TodoDataV2, TodoFilePathHash } from '../src/types';
+import { FilePath, LintResult, TodoDataV2 } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { getFixture } from './__utils__/get-fixture';
 import TodoMatcher from '../src/todo-matcher';
@@ -51,6 +51,16 @@ function chunk<T>(initial: Set<T>, firstChunk = 1): [Set<T>, Set<T>] {
   const secondHalf = fixtureArr.slice(firstChunk, fixtureArr.length);
 
   return [new Set(firstHalf), new Set(secondHalf)];
+}
+
+function stableTodoFragment(todoData: Set<TodoDataV2>) {
+  return [...todoData].map((todoDatum) => {
+    return {
+      filePath: todoDatum.filePath,
+      range: todoDatum.range,
+      source: todoDatum.source,
+    };
+  });
 }
 
 jest.setTimeout(100000);
@@ -578,18 +588,14 @@ describe('io', () => {
 
   describe('getTodoBatches', () => {
     it('generates no batches when lint results are empty', () => {
-      const counts = getTodoBatches(new Set(), new Map(), {
+      const { add, remove, stable, expired } = getTodoBatches(new Set(), new Map(), {
         shouldRemove: () => true,
       });
 
-      expect(counts).toMatchInlineSnapshot(`
-        Object {
-          "add": Map {},
-          "expired": Map {},
-          "remove": Map {},
-          "stable": Map {},
-        }
-      `);
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`Array []`);
     });
 
     it('creates items to add', async () => {
@@ -597,14 +603,92 @@ describe('io', () => {
         shouldRemove: () => true,
       });
 
-      expect([...add.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`
         Array [
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 17,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 11,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 133,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 119,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
     });
@@ -618,27 +702,106 @@ describe('io', () => {
         }
       );
 
-      expect([...remove.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`
         Array [
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 17,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 11,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 133,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 119,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
     });
 
     it('creates items to expire', async () => {
-      const expiredBatches: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodos(
+      const expiredBatches: Map<FilePath, TodoMatcher> = buildExistingTodos(
         tmp,
         getFixture('new-batches', tmp, false)
       );
+
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const expiredTodo: TodoDataV2 = expiredBatches
-        .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
-        .find('cc71e5f9')!;
+        .get('app/controllers/settings.js')!
+        .find((todoDatum) => todoDatum.filePath)!;
 
       expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
@@ -651,22 +814,35 @@ describe('io', () => {
         }
       );
 
-      expect([...expired.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
         Array [
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
     });
 
     it('creates all batches', async () => {
-      const existingBatches: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodosFromFixture(
+      const existingBatches: Map<FilePath, TodoMatcher> = buildExistingTodosFromFixture(
         tmp,
         'existing-batches'
       );
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const expiredTodo: TodoDataV2 = existingBatches
-        .get('60a67ad5c653f5b1a6537d9a6aee56c0662c0e35')!
-        .find('cc71e5f9')!;
+        .get('app/initializers/tracer.js')!
+        .find((todoDatum) => todoDatum.filePath)!;
 
       expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
@@ -676,28 +852,132 @@ describe('io', () => {
         { shouldRemove: () => true }
       );
 
-      expect([...add.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`
         Array [
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/aad8bc25",
-          "0a1e71cf4d0931e81f494d5a73a550016814e15a/53e7a9a0",
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 35,
+                "line": 25,
+              },
+              "start": Object {
+                "column": 21,
+                "line": 25,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 26,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 26,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/controllers/settings.js",
+            "range": Object {
+              "end": Object {
+                "column": 48,
+                "line": 32,
+              },
+              "start": Object {
+                "column": 34,
+                "line": 32,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
-      expect([...remove.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`
         Array [
-          "07d3818b8afefcdd7db6d52743309fdbb85313f0/66256fb7",
-          "07d3818b8afefcdd7db6d52743309fdbb85313f0/8fd35486",
+          Object {
+            "filePath": "app/models/build.js",
+            "range": Object {
+              "end": Object {
+                "column": 64,
+                "line": 108,
+              },
+              "start": Object {
+                "column": 50,
+                "line": 108,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/models/build.js",
+            "range": Object {
+              "end": Object {
+                "column": 39,
+                "line": 120,
+              },
+              "start": Object {
+                "column": 25,
+                "line": 120,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
-      expect([...stable.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`
         Array [
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/b9046d34",
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/092271fa",
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 33,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 19,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 133,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 119,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
-      expect([...expired.keys()]).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
         Array [
-          "60a67ad5c653f5b1a6537d9a6aee56c0662c0e35/cc71e5f9",
+          Object {
+            "filePath": "app/initializers/tracer.js",
+            "range": Object {
+              "end": Object {
+                "column": 17,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 11,
+                "line": 1,
+              },
+            },
+            "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          },
         ]
       `);
     });
@@ -706,7 +986,7 @@ describe('io', () => {
       process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
 
       const lintResults = getFixture('eslint-exact-matches', tmp, false);
-      let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodos(tmp, lintResults);
+      let existingTodos: Map<FilePath, TodoMatcher> = buildExistingTodos(tmp, lintResults);
 
       let counts = getTodoBatches(buildMaybeTodos(tmp, lintResults), existingTodos, {
         shouldRemove: () => true,
@@ -733,7 +1013,7 @@ describe('io', () => {
       process.env.TODO_CREATED_DATE = new Date(2015, 1, 23).toJSON();
 
       const lintResults = getFixture('eslint-no-fuzzy-source-prechange', tmp, false);
-      let existingTodos: Map<TodoFilePathHash, TodoMatcher> = buildExistingTodos(tmp, lintResults);
+      let existingTodos: Map<FilePath, TodoMatcher> = buildExistingTodos(tmp, lintResults);
 
       let counts = getTodoBatches(buildMaybeTodos(tmp, lintResults), existingTodos, {
         shouldRemove: () => true,
@@ -764,11 +1044,11 @@ describe('io', () => {
 
       expect(addedCount).toEqual(5);
 
-      const existing: Map<TodoFilePathHash, TodoMatcher> = readTodos(tmp);
+      const existing: Map<FilePath, TodoMatcher> = readTodos(tmp);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const expiredTodo: TodoDataV2 = existing
-        .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
-        .find('0c1a00af')!;
+        .get('app/components/foo.js')!
+        .find((todoDatum) => todoDatum.filePath)!;
 
       expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
@@ -778,21 +1058,86 @@ describe('io', () => {
         { shouldRemove: () => true }
       );
 
-      expect([...add.keys()]).toMatchInlineSnapshot(`Array []`);
-      expect([...remove.keys()]).toMatchInlineSnapshot(`Array []`);
-      expect([...stable.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "68e22b32dc9da5964fc73d75680c1cfad9532912/da773fcf",
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/fb219dc1",
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/ce6ecd57",
-            "b6f600233b5a01e7165bcaf27ea6730b6213f331/fb17ee16",
-          ]
-        `);
-      expect([...expired.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "d47704143ff2aa8b05d66fc59e790e126b7b3603/0c1a00af",
-          ]
-        `);
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "filePath": "app/utils/util.js",
+            "range": Object {
+              "end": Object {
+                "column": 16,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 10,
+                "line": 1,
+              },
+            },
+            "source": "b618e5603b05243a5fe81039b3b18551e963f07f",
+          },
+          Object {
+            "filePath": "app/utils/util.js",
+            "range": Object {
+              "end": Object {
+                "column": 15,
+                "line": 2,
+              },
+              "start": Object {
+                "column": 7,
+                "line": 2,
+              },
+            },
+            "source": "b7c8adf0cc8799f2488de3116a72fc2bd326fc1f",
+          },
+          Object {
+            "filePath": "json-formatter.js",
+            "range": Object {
+              "end": Object {
+                "column": 7,
+                "line": 18,
+              },
+              "start": Object {
+                "column": 1,
+                "line": 18,
+              },
+            },
+            "source": "cfc137fb4c575a1564e767297c7f2b9dc4748a12",
+          },
+          Object {
+            "filePath": "rule-config.js",
+            "range": Object {
+              "end": Object {
+                "column": 7,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 1,
+                "line": 1,
+              },
+            },
+            "source": "cfc137fb4c575a1564e767297c7f2b9dc4748a12",
+          },
+        ]
+      `);
+      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "filePath": "app/components/foo.js",
+            "range": Object {
+              "end": Object {
+                "column": 13,
+                "line": 7,
+              },
+              "start": Object {
+                "column": 9,
+                "line": 7,
+              },
+            },
+            "source": "5ae05cec9a70e6badfa35fee65306763961f070e",
+          },
+        ]
+      `);
     });
 
     it(`creates only stable and expired batches for fuzzy match`, async () => {
@@ -803,11 +1148,11 @@ describe('io', () => {
 
       expect(addedCount).toEqual(5);
 
-      const existing: Map<TodoFilePathHash, TodoMatcher> = readTodos(tmp);
+      const existing: Map<FilePath, TodoMatcher> = readTodos(tmp);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const expiredTodo: TodoDataV2 = existing
-        .get('d47704143ff2aa8b05d66fc59e790e126b7b3603')!
-        .find('0c1a00af')!;
+        .get('app/components/foo.js')!
+        .find((todoDatum) => todoDatum.filePath)!;
 
       expiredTodo.errorDate = subDays(getDatePart(), 1).getTime();
 
@@ -817,21 +1162,86 @@ describe('io', () => {
         { shouldRemove: () => true }
       );
 
-      expect([...add.keys()]).toMatchInlineSnapshot(`Array []`);
-      expect([...remove.keys()]).toMatchInlineSnapshot(`Array []`);
-      expect([...stable.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/fb219dc1",
-            "a0b23a0fa099c0ae674ec53a04fc6a6278526141/ce6ecd57",
-            "b6f600233b5a01e7165bcaf27ea6730b6213f331/fb17ee16",
-            "68e22b32dc9da5964fc73d75680c1cfad9532912/da773fcf",
-          ]
-        `);
-      expect([...expired.keys()]).toMatchInlineSnapshot(`
-          Array [
-            "d47704143ff2aa8b05d66fc59e790e126b7b3603/0c1a00af",
-          ]
-        `);
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "filePath": "app/utils/util.js",
+            "range": Object {
+              "end": Object {
+                "column": 16,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 10,
+                "line": 1,
+              },
+            },
+            "source": "b618e5603b05243a5fe81039b3b18551e963f07f",
+          },
+          Object {
+            "filePath": "app/utils/util.js",
+            "range": Object {
+              "end": Object {
+                "column": 15,
+                "line": 2,
+              },
+              "start": Object {
+                "column": 7,
+                "line": 2,
+              },
+            },
+            "source": "b7c8adf0cc8799f2488de3116a72fc2bd326fc1f",
+          },
+          Object {
+            "filePath": "json-formatter.js",
+            "range": Object {
+              "end": Object {
+                "column": 7,
+                "line": 18,
+              },
+              "start": Object {
+                "column": 1,
+                "line": 18,
+              },
+            },
+            "source": "cfc137fb4c575a1564e767297c7f2b9dc4748a12",
+          },
+          Object {
+            "filePath": "rule-config.js",
+            "range": Object {
+              "end": Object {
+                "column": 7,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 1,
+                "line": 1,
+              },
+            },
+            "source": "cfc137fb4c575a1564e767297c7f2b9dc4748a12",
+          },
+        ]
+      `);
+      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "filePath": "app/components/foo.js",
+            "range": Object {
+              "end": Object {
+                "column": 13,
+                "line": 7,
+              },
+              "start": Object {
+                "column": 9,
+                "line": 7,
+              },
+            },
+            "source": "5ae05cec9a70e6badfa35fee65306763961f070e",
+          },
+        ]
+      `);
     });
   });
 });
