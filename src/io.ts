@@ -1,44 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { posix } from 'path';
 import { EOL } from 'os';
-import {
-  existsSync,
-  ensureDirSync,
-  readFileSync,
-  appendFileSync,
-  writeFileSync,
-  ensureFileSync,
+import { existsSync, readFileSync, appendFileSync, writeFileSync, ensureFileSync } from 'fs-extra';
   lstatSync,
-} from 'fs-extra';
 import { FilePath, TodoDataV2, TodoBatchCounts, TodoBatches, WriteTodoOptions } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
 import { buildFromTodoOperations, buildTodoOperations, generateHash } from './builders';
-
-/**
- * Determines if the .lint-todo storage directory exists.
- *
- * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns - true if the todo storage directory exists, otherwise false.
- */
-export function todoStorageDirExists(baseDir: string): boolean {
-  const todoStorageFilePath = getTodoStorageFilePath(baseDir);
-  return existsSync(todoStorageFilePath) && !lstatSync(todoStorageFilePath).isDirectory();
-}
-
-/**
- * Creates, or ensures the creation of, the .lint-todo directory.
- *
- * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns - The todo storage directory path.
- */
-export function ensureTodoStorageDir(baseDir: string): string {
-  const path = getTodoStorageFilePath(baseDir);
-
-  ensureDirSync(path);
-
-  return path;
-}
 
 /**
  * Determines if the .lint-todo storage file exists.
@@ -71,30 +39,6 @@ export function ensureTodoStorageFile(baseDir: string): string {
  */
 export function getTodoStorageFilePath(baseDir: string): string {
   return posix.join(baseDir, '.lint-todo');
-}
-
-/**
- * Creates a file path from the linting data. Excludes extension.
- *
- * @example
- * 42b8532cff6da75c5e5895a6f33522bf37418d0c/6e3be839
- *
- * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @param todoData - The linting data for an individual violation.
- * @returns - The todo file path for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2} object.
- */
-export function todoFilePathFor(todoData: TodoDataV2): string {
-  return posix.join(todoDirFor(todoData.filePath), todoFileNameFor(todoData));
-}
-
-/**
- * Creates a short hash for the todo's file path.
- *
- * @param filePath - The filePath from linting data for an individual violation.
- * @returns - The todo directory for a specific filepath.
- */
-export function todoDirFor(filePath: string): string {
-  return generateHash(filePath);
 }
 
 /**
