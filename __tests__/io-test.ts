@@ -1,14 +1,9 @@
 import { existsSync } from 'fs-extra';
 import { subDays } from 'date-fns';
 import {
-  ensureTodoStorageDir,
   getDatePart,
   getTodoStorageFilePath,
   getTodoBatches,
-  todoDirFor,
-  todoFileNameFor,
-  todoFilePathFor,
-  todoStorageDirExists,
   todoStorageFileExists,
   readTodoData,
   readTodos,
@@ -24,26 +19,7 @@ import {
   buildMaybeTodosFromFixture,
   buildExistingTodosFromFixture,
 } from './__utils__/build-todo-data';
-import { readTodoStorageFile } from '../src/io';
-
-const TODO_DATA: TodoDataV2 = {
-  engine: 'eslint',
-  filePath: 'app/controllers/settings.js',
-  ruleId: 'no-prototype-builtins',
-  range: {
-    start: {
-      line: 25,
-      column: 21,
-    },
-    end: {
-      line: 25,
-      column: 21,
-    },
-  },
-  source: '',
-  createdDate: getDatePart(new Date('12/11/2020')).getTime(),
-  fileFormat: 2,
-};
+import { ensureTodoStorageFile, readTodoStorageFile } from '../src/io';
 
 function chunk<T>(initial: Set<T>, firstChunk = 1): [Set<T>, Set<T>] {
   const fixtureArr = [...initial];
@@ -72,73 +48,15 @@ describe('io', () => {
     tmp = createTmpDir();
   });
 
-  describe('todoStorageDirExists', () => {
-    it('returns false when directory does not exist', async () => {
-      expect(todoStorageDirExists(tmp)).toEqual(false);
-    });
-
-    it('returns true when directory exists sync', async () => {
-      ensureTodoStorageDir(tmp);
-
-      expect(todoStorageDirExists(tmp)).toEqual(true);
-    });
-  });
-
   describe('todoStorageFileExists', () => {
     it('returns false when file does not exist', async () => {
       expect(todoStorageFileExists(tmp)).toEqual(false);
     });
 
     it('returns true when directory exists sync', async () => {
-      ensureTodoStorageDir(tmp);
+      ensureTodoStorageFile(tmp);
 
-      expect(todoStorageDirExists(tmp)).toEqual(true);
-    });
-  });
-
-  describe('todoFileNameFor', () => {
-    it('can generate a unique hash for todo', () => {
-      const fileName = todoFileNameFor(TODO_DATA);
-
-      expect(fileName).toEqual('6e3be839');
-    });
-
-    it('generates idempotent file names', () => {
-      const fileName = todoFileNameFor(TODO_DATA);
-      const secondFileName = todoFileNameFor(TODO_DATA);
-
-      expect(fileName).toEqual('6e3be839');
-      expect(secondFileName).toEqual('6e3be839');
-    });
-  });
-
-  describe('todoDirFor', () => {
-    it('can generate a unique dir hash for todo', () => {
-      const dir = todoDirFor(TODO_DATA.filePath);
-
-      expect(dir).toEqual('0a1e71cf4d0931e81f494d5a73a550016814e15a');
-    });
-
-    it('generates idempotent dir names', () => {
-      const dir1 = todoDirFor(TODO_DATA.filePath);
-      const dir2 = todoDirFor(TODO_DATA.filePath);
-
-      expect(dir1).toEqual(dir2);
-    });
-  });
-
-  describe('todoFilePathFor', () => {
-    it('can generate a unique file path for todo', () => {
-      const dir = todoFilePathFor(TODO_DATA);
-
-      expect(dir).toEqual('0a1e71cf4d0931e81f494d5a73a550016814e15a/6e3be839');
-    });
-
-    it('generates idempotent file paths', () => {
-      const dir1 = todoFilePathFor(TODO_DATA);
-      const dir2 = todoFilePathFor(TODO_DATA);
-
-      expect(dir1).toEqual(dir2);
+      expect(todoStorageFileExists(tmp)).toEqual(true);
     });
   });
 
