@@ -1,5 +1,4 @@
-import { todoFilePathFor, todoFileNameFor } from './io';
-import { TodoFileFormat, TodoDataV2, TodoFilePathHash, Operation } from './types';
+import { TodoFileFormat, TodoDataV2, Operation } from './types';
 
 type TodoExactMatcher = {
   match: (first: TodoDataV2, second: TodoDataV2) => boolean;
@@ -44,16 +43,8 @@ export default class TodoMatcher {
     this.unprocessed = new Set();
   }
 
-  unmatched(
-    predicate: (todoDatum: TodoDataV2) => boolean = () => false
-  ): Map<TodoFilePathHash, TodoDataV2> {
-    return new Map(
-      [...this.unprocessed]
-        .filter((todoDatum) => predicate(todoDatum))
-        .map((todoDatum: TodoDataV2) => {
-          return [todoFilePathFor(todoDatum), todoDatum];
-        })
-    );
+  unmatched(predicate: (todoDatum: TodoDataV2) => boolean = () => false): Set<TodoDataV2> {
+    return new Set([...this.unprocessed].filter((todoDatum) => predicate(todoDatum)));
   }
 
   add(todoDatum: TodoDataV2): void {
@@ -84,10 +75,10 @@ export default class TodoMatcher {
     );
   }
 
-  find(todoFilePathHash: TodoFilePathHash): TodoDataV2 | undefined {
-    return [...this.unprocessed].find(
-      (todoDatum) => todoFileNameFor(todoDatum) === todoFilePathHash
-    );
+  find(
+    predicate: (value: TodoDataV2, index?: number, obj?: TodoDataV2[]) => unknown
+  ): TodoDataV2 | undefined {
+    return [...this.unprocessed].find((todoDatum) => predicate(todoDatum));
   }
 
   exactMatch(todoDataToFind: TodoDataV2): TodoDataV2 | undefined {

@@ -4,25 +4,21 @@ import slash = require('slash');
 import { createHash } from 'crypto';
 import {
   DaysToDecay,
+  FilePath,
   GenericLintData,
   Operation,
   TodoConfig,
   TodoDataV2,
   TodoDates,
   TodoFileFormat,
-  TodoFileHash,
-  TodoFilePathHash,
 } from './types';
 import { getDatePart } from './date-utils';
-import { todoDirFor } from './io';
 import TodoMatcher from './todo-matcher';
 
 const SEPARATOR = '|';
 
-export function buildFromTodoOperations(
-  todoOperations: string[]
-): Map<TodoFilePathHash, TodoMatcher> {
-  const existingTodos = new Map<TodoFilePathHash, TodoMatcher>();
+export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath, TodoMatcher> {
+  const existingTodos = new Map<FilePath, TodoMatcher>();
 
   for (const todoOperation of todoOperations) {
     const [
@@ -44,13 +40,12 @@ export function buildFromTodoOperations(
     // The only case where we need to join back on the separator is when the filePath itself
     // contains a pipe ('|') char. Normal filePaths will simply join without the separator.
     const filePath = filePathSegments.join(SEPARATOR);
-    const todoFileDir = todoDirFor(filePath);
 
-    if (!existingTodos.has(todoFileDir)) {
-      existingTodos.set(todoFileDir, new TodoMatcher());
+    if (!existingTodos.has(filePath)) {
+      existingTodos.set(filePath, new TodoMatcher());
     }
 
-    const matcher = existingTodos.get(todoFileDir);
+    const matcher = existingTodos.get(filePath);
 
     matcher?.addOrRemove(<Operation>operation, {
       engine,
@@ -83,17 +78,14 @@ export function buildFromTodoOperations(
   return existingTodos;
 }
 
-export function buildTodoOperations(
-  add: Map<TodoFileHash, TodoDataV2>,
-  remove: Map<TodoFileHash, TodoDataV2>
-): string {
+export function buildTodoOperations(add: Set<TodoDataV2>, remove: Set<TodoDataV2>): string {
   const ops: string[] = [];
 
-  for (const [, todoDatum] of add) {
+  for (const todoDatum of add) {
     ops.push(toOperation('add', todoDatum));
   }
 
-  for (const [, todoDatum] of remove) {
+  for (const todoDatum of remove) {
     ops.push(toOperation('remove', todoDatum));
   }
 

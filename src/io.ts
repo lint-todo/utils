@@ -9,14 +9,7 @@ import {
   writeFileSync,
   ensureFileSync,
 } from 'fs-extra';
-import {
-  TodoFileHash,
-  TodoDataV2,
-  TodoBatchCounts,
-  WriteTodoOptions,
-  TodoFilePathHash,
-  TodoBatches,
-} from './types';
+import { FilePath, TodoDataV2, TodoBatchCounts, TodoBatches, WriteTodoOptions } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
 import { buildFromTodoOperations, buildTodoOperations, generateHash } from './builders';
@@ -141,7 +134,7 @@ export function writeTodos(
   options = Object.assign({ shouldRemove: () => true, overwrite: false }, options ?? {});
 
   const todoStorageFilePath: string = ensureTodoStorageFile(baseDir);
-  const existing: Map<TodoFilePathHash, TodoMatcher> = options.filePath
+  const existing: Map<FilePath, TodoMatcher> = options.filePath
     ? readTodosForFilePath(baseDir, options.filePath)
     : readTodos(baseDir);
   const { add, remove, stable, expired } = getTodoBatches(maybeTodos, existing, options);
@@ -161,9 +154,9 @@ export function writeTodos(
  * Reads all todo files in the .lint-todo directory.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L26|TodoFilePathHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
+ * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L25|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
-export function readTodos(baseDir: string): Map<TodoFilePathHash, TodoMatcher> {
+export function readTodos(baseDir: string): Map<FilePath, TodoMatcher> {
   const todoOperations = readTodoStorageFile(getTodoStorageFilePath(baseDir));
 
   return buildFromTodoOperations(todoOperations);
@@ -174,12 +167,12 @@ export function readTodos(baseDir: string): Map<TodoFilePathHash, TodoMatcher> {
  *
  * @param todoStorageDir - The .lint-todo storage directory.
  * @param filePath - The relative file path of the file to return todo items for.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L26|TodoFilePathHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
+ * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L25|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
 export function readTodosForFilePath(
   baseDir: string,
   filePath: string
-): Map<TodoFilePathHash, TodoMatcher> {
+): Map<FilePath, TodoMatcher> {
   const todoOperations = readFileSync(getTodoStorageFilePath(baseDir), {
     encoding: 'utf-8',
   }).split(EOL);
@@ -214,7 +207,7 @@ export function readTodoData(baseDir: string): TodoDataV2[] {
  */
 export function getTodoBatches(
   maybeTodos: Set<TodoDataV2>,
-  existing: Map<TodoFilePathHash, TodoMatcher>,
+  existing: Map<FilePath, TodoMatcher>,
   options: Partial<WriteTodoOptions>
 ): TodoBatches {
   const todoBatchGenerator = new TodoBatchGenerator(options);
@@ -231,8 +224,8 @@ export function getTodoBatches(
  */
 export function applyTodoChanges(
   todoStorageFilePath: string,
-  add: Map<TodoFileHash, TodoDataV2>,
-  remove: Map<TodoFileHash, TodoDataV2>,
+  add: Set<TodoDataV2>,
+  remove: Set<TodoDataV2>,
   options: Partial<WriteTodoOptions>
 ): void {
   const ops = buildTodoOperations(add, remove);

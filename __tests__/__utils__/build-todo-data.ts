@@ -1,14 +1,13 @@
 import { buildTodoDatum, generateHash } from '../../src/builders';
-import { todoDirFor } from '../../src/io';
 import TodoMatcher from '../../src/todo-matcher';
 import {
+  FilePath,
   LintMessage,
   LintResult,
   Location,
   Range,
   TodoConfig,
   TodoDataV2,
-  TodoFilePathHash,
 } from '../../src/types';
 import { getFixture } from './get-fixture';
 import { updatePaths } from './update-path';
@@ -58,7 +57,7 @@ export function buildExistingTodos(
   baseDir: string,
   lintResults: LintResult[],
   todoConfig?: TodoConfig
-): Map<TodoFilePathHash, TodoMatcher> {
+): Map<FilePath, TodoMatcher> {
   const results = updatePaths(baseDir, lintResults).filter((result) => result.messages.length > 0);
 
   const todoData = results.reduce((converted, lintResult) => {
@@ -77,20 +76,19 @@ export function buildExistingTodos(
           },
           todoConfig
         );
-        const todoFilePathHash = todoDirFor(todoDatum.filePath);
 
-        if (!converted.has(todoFilePathHash)) {
-          converted.set(todoFilePathHash, new TodoMatcher());
+        if (!converted.has(todoDatum.filePath)) {
+          converted.set(todoDatum.filePath, new TodoMatcher());
         }
 
-        const matcher = converted.get(todoFilePathHash);
+        const matcher = converted.get(todoDatum.filePath);
 
         matcher?.add(todoDatum);
       }
     });
 
     return converted;
-  }, new Map<TodoFilePathHash, TodoMatcher>());
+  }, new Map<FilePath, TodoMatcher>());
 
   return todoData;
 }
@@ -98,7 +96,7 @@ export function buildExistingTodos(
 export function buildExistingTodosFromFixture(
   baseDir: string,
   fixtureName: string
-): Map<TodoFilePathHash, TodoMatcher> {
+): Map<FilePath, TodoMatcher> {
   const fixture = getFixture(fixtureName, baseDir, false);
   return buildExistingTodos(baseDir, fixture);
 }
