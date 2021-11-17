@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { differenceInDays } from 'date-fns';
 import { getDatePart } from '../src/date-utils';
-import { TodoDataV1, TodoDataV2 } from '../src/types';
-import { buildFromTodoOperations, buildTodoDatum, normalizeToV2 } from '../src/builders';
+import { buildFromTodoOperations, buildTodoDatum } from '../src/builders';
 import { createTmpDir } from './__utils__/tmp-dir';
 
 describe('builders', () => {
@@ -218,83 +217,6 @@ describe('builders', () => {
           },
           "ruleId": "no-unused-vars",
           "source": "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33",
-        }
-      `);
-    });
-  });
-
-  describe('normalizeToV2', () => {
-    it('returns a v2 todo when a v1 is provided', () => {
-      const todoDatum: TodoDataV1 = {
-        engine: 'eslint',
-        filePath: 'app/controllers/settings.js',
-        ruleId: 'no-prototype-builtins',
-        line: 25,
-        column: 21,
-        createdDate: getDatePart(new Date('2021-01-01')).getTime(),
-        fileFormat: 1,
-      };
-
-      expect(normalizeToV2(todoDatum)).toMatchInlineSnapshot(`
-        Object {
-          "createdDate": 1609459200000,
-          "engine": "eslint",
-          "fileFormat": 1,
-          "filePath": "app/controllers/settings.js",
-          "range": Object {
-            "end": Object {
-              "column": 21,
-              "line": 25,
-            },
-            "start": Object {
-              "column": 21,
-              "line": 25,
-            },
-          },
-          "ruleId": "no-prototype-builtins",
-          "source": "",
-        }
-      `);
-    });
-
-    it('returns a v2 todo when a v2 is provided', () => {
-      const todoDatum: TodoDataV2 = {
-        engine: 'eslint',
-        filePath: 'app/controllers/settings.js',
-        ruleId: 'no-prototype-builtins',
-        range: {
-          start: {
-            line: 25,
-            column: 21,
-          },
-          end: {
-            line: 25,
-            column: 29,
-          },
-        },
-        source: '',
-        createdDate: getDatePart(new Date('2021-01-01')).getTime(),
-        fileFormat: 2,
-      };
-
-      expect(normalizeToV2(todoDatum)).toMatchInlineSnapshot(`
-        Object {
-          "createdDate": 1609459200000,
-          "engine": "eslint",
-          "fileFormat": 2,
-          "filePath": "app/controllers/settings.js",
-          "range": Object {
-            "end": Object {
-              "column": 29,
-              "line": 25,
-            },
-            "start": Object {
-              "column": 21,
-              "line": 25,
-            },
-          },
-          "ruleId": "no-prototype-builtins",
-          "source": "",
         }
       `);
     });

@@ -5,11 +5,8 @@ import { createHash } from 'crypto';
 import {
   DaysToDecay,
   GenericLintData,
-  Location,
   Operation,
   TodoConfig,
-  TodoData,
-  TodoDataV1,
   TodoDataV2,
   TodoDates,
   TodoFileFormat,
@@ -154,37 +151,6 @@ export function buildTodoDatum(
   return todoDatum;
 }
 
-export function normalizeToV2(todoDatum: TodoData): TodoDataV2 {
-  // if we have a range property, we're already in V2 format
-  if ('range' in todoDatum) {
-    todoDatum.fileFormat = TodoFileFormat.Version2;
-
-    return <TodoDataV2>todoDatum;
-  }
-
-  const todoDatumV1 = <TodoDataV1>todoDatum;
-
-  const todoDatumV2: TodoDataV2 = {
-    engine: todoDatumV1.engine,
-    filePath: todoDatumV1.filePath,
-    ruleId: todoDatumV1.ruleId,
-    range: getRange(todoDatumV1),
-    source: '',
-    createdDate: todoDatumV1.createdDate,
-    fileFormat: TodoFileFormat.Version1,
-  };
-
-  if (todoDatumV1.warnDate) {
-    todoDatumV2.warnDate = todoDatumV1.warnDate;
-  }
-
-  if (todoDatumV1.errorDate) {
-    todoDatumV2.errorDate = todoDatumV1.errorDate;
-  }
-
-  return todoDatumV2;
-}
-
 export function generateHash(input: string, algorithm = 'sha1'): string {
   return createHash(algorithm).update(input).digest('hex');
 }
@@ -205,21 +171,6 @@ function getTodoDates(ruleId: string, todoConfig?: TodoConfig): TodoDates {
   }
 
   return todoDates;
-}
-
-function getRange(loc: Location) {
-  return {
-    start: {
-      line: loc.line,
-      column: loc.column,
-    },
-    end: {
-      // eslint-disable-next-line unicorn/no-null
-      line: loc.endLine ?? loc.line,
-      // eslint-disable-next-line unicorn/no-null
-      column: loc.endColumn ?? loc.column,
-    },
-  };
 }
 
 function getDaysToDecay(ruleId: string, todoConfig?: TodoConfig) {

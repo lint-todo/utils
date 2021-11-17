@@ -6,9 +6,7 @@ export {
   getTodoBatches,
   getTodoStorageFilePath,
   readTodos,
-  readTodos2,
   readTodosForFilePath,
-  readTodosForFilePath2,
   readTodoData,
   todoStorageDirExists,
   todoStorageFileExists,
@@ -16,7 +14,6 @@ export {
   todoFileNameFor,
   todoFilePathFor,
   writeTodos,
-  writeTodos2,
 } from './io';
 export { getTodoConfig, validateConfig } from './todo-config';
 export { getSeverity } from './get-severity';
