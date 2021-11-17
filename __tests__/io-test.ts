@@ -24,6 +24,7 @@ import {
   buildMaybeTodosFromFixture,
   buildExistingTodosFromFixture,
 } from './__utils__/build-todo-data';
+import { readTodoStorageFile } from '../src/io';
 
 const TODO_DATA: TodoDataV2 = {
   engine: 'eslint',
@@ -544,13 +545,36 @@ describe('io', () => {
     });
   });
 
-  // describe('readTodoStorageFile', () => {
-  //   it('can read empty storage file', () => {});
+  describe('readTodos', () => {
+    it('can read empty storage file', () => {
+      writeTodos(tmp, new Set());
 
-  //   it('can read storage file with adds only', () => {});
+      expect(readTodos(tmp).size).toEqual(0);
+    });
 
-  //   it('can read storage file with adds and removes', () => {});
-  // });
+    it('can read storage file with adds only', () => {
+      const initialTodos = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
+      const { addedCount } = writeTodos(tmp, initialTodos);
+
+      expect(readTodoData(tmp)).toHaveLength(addedCount);
+    });
+
+    it('can read storage file with adds and removes', () => {
+      const initialTodos = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
+      const { addedCount } = writeTodos(tmp, initialTodos);
+
+      expect(readTodoData(tmp)).toHaveLength(addedCount);
+
+      const [firstChunk] = chunk(initialTodos, 2);
+
+      const { removedCount } = writeTodos(tmp, firstChunk);
+
+      expect(readTodoStorageFile(getTodoStorageFilePath(tmp))).toHaveLength(
+        addedCount + removedCount
+      );
+      expect(readTodoData(tmp)).toHaveLength(2);
+    });
+  });
 
   describe('getTodoBatches', () => {
     it('generates no batches when lint results are empty', () => {

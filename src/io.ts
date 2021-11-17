@@ -113,6 +113,14 @@ export function todoFileNameFor(todoData: TodoDataV2): string {
   return generateHash(fileContentsHash, 'sha256').slice(0, 8);
 }
 
+export function readTodoStorageFile(todoStorageFilePath: string): string[] {
+  return readFileSync(todoStorageFilePath, {
+    encoding: 'utf-8',
+  })
+    .split(EOL)
+    .filter(Boolean);
+}
+
 /**
  * Writes files for todo lint violations. One file is generated for each violation, using a generated
  * hash to identify each.
@@ -156,9 +164,7 @@ export function writeTodos(
  * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L26|TodoFilePathHash}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
 export function readTodos(baseDir: string): Map<TodoFilePathHash, TodoMatcher> {
-  const todoOperations = readFileSync(getTodoStorageFilePath(baseDir), {
-    encoding: 'utf-8',
-  }).split(EOL);
+  const todoOperations = readTodoStorageFile(getTodoStorageFilePath(baseDir));
 
   return buildFromTodoOperations(todoOperations);
 }
@@ -234,6 +240,6 @@ export function applyTodoChanges(
   if (options.overwrite) {
     writeFileSync(todoStorageFilePath, ops);
   } else {
-    appendFileSync(todoStorageFilePath, [EOL, ops].join(''));
+    appendFileSync(todoStorageFilePath, ops);
   }
 }

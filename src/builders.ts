@@ -97,7 +97,7 @@ export function buildTodoOperations(
     ops.push(toOperation('remove', todoDatum));
   }
 
-  return ops.join(EOL);
+  return ops.join(EOL) + EOL;
 }
 
 export function toOperation(operation: Operation, todoDatum: TodoDataV2): string {
