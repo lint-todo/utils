@@ -138,7 +138,7 @@ export function readTodosForFilePath(
   }).split(EOL);
 
   return buildFromTodoOperations(
-    todoOperations.filter((operation) => operation.includes(filePath))
+    todoOperations.filter((operation) => operation.endsWith(filePath))
   );
 }
 
