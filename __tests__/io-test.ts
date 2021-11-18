@@ -19,7 +19,12 @@ import {
   buildMaybeTodosFromFixture,
   buildExistingTodosFromFixture,
 } from './__utils__/build-todo-data';
-import { ensureTodoStorageFile, readTodoStorageFile } from '../src/io';
+import {
+  ensureTodoStorageFile,
+  hasConflicts,
+  readTodoStorageFile,
+  resolveConflicts,
+} from '../src/io';
 
 function chunk<T>(initial: Set<T>, firstChunk = 1): [Set<T>, Set<T>] {
   const fixtureArr = [...initial];
@@ -57,6 +62,59 @@ describe('io', () => {
       ensureTodoStorageFile(tmp);
 
       expect(todoStorageFileExists(tmp)).toEqual(true);
+    });
+  });
+
+  describe('hasConflicts', () => {
+    it('returns false if no conflicts are detected', () => {
+      const noConflicts = `add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
+add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
+      `;
+
+      expect(hasConflicts(noConflicts)).toEqual(false);
+    });
+
+    it('returns true if conflicts are detected', () => {
+      const conflicts = `add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
+add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
+<<<<<<< .lint-todo
+add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
+=======
+remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
+>>>>>>> .lint-todo
+      `;
+
+      expect(hasConflicts(conflicts)).toEqual(true);
+    });
+  });
+
+  describe('resolveConflicts', () => {
+    it('does not change operations when no conflicts are present', () => {
+      const operations = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+      ];
+
+      expect(resolveConflicts(operations)).toEqual(operations);
+    });
+
+    it('resolves conflicts when detected', () => {
+      const operations = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        '<<<<<<< .lint-todo',
+        'add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        '=======',
+        'remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        '>>>>>>> .lint-todo',
+      ];
+
+      expect(resolveConflicts(operations)).toEqual([
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+      ]);
     });
   });
 

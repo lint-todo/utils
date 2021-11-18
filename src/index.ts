@@ -2,11 +2,13 @@ export { buildTodoDatum } from './builders';
 export {
   applyTodoChanges,
   ensureTodoStorageFile,
+  hasConflicts,
   getTodoBatches,
   getTodoStorageFilePath,
   readTodos,
   readTodosForFilePath,
   readTodoData,
+  resolveConflicts,
   todoStorageFileExists,
   writeTodos,
 } from './io';

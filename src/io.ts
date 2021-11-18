@@ -8,6 +8,8 @@ import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
 import { buildFromTodoOperations, buildTodoOperations } from './builders';
 
+const CONFLICT_PATTERN = /\|{7,}|<{7,}|={7,}|>{7,}/g;
+
 /**
  * Determines if the .lint-todo storage file exists.
  *
@@ -41,12 +43,28 @@ export function getTodoStorageFilePath(baseDir: string): string {
   return posix.join(baseDir, '.lint-todo');
 }
 
+export function hasConflicts(todoContents: string): boolean {
+  return CONFLICT_PATTERN.test(todoContents);
+}
+
+export function resolveConflicts(operations: string[]): string[] {
+  return operations.filter((operation) => !CONFLICT_PATTERN.test(operation));
+}
+
 export function readTodoStorageFile(todoStorageFilePath: string): string[] {
-  return readFileSync(todoStorageFilePath, {
+  const todoContents = readFileSync(todoStorageFilePath, {
     encoding: 'utf-8',
-  })
-    .split(EOL)
-    .filter(Boolean);
+  });
+
+  let operations = todoContents.split(EOL);
+
+  if (hasConflicts(todoContents)) {
+    operations = resolveConflicts(operations);
+
+    writeFileSync(todoStorageFilePath, operations.join(EOL));
+  }
+
+  return operations.filter(Boolean);
 }
 
 /**
