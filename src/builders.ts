@@ -42,7 +42,8 @@ export function buildFromTodoOperations(
     ] = todoOperation.split(SEPARATOR);
 
     // The only case where we need to join back on the separator is when the filePath itself
-    // contains a pipe ('|') char. Normal filePaths will simply join without the separator.
+    // contains a pipe ('|') char. The vast majority of normal filePaths will simply join without
+    // the separator.
     const filePath = filePathSegments.join(SEPARATOR);
     const todoFileDir = todoDirFor(filePath);
 
