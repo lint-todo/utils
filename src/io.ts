@@ -8,6 +8,7 @@ import {
   appendFileSync,
   writeFileSync,
   ensureFileSync,
+  lstatSync,
 } from 'fs-extra';
 import {
   TodoFileHash,
@@ -28,7 +29,8 @@ import { buildFromTodoOperations, buildTodoOperations, generateHash } from './bu
  * @returns - true if the todo storage directory exists, otherwise false.
  */
 export function todoStorageDirExists(baseDir: string): boolean {
-  return existsSync(getTodoStorageFilePath(baseDir));
+  const todoStorageFilePath = getTodoStorageFilePath(baseDir);
+  return existsSync(todoStorageFilePath) && !lstatSync(todoStorageFilePath).isDirectory();
 }
 
 /**
@@ -52,7 +54,8 @@ export function ensureTodoStorageDir(baseDir: string): string {
  * @returns - true if the todo storage file exists, otherwise false.
  */
 export function todoStorageFileExists(baseDir: string): boolean {
-  return existsSync(getTodoStorageFilePath(baseDir));
+  const todoStorageFilePath = getTodoStorageFilePath(baseDir);
+  return existsSync(todoStorageFilePath) && !lstatSync(todoStorageFilePath).isDirectory();
 }
 
 /**
