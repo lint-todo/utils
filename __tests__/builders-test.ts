@@ -3,7 +3,7 @@ import { differenceInDays } from 'date-fns';
 import { getDatePart } from '../src/date-utils';
 import { buildFromTodoOperations, buildTodoDatum, buildTodoOperations } from '../src/builders';
 import { createTmpDir } from './__utils__/tmp-dir';
-import { buildMaybeTodosFromFixtureAsMap } from './__utils__/build-todo-data';
+import { buildMaybeTodosFromFixture } from './__utils__/build-todo-data';
 
 describe('builders', () => {
   let tmp: string;
@@ -358,14 +358,14 @@ describe('builders', () => {
 
   describe('buildTodoOperations', () => {
     it('returns empty string when add and remove are empty', () => {
-      const ops = buildTodoOperations(new Map(), new Map());
+      const ops = buildTodoOperations(new Set(), new Set());
 
       expect(ops).toEqual('');
     });
 
     it('returns string containing adds', () => {
-      const todos = buildMaybeTodosFromFixtureAsMap(tmp, 'new-batches');
-      const ops = buildTodoOperations(todos, new Map());
+      const todos = buildMaybeTodosFromFixture(tmp, 'new-batches');
+      const ops = buildTodoOperations(todos, new Set());
 
       expect(ops).toMatchInlineSnapshot(`
         "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
@@ -379,7 +379,7 @@ describe('builders', () => {
     });
 
     it('returns string containing adds and removes', () => {
-      const todos = buildMaybeTodosFromFixtureAsMap(tmp, 'new-batches');
+      const todos = buildMaybeTodosFromFixture(tmp, 'new-batches');
       const ops = buildTodoOperations(todos, todos);
 
       expect(ops).toMatchInlineSnapshot(`

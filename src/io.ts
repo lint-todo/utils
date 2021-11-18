@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { posix } from 'path';
 import { EOL } from 'os';
-import { existsSync, readFileSync, appendFileSync, writeFileSync, ensureFileSync } from 'fs-extra';
-  lstatSync,
+import { readFileSync, appendFileSync, writeFileSync, ensureFileSync, lstatSync } from 'fs-extra';
+
 import { FilePath, TodoDataV2, TodoBatchCounts, TodoBatches, WriteTodoOptions } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
@@ -17,8 +17,15 @@ const CONFLICT_PATTERN = /\|{7,}|<{7,}|={7,}|>{7,}/g;
  * @returns - true if the todo storage file exists, otherwise false.
  */
 export function todoStorageFileExists(baseDir: string): boolean {
-  const todoStorageFilePath = getTodoStorageFilePath(baseDir);
-  return existsSync(todoStorageFilePath) && !lstatSync(todoStorageFilePath).isDirectory();
+  try {
+    return !lstatSync(getTodoStorageFilePath(baseDir)).isDirectory();
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return false;
+    }
+
+    throw error;
+  }
 }
 
 /**

@@ -53,23 +53,6 @@ export function buildMaybeTodosFromFixture(baseDir: string, fixtureName: string)
   return buildMaybeTodos(baseDir, fixture);
 }
 
-export function buildMaybeTodosFromFixtureAsMap(
-  baseDir: string,
-  fixtureName: string
-): Map<TodoFilePathHash, TodoDataV2> {
-  const maybeTodos = buildMaybeTodosFromFixture(baseDir, fixtureName);
-
-  return [...maybeTodos].reduce((map: Map<TodoFilePathHash, TodoDataV2>, todoDatum: TodoDataV2) => {
-    const todoFilePathHash = todoFilePathFor(todoDatum);
-
-    if (!map.has(todoFilePathHash)) {
-      map.set(todoFilePathHash, todoDatum);
-    }
-
-    return map;
-  }, new Map());
-}
-
 export function buildExistingTodos(
   baseDir: string,
   lintResults: LintResult[],
