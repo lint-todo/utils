@@ -8,7 +8,6 @@ export {
   readTodosForFilePath,
   readTodoData,
   todoStorageFileExists,
-  todoFileNameFor,
   writeTodos,
 } from './io';
 export { getTodoConfig, validateConfig } from './todo-config';
