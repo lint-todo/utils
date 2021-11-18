@@ -65,8 +65,8 @@ export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath,
       },
       source,
       createdDate: Number.parseInt(createdDate, 10),
-      warnDate: Number.parseInt(warnDate, 10),
-      errorDate: Number.parseInt(errorDate, 10),
+      warnDate: warnDate ? Number.parseInt(warnDate, 10) : undefined,
+      errorDate: errorDate ? Number.parseInt(errorDate, 10) : undefined,
     });
   }
 
