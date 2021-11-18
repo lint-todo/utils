@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { differenceInDays } from 'date-fns';
 import { getDatePart } from '../src/date-utils';
-import { buildFromTodoOperations, buildTodoDatum } from '../src/builders';
+import { buildFromTodoOperations, buildTodoDatum, buildTodoOperations } from '../src/builders';
 import { createTmpDir } from './__utils__/tmp-dir';
+import { buildMaybeTodosFromFixtureAsMap } from './__utils__/build-todo-data';
 
 describe('builders', () => {
   let tmp: string;
@@ -352,6 +353,50 @@ describe('builders', () => {
       ];
 
       expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`Map {}`);
+    });
+  });
+
+  describe('buildTodoOperations', () => {
+    it('returns empty string when add and remove are empty', () => {
+      const ops = buildTodoOperations(new Map(), new Map());
+
+      expect(ops).toEqual('');
+    });
+
+    it('returns string containing adds', () => {
+      const todos = buildMaybeTodosFromFixtureAsMap(tmp, 'new-batches');
+      const ops = buildTodoOperations(todos, new Map());
+
+      expect(ops).toMatchInlineSnapshot(`
+        "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
+        add|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
+        "
+      `);
+    });
+
+    it('returns string containing adds and removes', () => {
+      const todos = buildMaybeTodosFromFixtureAsMap(tmp, 'new-batches');
+      const ops = buildTodoOperations(todos, todos);
+
+      expect(ops).toMatchInlineSnapshot(`
+        "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
+        add|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
+        remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
+        remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
+        remove|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
+        remove|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
+        remove|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
+        remove|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
+        "
+      `);
     });
   });
 });

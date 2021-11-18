@@ -87,6 +87,10 @@ export function buildTodoOperations(
   add: Map<TodoFileHash, TodoDataV2>,
   remove: Map<TodoFileHash, TodoDataV2>
 ): string {
+  if (add.size === 0 && remove.size === 0) {
+    return '';
+  }
+
   const ops: string[] = [];
 
   for (const [, todoDatum] of add) {

@@ -1,5 +1,5 @@
 import { buildTodoDatum, generateHash } from '../../src/builders';
-import { todoDirFor } from '../../src/io';
+import { todoDirFor, todoFilePathFor } from '../../src/io';
 import TodoMatcher from '../../src/todo-matcher';
 import {
   LintMessage,
@@ -52,6 +52,23 @@ export function buildMaybeTodos(
 export function buildMaybeTodosFromFixture(baseDir: string, fixtureName: string): Set<TodoDataV2> {
   const fixture = getFixture(fixtureName, baseDir, false);
   return buildMaybeTodos(baseDir, fixture);
+}
+
+export function buildMaybeTodosFromFixtureAsMap(
+  baseDir: string,
+  fixtureName: string
+): Map<TodoFilePathHash, TodoDataV2> {
+  const maybeTodos = buildMaybeTodosFromFixture(baseDir, fixtureName);
+
+  return [...maybeTodos].reduce((map: Map<TodoFilePathHash, TodoDataV2>, todoDatum: TodoDataV2) => {
+    const todoFilePathHash = todoFilePathFor(todoDatum);
+
+    if (!map.has(todoFilePathHash)) {
+      map.set(todoFilePathHash, todoDatum);
+    }
+
+    return map;
+  }, new Map());
 }
 
 export function buildExistingTodos(
