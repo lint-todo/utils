@@ -6,7 +6,7 @@ import { existsSync, readFileSync, appendFileSync, writeFileSync, ensureFileSync
 import { FilePath, TodoDataV2, TodoBatchCounts, TodoBatches, WriteTodoOptions } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
-import { buildFromTodoOperations, buildTodoOperations, generateHash } from './builders';
+import { buildFromTodoOperations, buildTodoOperations } from './builders';
 
 /**
  * Determines if the .lint-todo storage file exists.
@@ -39,18 +39,6 @@ export function ensureTodoStorageFile(baseDir: string): string {
  */
 export function getTodoStorageFilePath(baseDir: string): string {
   return posix.join(baseDir, '.lint-todo');
-}
-
-/**
- * Generates a unique filename for a todo lint data.
- *
- * @param todoData - The linting data for an individual violation.
- * @returns - The todo file name for a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2} object.
- */
-export function todoFileNameFor(todoData: TodoDataV2): string {
-  const fileContentsHash = `${todoData.engine}${todoData.ruleId}${todoData.range.start.line}${todoData.range.start.column}`;
-
-  return generateHash(fileContentsHash, 'sha256').slice(0, 8);
 }
 
 export function readTodoStorageFile(todoStorageFilePath: string): string[] {
@@ -135,12 +123,14 @@ export function readTodosForFilePath(
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @returns An array of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}
  */
-export function readTodoData(baseDir: string): TodoDataV2[] {
-  return [...readTodos(baseDir).values()].reduce(
-    (matcherResults: TodoDataV2[], matcher: TodoMatcher) => {
-      return [...matcherResults, ...matcher.unprocessed];
-    },
-    []
+export function readTodoData(baseDir: string): Set<TodoDataV2> {
+  return new Set(
+    [...readTodos(baseDir).values()].reduce(
+      (matcherResults: TodoDataV2[], matcher: TodoMatcher) => {
+        return [...matcherResults, ...matcher.unprocessed];
+      },
+      []
+    )
   );
 }
 

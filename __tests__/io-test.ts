@@ -79,7 +79,7 @@ describe('io', () => {
       const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'));
 
       expect(addedCount).toEqual(18);
-      expect(readTodoData(tmp)).toHaveLength(18);
+      expect(readTodoData(tmp).size).toEqual(18);
     });
 
     it("generates todos only if previous todo doesn't exist", async () => {
@@ -122,13 +122,13 @@ describe('io', () => {
       const { addedCount } = writeTodos(tmp, buildMaybeTodos(tmp, initialTodos));
 
       expect(addedCount).toEqual(2);
-      expect(readTodoData(tmp)).toHaveLength(2);
+      expect(readTodoData(tmp).size).toEqual(2);
 
       writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'));
 
       const subsequentTodos = readTodoData(tmp);
 
-      expect(subsequentTodos).toHaveLength(18);
+      expect(subsequentTodos.size).toEqual(18);
     });
 
     it('removes old todos if todos no longer contains violations', async () => {
@@ -137,14 +137,14 @@ describe('io', () => {
       const initialTodos = readTodoData(tmp);
 
       expect(addedCount).toEqual(18);
-      expect(initialTodos).toHaveLength(18);
+      expect(initialTodos.size).toEqual(18);
 
       const [firstHalf] = chunk(fixture, 3);
       const { removedCount } = writeTodos(tmp, new Set(firstHalf));
       const subsequentTodos = readTodoData(tmp);
 
       expect(removedCount).toEqual(15);
-      expect(subsequentTodos).toHaveLength(3);
+      expect(subsequentTodos.size).toEqual(3);
     });
 
     it('does not remove old todos if todos no longer contains violations if shouldRemove returns false', async () => {
@@ -155,7 +155,7 @@ describe('io', () => {
       const initialFiles = readTodoData(tmp);
 
       expect(addedCount).toEqual(18);
-      expect(initialFiles).toHaveLength(18);
+      expect(initialFiles.size).toEqual(18);
 
       const [firstHalf] = chunk(fixture, 3);
 
@@ -164,7 +164,7 @@ describe('io', () => {
       const subsequentFiles = readTodoData(tmp);
 
       expect(removedCount).toEqual(0);
-      expect(subsequentFiles).toHaveLength(18);
+      expect(subsequentFiles.size).toEqual(18);
     });
   });
 
@@ -175,13 +175,9 @@ describe('io', () => {
       });
 
       expect(addedCount).toEqual(3);
-      expect(readTodoData(tmp)).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
         Array [
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -193,15 +189,9 @@ describe('io', () => {
                 "line": 25,
               },
             },
-            "ruleId": "no-prototype-builtins",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -213,15 +203,9 @@ describe('io', () => {
                 "line": 26,
               },
             },
-            "ruleId": "no-prototype-builtins",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -233,9 +217,7 @@ describe('io', () => {
                 "line": 32,
               },
             },
-            "ruleId": "no-prototype-builtins",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
         ]
       `);
@@ -247,13 +229,9 @@ describe('io', () => {
       });
 
       expect(addedCount).toEqual(3);
-      expect(readTodoData(tmp)).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
         Array [
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -265,15 +243,9 @@ describe('io', () => {
                 "line": 25,
               },
             },
-            "ruleId": "no-prototype-builtins",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -285,15 +257,9 @@ describe('io', () => {
                 "line": 26,
               },
             },
-            "ruleId": "no-prototype-builtins",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -305,9 +271,7 @@ describe('io', () => {
                 "line": 32,
               },
             },
-            "ruleId": "no-prototype-builtins",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
         ]
       `);
@@ -322,13 +286,9 @@ describe('io', () => {
         removedCount: 1,
         stableCount: 2,
       });
-      expect(readTodoData(tmp)).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
         Array [
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -340,15 +300,9 @@ describe('io', () => {
                 "line": 25,
               },
             },
-            "ruleId": "no-prototype-builtins",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -360,15 +314,9 @@ describe('io', () => {
                 "line": 26,
               },
             },
-            "ruleId": "no-prototype-builtins",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -380,9 +328,7 @@ describe('io', () => {
                 "line": 50,
               },
             },
-            "ruleId": "no-unused-vars",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
         ]
       `);
@@ -394,13 +340,9 @@ describe('io', () => {
       });
 
       expect(addedCount).toEqual(3);
-      expect(readTodoData(tmp)).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
         Array [
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -412,15 +354,9 @@ describe('io', () => {
                 "line": 25,
               },
             },
-            "ruleId": "no-prototype-builtins",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -432,15 +368,9 @@ describe('io', () => {
                 "line": 26,
               },
             },
-            "ruleId": "no-prototype-builtins",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
           Object {
-            "createdDate": 1637107200000,
-            "engine": "eslint",
-            "errorDate": NaN,
-            "fileFormat": 2,
             "filePath": "app/controllers/settings.js",
             "range": Object {
               "end": Object {
@@ -452,9 +382,7 @@ describe('io', () => {
                 "line": 32,
               },
             },
-            "ruleId": "no-prototype-builtins",
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "warnDate": NaN,
           },
         ]
       `);
@@ -469,7 +397,7 @@ describe('io', () => {
 
       expect(addedCount2).toEqual(0);
       expect(removedCount).toEqual(3);
-      expect(readTodoData(tmp)).toHaveLength(0);
+      expect(readTodoData(tmp).size).toEqual(0);
     });
   });
 
@@ -484,14 +412,14 @@ describe('io', () => {
       const initialTodos = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
       const { addedCount } = writeTodos(tmp, initialTodos);
 
-      expect(readTodoData(tmp)).toHaveLength(addedCount);
+      expect(readTodoData(tmp).size).toEqual(addedCount);
     });
 
     it('can read storage file with adds and removes', () => {
       const initialTodos = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
       const { addedCount } = writeTodos(tmp, initialTodos);
 
-      expect(readTodoData(tmp)).toHaveLength(addedCount);
+      expect(readTodoData(tmp).size).toEqual(addedCount);
 
       const [firstChunk] = chunk(initialTodos, 2);
 
@@ -500,7 +428,7 @@ describe('io', () => {
       expect(readTodoStorageFile(getTodoStorageFilePath(tmp))).toHaveLength(
         addedCount + removedCount
       );
-      expect(readTodoData(tmp)).toHaveLength(2);
+      expect(readTodoData(tmp).size).toEqual(2);
     });
   });
 
