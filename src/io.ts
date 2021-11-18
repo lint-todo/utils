@@ -8,7 +8,7 @@ import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
 import { buildFromTodoOperations, buildTodoOperations } from './builders';
 
-const CONFLICT_PATTERN = /\|{7,}|<{7,}|={7,}|>{7,}/g;
+const CONFLICT_PATTERN = /\|{7,}|<{7,}|={7,}|>{7,}/;
 
 /**
  * Determines if the .lint-todo storage file exists.
@@ -91,7 +91,7 @@ export function writeTodos(
   maybeTodos: Set<TodoDataV2>,
   options?: Partial<WriteTodoOptions>
 ): TodoBatchCounts {
-  options = Object.assign({ shouldRemove: () => true, overwrite: false }, options ?? {});
+  options = Object.assign({ shouldRemove: () => true, overwrite: false }, options);
 
   const todoStorageFilePath: string = ensureTodoStorageFile(baseDir);
   const existing: Map<FilePath, TodoMatcher> = options.filePath
