@@ -3,7 +3,7 @@ import { posix } from 'path';
 import { EOL } from 'os';
 import { readFileSync, appendFileSync, writeFileSync, ensureFileSync, lstatSync } from 'fs-extra';
 
-import { FilePath, TodoDataV2, TodoBatchCounts, TodoBatches, WriteTodoOptions } from './types';
+import { FilePath, TodoData, TodoBatchCounts, TodoBatches, WriteTodoOptions } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
 import { buildFromTodoOperations, buildTodoOperations } from './builders';
@@ -50,14 +50,32 @@ export function getTodoStorageFilePath(baseDir: string): string {
   return posix.join(baseDir, '.lint-todo');
 }
 
+/**
+ * Determines if the .lint-todo storage file has conflicts.
+ *
+ * @param todoContents - The unparsed contents of the .lint-todo file.
+ * @returns true if the file has conflicts, otherwise false.
+ */
 export function hasConflicts(todoContents: string): boolean {
   return CONFLICT_PATTERN.test(todoContents);
 }
 
+/**
+ * Resolves git conflicts in todo operations by removing any lines that match conflict markers.
+ *
+ * @param operations - An array of string operations that are used to recreate todos.
+ * @returns An array of string operations excluding any operations that were identified as git conflict lines.
+ */
 export function resolveConflicts(operations: string[]): string[] {
   return operations.filter((operation) => !CONFLICT_PATTERN.test(operation));
 }
 
+/**
+ * Reads the .lint-todo storage file.
+ *
+ * @param todoStorageFilePath - The .lint-todo storage file path.
+ * @returns A array of todo operations.
+ */
 export function readTodoStorageFile(todoStorageFilePath: string): string[] {
   const todoContents = readFileSync(todoStorageFilePath, {
     encoding: 'utf-8',
@@ -82,13 +100,13 @@ export function readTodoStorageFile(todoStorageFilePath: string): string[] {
  * have a todo lint violation.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @param maybeTodos - The linting data, converted to TodoDataV2 format.
+ * @param maybeTodos - The linting data, converted to TodoData format.
  * @param options - An object containing write options.
  * @returns - The counts of added and removed todos.
  */
 export function writeTodos(
   baseDir: string,
-  maybeTodos: Set<TodoDataV2>,
+  maybeTodos: Set<TodoData>,
   options?: Partial<WriteTodoOptions>
 ): TodoBatchCounts {
   options = Object.assign({ shouldRemove: () => true, overwrite: false }, options);
@@ -146,16 +164,13 @@ export function readTodosForFilePath(
  * Reads todo files in the .lint-todo directory and returns Todo data in an array.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns An array of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}
+ * @returns An array of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoData}
  */
-export function readTodoData(baseDir: string): Set<TodoDataV2> {
+export function readTodoData(baseDir: string): Set<TodoData> {
   return new Set(
-    [...readTodos(baseDir).values()].reduce(
-      (matcherResults: TodoDataV2[], matcher: TodoMatcher) => {
-        return [...matcherResults, ...matcher.unprocessed];
-      },
-      []
-    )
+    [...readTodos(baseDir).values()].reduce((matcherResults: TodoData[], matcher: TodoMatcher) => {
+      return [...matcherResults, ...matcher.unprocessed];
+    }, [])
   );
 }
 
@@ -168,7 +183,7 @@ export function readTodoData(baseDir: string): Set<TodoDataV2> {
  * @returns - An object of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L36|TodoBatches}.
  */
 export function getTodoBatches(
-  maybeTodos: Set<TodoDataV2>,
+  maybeTodos: Set<TodoData>,
   existing: Map<FilePath, TodoMatcher>,
   options: Partial<WriteTodoOptions>
 ): TodoBatches {
@@ -186,8 +201,8 @@ export function getTodoBatches(
  */
 export function applyTodoChanges(
   todoStorageFilePath: string,
-  add: Set<TodoDataV2>,
-  remove: Set<TodoDataV2>,
+  add: Set<TodoData>,
+  remove: Set<TodoData>,
   options: Partial<WriteTodoOptions>
 ): void {
   const ops = buildTodoOperations(add, remove);

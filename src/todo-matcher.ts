@@ -1,14 +1,14 @@
-import { TodoFileFormat, TodoDataV2, Operation } from './types';
+import { TodoFileFormat, TodoData, Operation } from './types';
 
 type TodoExactMatcher = {
-  match: (first: TodoDataV2, second: TodoDataV2) => boolean;
+  match: (first: TodoData, second: TodoData) => boolean;
 };
 
 const ExactMatchers = new Map<TodoFileFormat, TodoExactMatcher>([
   [
     TodoFileFormat.Version1,
     {
-      match: (todoDataToFind: TodoDataV2, todoDatum: TodoDataV2) => {
+      match: (todoDataToFind: TodoData, todoDatum: TodoData) => {
         return (
           todoDataToFind.engine === todoDatum.engine &&
           todoDataToFind.ruleId === todoDatum.ruleId &&
@@ -21,7 +21,7 @@ const ExactMatchers = new Map<TodoFileFormat, TodoExactMatcher>([
   [
     TodoFileFormat.Version2,
     {
-      match: (todoDataToFind: TodoDataV2, todoDatum: TodoDataV2) => {
+      match: (todoDataToFind: TodoData, todoDatum: TodoData) => {
         return (
           todoDataToFind.engine === todoDatum.engine &&
           todoDataToFind.ruleId === todoDatum.ruleId &&
@@ -37,25 +37,25 @@ const ExactMatchers = new Map<TodoFileFormat, TodoExactMatcher>([
 ]);
 
 export default class TodoMatcher {
-  unprocessed: Set<TodoDataV2>;
+  unprocessed: Set<TodoData>;
 
   constructor() {
     this.unprocessed = new Set();
   }
 
-  unmatched(predicate: (todoDatum: TodoDataV2) => boolean = () => false): Set<TodoDataV2> {
+  unmatched(predicate: (todoDatum: TodoData) => boolean = () => false): Set<TodoData> {
     return new Set([...this.unprocessed].filter((todoDatum) => predicate(todoDatum)));
   }
 
-  add(todoDatum: TodoDataV2): void {
+  add(todoDatum: TodoData): void {
     this.unprocessed.add(todoDatum);
   }
 
-  remove(todoDatum: TodoDataV2): void {
+  remove(todoDatum: TodoData): void {
     this.unprocessed.delete(todoDatum);
   }
 
-  addOrRemove(operation: Operation, todoDatum: TodoDataV2): void {
+  addOrRemove(operation: Operation, todoDatum: TodoData): void {
     if (operation === 'add' && !this.find2(todoDatum)) {
       this.add(todoDatum);
     }
@@ -69,19 +69,19 @@ export default class TodoMatcher {
     }
   }
 
-  find2(todoDatum: TodoDataV2): TodoDataV2 | undefined {
+  find2(todoDatum: TodoData): TodoData | undefined {
     return [...this.unprocessed].find((unprocessedTodo) =>
       ExactMatchers.get(2)?.match(unprocessedTodo, todoDatum)
     );
   }
 
   find(
-    predicate: (value: TodoDataV2, index?: number, obj?: TodoDataV2[]) => unknown
-  ): TodoDataV2 | undefined {
+    predicate: (value: TodoData, index?: number, obj?: TodoData[]) => unknown
+  ): TodoData | undefined {
     return [...this.unprocessed].find((todoDatum) => predicate(todoDatum));
   }
 
-  exactMatch(todoDataToFind: TodoDataV2): TodoDataV2 | undefined {
+  exactMatch(todoDataToFind: TodoData): TodoData | undefined {
     let found;
 
     for (const todoDatum of this.unprocessed) {
@@ -95,7 +95,7 @@ export default class TodoMatcher {
     return found;
   }
 
-  fuzzyMatch(todoDataToFind: TodoDataV2): TodoDataV2 | undefined {
+  fuzzyMatch(todoDataToFind: TodoData): TodoData | undefined {
     let found;
 
     for (const todoDatum of this.unprocessed) {

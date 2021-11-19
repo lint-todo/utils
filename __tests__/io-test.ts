@@ -10,7 +10,7 @@ import {
   writeTodos,
   getTodoConfig,
 } from '../src';
-import { FilePath, LintResult, TodoDataV2 } from '../src/types';
+import { FilePath, LintResult, TodoData } from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { getFixture } from './__utils__/get-fixture';
 import TodoMatcher from '../src/todo-matcher';
@@ -35,7 +35,7 @@ function chunk<T>(initial: Set<T>, firstChunk = 1): [Set<T>, Set<T>] {
   return [new Set(firstHalf), new Set(secondHalf)];
 }
 
-function stableTodoFragment(todoData: Set<TodoDataV2>) {
+function stableTodoFragment(todoData: Set<TodoData>) {
   return [...todoData].map((todoDatum) => {
     return {
       filePath: todoDatum.filePath,
@@ -738,7 +738,7 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
       );
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const expiredTodo: TodoDataV2 = expiredBatches
+      const expiredTodo: TodoData = expiredBatches
         .get('app/controllers/settings.js')!
         .find((todoDatum) => todoDatum.filePath)!;
 
@@ -779,7 +779,7 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         'existing-batches'
       );
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const expiredTodo: TodoDataV2 = existingBatches
+      const expiredTodo: TodoData = existingBatches
         .get('app/initializers/tracer.js')!
         .find((todoDatum) => todoDatum.filePath)!;
 
@@ -985,7 +985,7 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
 
       const existing: Map<FilePath, TodoMatcher> = readTodos(tmp);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const expiredTodo: TodoDataV2 = existing
+      const expiredTodo: TodoData = existing
         .get('app/components/foo.js')!
         .find((todoDatum) => todoDatum.filePath)!;
 
@@ -1089,7 +1089,7 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
 
       const existing: Map<FilePath, TodoMatcher> = readTodos(tmp);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const expiredTodo: TodoDataV2 = existing
+      const expiredTodo: TodoData = existing
         .get('app/components/foo.js')!
         .find((todoDatum) => todoDatum.filePath)!;
 

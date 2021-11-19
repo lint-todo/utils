@@ -1,83 +1,92 @@
 ## v10.0.0 (2021-08-15)
 
 #### :boom: Breaking Change
-* [#279](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/279) Change return value of writeTodos to object ([@scalvert](https://github.com/scalvert))
-* [#276](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/276) Change public API to take V2 format data over lint results ([@scalvert](https://github.com/scalvert))
-* [#264](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/264) Adding test cases for fuzzy matching ([@scalvert](https://github.com/scalvert))
-* [#252](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/252) Adding expanded todo batching functionality to account for fuzzy matching ([@scalvert](https://github.com/scalvert))
-* [#250](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/250) Renaming FilePath type to improve code readability ([@scalvert](https://github.com/scalvert))
+
+- [#279](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/279) Change return value of writeTodos to object ([@scalvert](https://github.com/scalvert))
+- [#276](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/276) Change public API to take V2 format data over lint results ([@scalvert](https://github.com/scalvert))
+- [#264](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/264) Adding test cases for fuzzy matching ([@scalvert](https://github.com/scalvert))
+- [#252](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/252) Adding expanded todo batching functionality to account for fuzzy matching ([@scalvert](https://github.com/scalvert))
+- [#250](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/250) Renaming FilePath type to improve code readability ([@scalvert](https://github.com/scalvert))
 
 #### :rocket: Enhancement
-* [#277](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/277) Adds match agnostic lint result identity referencing ([@scalvert](https://github.com/scalvert))
-* [#270](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/270) Adds new readTodoData API for convenience reading of TodoDataV2 ([@scalvert](https://github.com/scalvert))
-* [#264](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/264) Adding test cases for fuzzy matching ([@scalvert](https://github.com/scalvert))
-* [#257](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/257) Expands todo data into v2 format ([@scalvert](https://github.com/scalvert))
-* [#252](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/252) Adding expanded todo batching functionality to account for fuzzy matching ([@scalvert](https://github.com/scalvert))
+
+- [#277](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/277) Adds match agnostic lint result identity referencing ([@scalvert](https://github.com/scalvert))
+- [#270](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/270) Adds new readTodoData API for convenience reading of TodoData ([@scalvert](https://github.com/scalvert))
+- [#264](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/264) Adding test cases for fuzzy matching ([@scalvert](https://github.com/scalvert))
+- [#257](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/257) Expands todo data into v2 format ([@scalvert](https://github.com/scalvert))
+- [#252](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/252) Adding expanded todo batching functionality to account for fuzzy matching ([@scalvert](https://github.com/scalvert))
 
 #### :bug: Bug Fix
-* [#269](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/269) Converts the remove Set back to a Map, which is required for consumers ([@scalvert](https://github.com/scalvert))
-* [#268](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/268) Adds missing export to public API ([@scalvert](https://github.com/scalvert))
+
+- [#269](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/269) Converts the remove Set back to a Map, which is required for consumers ([@scalvert](https://github.com/scalvert))
+- [#268](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/268) Adds missing export to public API ([@scalvert](https://github.com/scalvert))
 
 #### :house: Internal
-* [#250](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/250) Renaming FilePath type to improve code readability ([@scalvert](https://github.com/scalvert))
+
+- [#250](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/250) Renaming FilePath type to improve code readability ([@scalvert](https://github.com/scalvert))
 
 #### Committers: 1
+
 - Steve Calvert ([@scalvert](https://github.com/scalvert))
 
-
 ## v9.1.2 (2021-06-10)
-
 
 ## v9.1.1 (2021-06-10)
 
 #### :bug: Bug Fix
-* [#247](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/247) Exporting new date-utils APIs ([@scalvert](https://github.com/scalvert))
+
+- [#247](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/247) Exporting new date-utils APIs ([@scalvert](https://github.com/scalvert))
 
 #### Committers: 1
-- Steve Calvert ([@scalvert](https://github.com/scalvert))
 
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
 
 ## v9.1.0 (2021-06-10)
 
 #### :rocket: Enhancement
-* [#242](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/242) Adds new validateConfig function ([@scalvert](https://github.com/scalvert))
-* [#238](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/238) Adds new date utils: differenceInDays and format ([@scalvert](https://github.com/scalvert))
+
+- [#242](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/242) Adds new validateConfig function ([@scalvert](https://github.com/scalvert))
+- [#238](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/238) Adds new date utils: differenceInDays and format ([@scalvert](https://github.com/scalvert))
 
 #### Committers: 1
-- Steve Calvert ([@scalvert](https://github.com/scalvert))
 
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
 
 ## v9.0.1 (2021-06-10)
 
 #### :bug: Bug Fix
-* [#237](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/237) Tweak `getDatePart` to use UTC date ([@rwjblue](https://github.com/rwjblue))
+
+- [#237](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/237) Tweak `getDatePart` to use UTC date ([@rwjblue](https://github.com/rwjblue))
 
 #### Committers: 2
+
 - Robert Jackson ([@rwjblue](https://github.com/rwjblue))
 - [@dependabot-preview[bot]](https://github.com/apps/dependabot-preview)
-
 
 ## v9.0.0 (2021-06-08)
 
 #### :boom: Breaking Change
-* [#213](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/213) Extends todo configuration to support configuring days to decay by rule ID. ([@scalvert](https://github.com/scalvert))
-* [#212](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/212) Removes unsued APIs for write/ensure todo config ([@scalvert](https://github.com/scalvert))
+
+- [#213](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/213) Extends todo configuration to support configuring days to decay by rule ID. ([@scalvert](https://github.com/scalvert))
+- [#212](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/212) Removes unsued APIs for write/ensure todo config ([@scalvert](https://github.com/scalvert))
 
 #### :memo: Documentation
-* [#225](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/225) Update docs with new getTodoConfig API changes ([@scalvert](https://github.com/scalvert))
+
+- [#225](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/225) Update docs with new getTodoConfig API changes ([@scalvert](https://github.com/scalvert))
 
 #### Committers: 1
-- Steve Calvert ([@scalvert](https://github.com/scalvert))
 
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
 
 ## v8.1.0 (2021-05-04)
 
 #### :rocket: Enhancement
-* [#185](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/185) Adding expired batch to getTodoBatches ([@scalvert](https://github.com/scalvert))
+
+- [#185](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/185) Adding expired batch to getTodoBatches ([@scalvert](https://github.com/scalvert))
 
 #### Committers: 1
-- Steve Calvert ([@scalvert](https://github.com/scalvert))
 
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
 
 ## v8.0.0 (2021-03-09)
 

@@ -25,10 +25,10 @@ export interface GenericLintData {
 export type FilePath = string;
 
 export type TodoBatches = {
-  add: Set<TodoDataV2>;
-  expired: Set<TodoDataV2>;
-  stable: Set<TodoDataV2>;
-  remove: Set<TodoDataV2>;
+  add: Set<TodoData>;
+  expired: Set<TodoData>;
+  stable: Set<TodoData>;
+  remove: Set<TodoData>;
 };
 
 export enum TodoFileFormat {
@@ -38,7 +38,7 @@ export enum TodoFileFormat {
 
 export type Operation = 'add' | 'remove';
 
-export interface TodoDataV2 {
+export interface TodoData {
   engine: 'eslint' | 'ember-template-lint' | string;
   filePath: string;
   ruleId: string;
@@ -51,7 +51,7 @@ export interface TodoDataV2 {
   originalLintResult?: any;
 }
 
-export type TodoDates = Pick<TodoDataV2, 'createdDate' | 'errorDate' | 'warnDate'>;
+export type TodoDates = Pick<TodoData, 'createdDate' | 'errorDate' | 'warnDate'>;
 
 export type Range = {
   start: {
@@ -104,6 +104,6 @@ export interface TodoConfigByEngine {
 export interface WriteTodoOptions {
   filePath: string;
   todoConfig: TodoConfig;
-  shouldRemove: (todoDatum: TodoDataV2) => boolean;
+  shouldRemove: (todoDatum: TodoData) => boolean;
   overwrite: boolean;
 }

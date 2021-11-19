@@ -1,8 +1,8 @@
-import { TodoDataV2, getDatePart, getSeverity, Severity } from '../src';
+import { TodoData, getDatePart, getSeverity, Severity } from '../src';
 import { subDays, addDays } from 'date-fns';
 
 describe('getSeverity', () => {
-  let todo: TodoDataV2;
+  let todo: TodoData;
 
   beforeEach(() => {
     todo = {

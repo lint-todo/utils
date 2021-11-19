@@ -8,7 +8,7 @@ import {
   GenericLintData,
   Operation,
   TodoConfig,
-  TodoDataV2,
+  TodoData,
   TodoDates,
   TodoFileFormat,
 } from './types';
@@ -79,7 +79,7 @@ export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath,
   return existingTodos;
 }
 
-export function buildTodoOperations(add: Set<TodoDataV2>, remove: Set<TodoDataV2>): string {
+export function buildTodoOperations(add: Set<TodoData>, remove: Set<TodoData>): string {
   if (add.size === 0 && remove.size === 0) {
     return '';
   }
@@ -97,7 +97,7 @@ export function buildTodoOperations(add: Set<TodoDataV2>, remove: Set<TodoDataV2
   return ops.join(EOL) + EOL;
 }
 
-export function toOperation(operation: Operation, todoDatum: TodoDataV2): string {
+export function toOperation(operation: Operation, todoDatum: TodoData): string {
   return [
     operation,
     todoDatum.engine,
@@ -116,26 +116,26 @@ export function toOperation(operation: Operation, todoDatum: TodoDataV2): string
 }
 
 /**
- * Adapts a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} to a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}. FilePaths are absolute
+ * Adapts a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} to a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoData}. FilePaths are absolute
  * when received from a lint result, so they're converted to relative paths for stability in
  * serializing the contents to disc.
  *
  * @param lintResult - The lint result object.
  * @param lintMessage - A lint message object representing a specific violation for a file.
  * @param todoConfig - An object containing the warn or error days, in integers.
- * @returns - A {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2} object.
+ * @returns - A {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoData} object.
  */
 export function buildTodoDatum(
   baseDir: string,
   genericLintData: GenericLintData,
   todoConfig?: TodoConfig
-): TodoDataV2 {
+): TodoData {
   // Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
   // provided that the fix is landed on the supported node versions of this lib
   const filePath = isAbsolute(genericLintData.filePath)
     ? relative(baseDir, genericLintData.filePath)
     : genericLintData.filePath;
-  const todoDatum: TodoDataV2 = Object.assign(
+  const todoDatum: TodoData = Object.assign(
     genericLintData,
     {
       source: generateHash(genericLintData.source),

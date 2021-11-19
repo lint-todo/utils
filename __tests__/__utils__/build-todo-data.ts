@@ -7,7 +7,7 @@ import {
   Location,
   Range,
   TodoConfig,
-  TodoDataV2,
+  TodoData,
 } from '../../src/types';
 import { getFixture } from './get-fixture';
 import { updatePaths } from './update-path';
@@ -18,7 +18,7 @@ export function buildMaybeTodos(
   baseDir: string,
   lintResults: LintResult[],
   todoConfig?: TodoConfig
-): Set<TodoDataV2> {
+): Set<TodoData> {
   const results = updatePaths(baseDir, lintResults).filter((result) => result.messages.length > 0);
 
   const todoData = results.reduce((converted, lintResult) => {
@@ -43,12 +43,12 @@ export function buildMaybeTodos(
     });
 
     return converted;
-  }, new Set<TodoDataV2>());
+  }, new Set<TodoData>());
 
   return todoData;
 }
 
-export function buildMaybeTodosFromFixture(baseDir: string, fixtureName: string): Set<TodoDataV2> {
+export function buildMaybeTodosFromFixture(baseDir: string, fixtureName: string): Set<TodoData> {
   const fixture = getFixture(fixtureName, baseDir, false);
   return buildMaybeTodos(baseDir, fixture);
 }
