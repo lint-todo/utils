@@ -1,6 +1,7 @@
 export { buildTodoDatum } from './builders';
 export {
   applyTodoChanges,
+  compactTodoStorageFile,
   ensureTodoStorageFile,
   hasConflicts,
   getTodoBatches,
@@ -8,9 +9,11 @@ export {
   readTodos,
   readTodosForFilePath,
   readTodoData,
+  readTodoStorageFile,
   resolveConflicts,
   todoStorageFileExists,
   writeTodos,
+  writeTodoStorageFile,
 } from './io';
 export { getTodoConfig, validateConfig } from './todo-config';
 export { getSeverity } from './get-severity';

@@ -21,10 +21,12 @@ import {
   buildExistingTodosFromFixture,
 } from './__utils__/build-todo-data';
 import {
+  compactTodoStorageFile,
   ensureTodoStorageFile,
   hasConflicts,
   readTodoStorageFile,
   resolveConflicts,
+  writeTodoStorageFile,
 } from '../src/io';
 
 function chunk<T>(initial: Set<T>, firstChunk = 1): [Set<T>, Set<T>] {
@@ -63,6 +65,64 @@ describe('io', () => {
       ensureTodoStorageFile(tmp);
 
       expect(todoStorageFileExists(tmp)).toEqual(true);
+    });
+  });
+
+  describe('compactTodoStorageFile', () => {
+    it('preserves existing file when no remove operations are present', () => {
+      const todoStorageFilePath = getTodoStorageFilePath(tmp);
+      const operations = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+      ];
+
+      writeTodoStorageFile(todoStorageFilePath, operations);
+
+      compactTodoStorageFile(tmp);
+
+      expect(readTodoStorageFile(todoStorageFilePath)).toEqual(operations);
+    });
+
+    it('compacts existing file when remove operations are present', () => {
+      const todoStorageFilePath = getTodoStorageFilePath(tmp);
+      const addOperations = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+      ];
+
+      const removeOperations = [
+        'remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+      ];
+
+      writeTodoStorageFile(todoStorageFilePath, [...addOperations, ...removeOperations]);
+
+      compactTodoStorageFile(tmp);
+
+      expect(readTodoStorageFile(todoStorageFilePath)).toEqual(addOperations);
+    });
+
+    it('compacts existing file when interleaved remove operations are present', () => {
+      const todoStorageFilePath = getTodoStorageFilePath(tmp);
+      const operations = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||tests/unit/services/insights-test.js',
+        'add|eslint|no-prototype-builtins|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||tests/unit/services/insights-test.js',
+        'remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+      ];
+
+      writeTodoStorageFile(todoStorageFilePath, operations);
+
+      compactTodoStorageFile(tmp);
+
+      expect(readTodoStorageFile(todoStorageFilePath)).toEqual([
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||tests/unit/services/insights-test.js',
+        'add|eslint|no-prototype-builtins|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||tests/unit/services/insights-test.js',
+      ]);
     });
   });
 

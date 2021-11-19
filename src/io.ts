@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { posix } from 'path';
 import { EOL } from 'os';
 import { readFileSync, appendFileSync, writeFileSync, ensureFileSync, lstatSync } from 'fs-extra';
@@ -86,10 +85,14 @@ export function readTodoStorageFile(todoStorageFilePath: string): string[] {
   if (hasConflicts(todoContents)) {
     operations = resolveConflicts(operations);
 
-    writeFileSync(todoStorageFilePath, operations.join(EOL));
+    writeTodoStorageFile(todoStorageFilePath, operations);
   }
 
   return operations.filter(Boolean);
+}
+
+export function writeTodoStorageFile(todoStorageFilePath: string, operations: string[]): void {
+  writeFileSync(todoStorageFilePath, operations.join(EOL));
 }
 
 /**
@@ -212,4 +215,19 @@ export function applyTodoChanges(
   } else {
     appendFileSync(todoStorageFilePath, ops);
   }
+}
+
+/**
+ * Compacts the .lint-todo storage file to delete all remove operations.
+ *
+ * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ */
+export function compactTodoStorageFile(baseDir: string): void {
+  const todoStorageFilePath = getTodoStorageFilePath(baseDir);
+
+  const operations = readTodoStorageFile(todoStorageFilePath).filter((operation: string) =>
+    /^add.*/.test(operation)
+  );
+
+  writeTodoStorageFile(todoStorageFilePath, operations);
 }
