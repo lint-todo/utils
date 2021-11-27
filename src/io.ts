@@ -5,7 +5,8 @@ import { readFileSync, appendFileSync, writeFileSync, ensureFileSync, lstatSync 
 import { FilePath, TodoData, TodoBatchCounts, TodoBatches, WriteTodoOptions } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
-import { buildFromTodoOperations, buildTodoOperations } from './builders';
+import { buildFromTodoOperations, buildTodoOperations, toTodoDatum } from './builders';
+import { isExpired } from './date-utils';
 
 const CONFLICT_PATTERN = /\|{7,}|<{7,}|={7,}|>{7,}/;
 
@@ -218,15 +219,39 @@ export function applyTodoChanges(
 }
 
 /**
- * Compacts the .lint-todo storage file to delete all remove operations.
+ * Compact strategy to leave only add operations in the todo storage file.
+ *
+ * @param operation - The single line operation read from the todo storage file.
+ * @returns True if the line matches an add operation, otherwise false.
+ */
+export const ADD_OPERATIONS_ONLY = (operation: string): boolean => /^add.*/.test(operation);
+
+/**
+ * Compact strategy to remove all expired operations from the todo storage file.
+ *
+ * @param operation - The single line operation read from the todo storage file.
+ * @returns True if the operation is not expired, otherwise false.
+ */
+export const EXCLUDE_EXPIRED = (operation: string): boolean => {
+  const [, todoDatum] = toTodoDatum(operation);
+
+  return !isExpired(todoDatum.errorDate);
+};
+
+/**
+ * Compacts the .lint-todo storage file based on the compact strategy.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @param compactStrategy - The strategy to use when compacting the storage file. Default: ADD_OPERATIONS_ONLY
  */
-export function compactTodoStorageFile(baseDir: string): void {
+export function compactTodoStorageFile(
+  baseDir: string,
+  compactStrategy: (operation: string) => boolean = ADD_OPERATIONS_ONLY
+): void {
   const todoStorageFilePath = getTodoStorageFilePath(baseDir);
 
-  const operations = readTodoStorageFile(todoStorageFilePath).filter((operation: string) =>
-    /^add.*/.test(operation)
+  const operations = readTodoStorageFile(todoStorageFilePath).filter((operation) =>
+    compactStrategy(operation)
   );
 
   writeTodoStorageFile(todoStorageFilePath, operations);
