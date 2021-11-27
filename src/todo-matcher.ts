@@ -1,40 +1,16 @@
-import { TodoFileFormat, TodoData, Operation } from './types';
+import { TodoData, Operation } from './types';
 
-type TodoExactMatcher = {
-  match: (first: TodoData, second: TodoData) => boolean;
-};
-
-const ExactMatchers = new Map<TodoFileFormat, TodoExactMatcher>([
-  [
-    TodoFileFormat.Version1,
-    {
-      match: (todoDataToFind: TodoData, todoDatum: TodoData) => {
-        return (
-          todoDataToFind.engine === todoDatum.engine &&
-          todoDataToFind.ruleId === todoDatum.ruleId &&
-          todoDataToFind.range.start.line === todoDatum.range.start.line &&
-          todoDataToFind.range.start.column === todoDatum.range.start.column
-        );
-      },
-    },
-  ],
-  [
-    TodoFileFormat.Version2,
-    {
-      match: (todoDataToFind: TodoData, todoDatum: TodoData) => {
-        return (
-          todoDataToFind.engine === todoDatum.engine &&
-          todoDataToFind.ruleId === todoDatum.ruleId &&
-          todoDataToFind.range.start.line === todoDatum.range.start.line &&
-          todoDataToFind.range.start.column === todoDatum.range.start.column &&
-          todoDataToFind.range.end.line === todoDatum.range.end.line &&
-          todoDataToFind.range.end.column === todoDatum.range.end.column &&
-          todoDataToFind.source === todoDatum.source
-        );
-      },
-    },
-  ],
-]);
+export function exactMatch(todoDataToFind: TodoData, todoDatum: TodoData): boolean {
+  return (
+    todoDataToFind.engine === todoDatum.engine &&
+    todoDataToFind.ruleId === todoDatum.ruleId &&
+    todoDataToFind.range.start.line === todoDatum.range.start.line &&
+    todoDataToFind.range.start.column === todoDatum.range.start.column &&
+    todoDataToFind.range.end.line === todoDatum.range.end.line &&
+    todoDataToFind.range.end.column === todoDatum.range.end.column &&
+    todoDataToFind.source === todoDatum.source
+  );
+}
 
 export default class TodoMatcher {
   unprocessed: Set<TodoData>;
@@ -70,9 +46,7 @@ export default class TodoMatcher {
   }
 
   find2(todoDatum: TodoData): TodoData | undefined {
-    return [...this.unprocessed].find((unprocessedTodo) =>
-      ExactMatchers.get(2)?.match(unprocessedTodo, todoDatum)
-    );
+    return [...this.unprocessed].find((unprocessedTodo) => exactMatch(unprocessedTodo, todoDatum));
   }
 
   find(
@@ -85,7 +59,7 @@ export default class TodoMatcher {
     let found;
 
     for (const todoDatum of this.unprocessed) {
-      if (ExactMatchers.get(todoDatum.fileFormat)?.match(todoDataToFind, todoDatum)) {
+      if (exactMatch(todoDataToFind, todoDatum)) {
         found = todoDatum;
         this.unprocessed.delete(todoDatum);
         break;
