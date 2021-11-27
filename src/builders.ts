@@ -21,53 +21,15 @@ export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath,
   const existingTodos = new Map<FilePath, TodoMatcher>();
 
   for (const todoOperation of todoOperations) {
-    const [
-      operation,
-      engine,
-      ruleId,
-      line,
-      column,
-      endLine,
-      endColumn,
-      source,
-      fileFormat,
-      createdDate,
-      warnDate,
-      errorDate,
-      ...filePathSegments
-    ] = todoOperation.split(SEPARATOR);
+    const [operation, todoDatum] = toTodoDatum(todoOperation);
 
-    // The only case where we need to join back on the separator is when the filePath itself
-    // contains a pipe ('|') char. The vast majority of normal filePaths will simply join without
-    // the separator.
-    const filePath = filePathSegments.join(SEPARATOR);
-
-    if (!existingTodos.has(filePath)) {
-      existingTodos.set(filePath, new TodoMatcher());
+    if (!existingTodos.has(todoDatum.filePath)) {
+      existingTodos.set(todoDatum.filePath, new TodoMatcher());
     }
 
-    const matcher = existingTodos.get(filePath);
+    const matcher = existingTodos.get(todoDatum.filePath);
 
-    matcher?.addOrRemove(<Operation>operation, {
-      engine,
-      ruleId,
-      filePath,
-      fileFormat: Number.parseInt(fileFormat, 10),
-      range: {
-        start: {
-          line: Number.parseInt(line, 10),
-          column: Number.parseInt(column, 10),
-        },
-        end: {
-          line: Number.parseInt(endLine, 10),
-          column: Number.parseInt(endColumn, 10),
-        },
-      },
-      source,
-      createdDate: Number.parseInt(createdDate, 10),
-      warnDate: warnDate ? Number.parseInt(warnDate, 10) : undefined,
-      errorDate: errorDate ? Number.parseInt(errorDate, 10) : undefined,
-    });
+    matcher?.addOrRemove(operation, todoDatum);
   }
 
   for (const [filePath, matcher] of existingTodos.entries()) {
@@ -95,6 +57,53 @@ export function buildTodoOperations(add: Set<TodoData>, remove: Set<TodoData>): 
   }
 
   return ops.join(EOL) + EOL;
+}
+
+export function toTodoDatum(todoOperation: string): [Operation, TodoData] {
+  const [
+    operation,
+    engine,
+    ruleId,
+    line,
+    column,
+    endLine,
+    endColumn,
+    source,
+    fileFormat,
+    createdDate,
+    warnDate,
+    errorDate,
+    ...filePathSegments
+  ] = todoOperation.split(SEPARATOR);
+
+  // The only case where we need to join back on the separator is when the filePath itself
+  // contains a pipe ('|') char. The vast majority of normal filePaths will simply join without
+  // the separator.
+  const filePath = filePathSegments.join(SEPARATOR);
+
+  return [
+    <Operation>operation,
+    {
+      engine,
+      ruleId,
+      filePath,
+      fileFormat: Number.parseInt(fileFormat, 10),
+      range: {
+        start: {
+          line: Number.parseInt(line, 10),
+          column: Number.parseInt(column, 10),
+        },
+        end: {
+          line: Number.parseInt(endLine, 10),
+          column: Number.parseInt(endColumn, 10),
+        },
+      },
+      source,
+      createdDate: Number.parseInt(createdDate, 10),
+      warnDate: warnDate ? Number.parseInt(warnDate, 10) : undefined,
+      errorDate: errorDate ? Number.parseInt(errorDate, 10) : undefined,
+    },
+  ];
 }
 
 export function toOperation(operation: Operation, todoDatum: TodoData): string {
