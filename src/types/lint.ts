@@ -25,8 +25,8 @@ export interface TemplateLintMessage {
   message: string;
   line: number;
   column: number;
-  endLine: number;
-  endColumn: number;
+  endLine?: number;
+  endColumn?: number;
   source: string;
 }
 
