@@ -105,5 +105,4 @@ export interface WriteTodoOptions {
   filePath: string;
   todoConfig: TodoConfig;
   shouldRemove: (todoDatum: TodoData) => boolean;
-  overwrite: boolean;
 }

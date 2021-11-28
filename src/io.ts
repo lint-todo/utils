@@ -121,7 +121,7 @@ export function writeTodos(
     : readTodos(baseDir);
   const { add, remove, stable, expired } = getTodoBatches(maybeTodos, existing, options);
 
-  applyTodoChanges(todoStorageFilePath, add, remove, options);
+  applyTodoChanges(todoStorageFilePath, add, remove);
 
   return {
     addedCount: add.size,
@@ -206,16 +206,11 @@ export function getTodoBatches(
 export function applyTodoChanges(
   todoStorageFilePath: string,
   add: Set<TodoData>,
-  remove: Set<TodoData>,
-  options: Partial<WriteTodoOptions>
+  remove: Set<TodoData>
 ): void {
   const ops = buildTodoOperations(add, remove);
 
-  if (options.overwrite) {
-    writeFileSync(todoStorageFilePath, ops);
-  } else {
-    appendFileSync(todoStorageFilePath, ops);
-  }
+  appendFileSync(todoStorageFilePath, ops);
 }
 
 /**

@@ -14,6 +14,8 @@ export {
   todoStorageFileExists,
   writeTodos,
   writeTodoStorageFile,
+  ADD_OPERATIONS_ONLY,
+  EXCLUDE_EXPIRED,
 } from './io';
 export { getTodoConfig, validateConfig } from './todo-config';
 export { getSeverity } from './get-severity';
