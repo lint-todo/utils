@@ -20,7 +20,6 @@ describe('getSeverity', () => {
         },
       },
       source: '',
-      fileFormat: 2,
 
       createdDate: getDatePart(new Date()).getTime(),
     };

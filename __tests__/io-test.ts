@@ -72,8 +72,8 @@ describe('io', () => {
     it('preserves existing file when no remove operations are present', () => {
       const todoStorageFilePath = getTodoStorageFilePath(tmp);
       const operations = [
-        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
       ];
 
       writeTodoStorageFile(todoStorageFilePath, operations);
@@ -86,13 +86,13 @@ describe('io', () => {
     it('compacts existing file when remove operations are present', () => {
       const todoStorageFilePath = getTodoStorageFilePath(tmp);
       const addOperations = [
-        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
       ];
 
       const removeOperations = [
-        'remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
       ];
 
       writeTodoStorageFile(todoStorageFilePath, [...addOperations, ...removeOperations]);
@@ -105,12 +105,12 @@ describe('io', () => {
     it('compacts existing file when interleaved remove operations are present', () => {
       const todoStorageFilePath = getTodoStorageFilePath(tmp);
       const operations = [
-        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||tests/unit/services/insights-test.js',
-        'add|eslint|no-prototype-builtins|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||tests/unit/services/insights-test.js',
-        'remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+        'add|eslint|no-prototype-builtins|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+        'remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
       ];
 
       writeTodoStorageFile(todoStorageFilePath, operations);
@@ -118,30 +118,30 @@ describe('io', () => {
       compactTodoStorageFile(tmp);
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual([
-        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||tests/unit/services/insights-test.js',
-        'add|eslint|no-prototype-builtins|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||tests/unit/services/insights-test.js',
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+        'add|eslint|no-prototype-builtins|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
       ]);
     });
   });
 
   describe('hasConflicts', () => {
     it('returns false if no conflicts are detected', () => {
-      const noConflicts = `add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
-add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
+      const noConflicts = `add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
+add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
       `;
 
       expect(hasConflicts(noConflicts)).toEqual(false);
     });
 
     it('returns true if conflicts are detected', () => {
-      const conflicts = `add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
-add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
+      const conflicts = `add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
+add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
 <<<<<<< .lint-todo
-add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
+add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
 =======
-remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js
+remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
 >>>>>>> .lint-todo
       `;
 
@@ -152,8 +152,8 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
   describe('resolveConflicts', () => {
     it('does not change operations when no conflicts are present', () => {
       const operations = [
-        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
       ];
 
       expect(resolveConflicts(operations)).toEqual(operations);
@@ -161,20 +161,20 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
 
     it('resolves conflicts when detected', () => {
       const operations = [
-        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
         '<<<<<<< .lint-todo',
-        'add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
         '=======',
-        'remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
         '>>>>>>> .lint-todo',
       ];
 
       expect(resolveConflicts(operations)).toEqual([
-        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
-        'remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
       ]);
     });
   });

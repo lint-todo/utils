@@ -31,11 +31,6 @@ export type TodoBatches = {
   remove: Set<TodoData>;
 };
 
-export enum TodoFileFormat {
-  Version1 = 1,
-  Version2 = 2,
-}
-
 export type Operation = 'add' | 'remove';
 
 export interface TodoData {
@@ -44,7 +39,6 @@ export interface TodoData {
   ruleId: string;
   range: Range;
   createdDate: number;
-  fileFormat: TodoFileFormat;
   source: string;
   warnDate?: number;
   errorDate?: number;

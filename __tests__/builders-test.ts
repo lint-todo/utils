@@ -201,7 +201,6 @@ describe('builders', () => {
         Object {
           "createdDate": 1424649600000,
           "engine": "eslint",
-          "fileFormat": 2,
           "filePath": "app/components/foo.js",
           "originalLintResult": Object {
             "fake": true,
@@ -226,7 +225,7 @@ describe('builders', () => {
   describe('buildFromOperations', () => {
     it('builds single todo from single add', () => {
       const todoOperations: string[] = [
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
       ];
 
       const todos = buildFromTodoOperations(todoOperations);
@@ -240,7 +239,6 @@ describe('builders', () => {
                 "createdDate": 1629331200000,
                 "engine": "ember-template-lint",
                 "errorDate": 2493334800000,
-                "fileFormat": 2,
                 "filePath": "addon/templates/components/foo.hbs",
                 "range": Object {
                   "end": Object {
@@ -264,7 +262,7 @@ describe('builders', () => {
 
     it('builds single todo from single add with pipes in filePath', () => {
       const todoOperations: string[] = [
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/fo|o.hbs',
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/fo|o.hbs',
       ];
 
       const todos = buildFromTodoOperations(todoOperations);
@@ -278,7 +276,6 @@ describe('builders', () => {
                 "createdDate": 1629331200000,
                 "engine": "ember-template-lint",
                 "errorDate": 2493334800000,
-                "fileFormat": 2,
                 "filePath": "addon/templates/components/fo|o.hbs",
                 "range": Object {
                   "end": Object {
@@ -302,8 +299,8 @@ describe('builders', () => {
 
     it('builds single todo from multiple identical adds', () => {
       const todoOperations: string[] = [
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
       ];
 
       expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`
@@ -314,7 +311,6 @@ describe('builders', () => {
                 "createdDate": 1629331200000,
                 "engine": "ember-template-lint",
                 "errorDate": 2493334800000,
-                "fileFormat": 2,
                 "filePath": "addon/templates/components/foo.hbs",
                 "range": Object {
                   "end": Object {
@@ -338,8 +334,8 @@ describe('builders', () => {
 
     it('builds empty todos from single add and remove', () => {
       const todoOperations: string[] = [
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
       ];
 
       expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`Map {}`);
@@ -347,9 +343,9 @@ describe('builders', () => {
 
     it('builds empty todos from single add and multiple identical removes', () => {
       const todoOperations: string[] = [
-        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
-        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|2|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
+        'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
       ];
 
       expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`Map {}`);
@@ -368,12 +364,12 @@ describe('builders', () => {
       const ops = buildTodoOperations(todos, new Set());
 
       expect(ops).toMatchInlineSnapshot(`
-        "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
-        add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
-        add|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
-        add|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
-        add|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
-        add|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
+        "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
         "
       `);
     });
@@ -383,18 +379,18 @@ describe('builders', () => {
       const ops = buildTodoOperations(todos, todos);
 
       expect(ops).toMatchInlineSnapshot(`
-        "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
-        add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
-        add|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
-        add|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
-        add|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
-        add|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
-        remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
-        remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
-        remove|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/controllers/settings.js
-        remove|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
-        remove|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
-        remove|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|2|1424649600000|||app/initializers/tracer.js
+        "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        add|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        add|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        remove|eslint|no-prototype-builtins|32|34|32|48|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/controllers/settings.js
+        remove|eslint|no-redeclare|1|11|1|17|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        remove|eslint|no-redeclare|1|19|1|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
+        remove|eslint|no-redeclare|1|119|1|133|da39a3ee5e6b4b0d3255bfef95601890afd80709|1424649600000|||app/initializers/tracer.js
         "
       `);
     });

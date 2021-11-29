@@ -10,7 +10,6 @@ import {
   TodoConfig,
   TodoData,
   TodoDates,
-  TodoFileFormat,
 } from './types';
 import { getDatePart } from './date-utils';
 import TodoMatcher from './todo-matcher';
@@ -69,7 +68,6 @@ export function toTodoDatum(todoOperation: string): [Operation, TodoData] {
     endLine,
     endColumn,
     source,
-    fileFormat,
     createdDate,
     warnDate,
     errorDate,
@@ -87,7 +85,6 @@ export function toTodoDatum(todoOperation: string): [Operation, TodoData] {
       engine,
       ruleId,
       filePath,
-      fileFormat: Number.parseInt(fileFormat, 10),
       range: {
         start: {
           line: Number.parseInt(line, 10),
@@ -116,7 +113,6 @@ export function toOperation(operation: Operation, todoDatum: TodoData): string {
     todoDatum.range.end.line,
     todoDatum.range.end.column,
     todoDatum.source,
-    todoDatum.fileFormat,
     todoDatum.createdDate,
     todoDatum.warnDate,
     todoDatum.errorDate,
@@ -149,7 +145,6 @@ export function buildTodoDatum(
     {
       source: generateHash(genericLintData.source),
       filePath: slash(filePath),
-      fileFormat: TodoFileFormat.Version2,
     },
     getTodoDates(genericLintData.ruleId, todoConfig)
   );
