@@ -1,5 +1,6 @@
 import { posix } from 'path';
 import { EOL } from 'os';
+import { lockSync } from 'proper-lockfile';
 import { readFileSync, appendFileSync, writeFileSync, ensureFileSync, lstatSync } from 'fs-extra';
 
 import { FilePath, TodoData, TodoBatchCounts, TodoBatches, WriteTodoOptions } from './types';
@@ -92,8 +93,18 @@ export function readTodoStorageFile(todoStorageFilePath: string): string[] {
   return operations.filter(Boolean);
 }
 
+/**
+ * Writes the operations to the .lint-todo storage file to the path provided by todoStorageFilePath.
+ *
+ * @param todoStorageFilePath - The .lint-todo storage file path.
+ * @param operations - An array of string operations that are used to recreate todos.
+ */
 export function writeTodoStorageFile(todoStorageFilePath: string, operations: string[]): void {
+  const release = lockStorageFile(todoStorageFilePath);
+
   writeFileSync(todoStorageFilePath, operations.join(EOL));
+
+  release();
 }
 
 /**
@@ -209,8 +220,11 @@ export function applyTodoChanges(
   remove: Set<TodoData>
 ): void {
   const ops = buildTodoOperations(add, remove);
+  const release = lockStorageFile(todoStorageFilePath);
 
   appendFileSync(todoStorageFilePath, ops);
+
+  release();
 }
 
 /**
@@ -250,4 +264,13 @@ export function compactTodoStorageFile(
   );
 
   writeTodoStorageFile(todoStorageFilePath, operations);
+}
+
+function lockStorageFile(todoStorageFilePath: string) {
+  try {
+    return lockSync(todoStorageFilePath);
+  } catch {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    return () => {};
+  }
 }
