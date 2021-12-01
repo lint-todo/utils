@@ -1,3 +1,16 @@
+
+## v11.0.0-beta.0 (2021-12-01)
+
+#### :boom: Breaking Change
+* [#301](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/301) Implements single file todos described in #298 ([@scalvert](https://github.com/scalvert))
+
+### :house: Internal
+* [#294](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/294) Adding readme-api-generator over custom script ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v10.0.0 (2021-08-15)
 
 #### :boom: Breaking Change
