@@ -1,17 +1,21 @@
 export { buildTodoDatum } from './builders';
 export {
   applyTodoChanges,
-  ensureTodoStorageDir,
+  compactTodoStorageFile,
+  ensureTodoStorageFile,
+  hasConflicts,
   getTodoBatches,
-  getTodoStorageDirPath,
+  getTodoStorageFilePath,
   readTodos,
   readTodosForFilePath,
   readTodoData,
-  todoStorageDirExists,
-  todoDirFor,
-  todoFileNameFor,
-  todoFilePathFor,
+  readTodoStorageFile,
+  resolveConflicts,
+  todoStorageFileExists,
   writeTodos,
+  writeTodoStorageFile,
+  ADD_OPERATIONS_ONLY,
+  EXCLUDE_EXPIRED,
 } from './io';
 export { getTodoConfig, validateConfig } from './todo-config';
 export { getSeverity } from './get-severity';

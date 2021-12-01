@@ -1,81 +1,155 @@
 import { isAbsolute, relative } from 'path';
+import { EOL } from 'os';
 import slash = require('slash');
 import { createHash } from 'crypto';
 import {
   DaysToDecay,
+  FilePath,
   GenericLintData,
-  Location,
+  OperationType,
   TodoConfig,
   TodoData,
-  TodoDataV1,
-  TodoDataV2,
   TodoDates,
-  TodoFileFormat,
 } from './types';
 import { getDatePart } from './date-utils';
+import TodoMatcher from './todo-matcher';
+
+const SEPARATOR = '|';
+
+export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath, TodoMatcher> {
+  const existingTodos = new Map<FilePath, TodoMatcher>();
+
+  for (const todoOperation of todoOperations) {
+    const [operation, todoDatum] = toTodoDatum(todoOperation);
+
+    if (!existingTodos.has(todoDatum.filePath)) {
+      existingTodos.set(todoDatum.filePath, new TodoMatcher());
+    }
+
+    const matcher = existingTodos.get(todoDatum.filePath);
+
+    matcher?.addOrRemove(operation, todoDatum);
+  }
+
+  for (const [filePath, matcher] of existingTodos.entries()) {
+    if (matcher.unprocessed.size === 0) {
+      existingTodos.delete(filePath);
+    }
+  }
+
+  return existingTodos;
+}
+
+export function buildTodoOperations(add: Set<TodoData>, remove: Set<TodoData>): string {
+  if (add.size === 0 && remove.size === 0) {
+    return '';
+  }
+
+  const ops: string[] = [];
+
+  for (const todoDatum of add) {
+    ops.push(toOperation('add', todoDatum));
+  }
+
+  for (const todoDatum of remove) {
+    ops.push(toOperation('remove', todoDatum));
+  }
+
+  return ops.join(EOL) + EOL;
+}
+
+export function toTodoDatum(todoOperation: string): [OperationType, TodoData] {
+  const [
+    operation,
+    engine,
+    ruleId,
+    line,
+    column,
+    endLine,
+    endColumn,
+    source,
+    createdDate,
+    warnDate,
+    errorDate,
+    ...filePathSegments
+  ] = todoOperation.split(SEPARATOR);
+
+  // The only case where we need to join back on the separator is when the filePath itself
+  // contains a pipe ('|') char. The vast majority of normal filePaths will simply join without
+  // the separator.
+  const filePath = filePathSegments.join(SEPARATOR);
+
+  return [
+    <OperationType>operation,
+    {
+      engine,
+      ruleId,
+      filePath,
+      range: {
+        start: {
+          line: Number.parseInt(line, 10),
+          column: Number.parseInt(column, 10),
+        },
+        end: {
+          line: Number.parseInt(endLine, 10),
+          column: Number.parseInt(endColumn, 10),
+        },
+      },
+      source,
+      createdDate: Number.parseInt(createdDate, 10),
+      warnDate: warnDate ? Number.parseInt(warnDate, 10) : undefined,
+      errorDate: errorDate ? Number.parseInt(errorDate, 10) : undefined,
+    },
+  ];
+}
+
+export function toOperation(operation: OperationType, todoDatum: TodoData): string {
+  return [
+    operation,
+    todoDatum.engine,
+    todoDatum.ruleId,
+    todoDatum.range.start.line,
+    todoDatum.range.start.column,
+    todoDatum.range.end.line,
+    todoDatum.range.end.column,
+    todoDatum.source,
+    todoDatum.createdDate,
+    todoDatum.warnDate,
+    todoDatum.errorDate,
+    todoDatum.filePath,
+  ].join(SEPARATOR);
+}
 
 /**
- * Adapts a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} to a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2}. FilePaths are absolute
+ * Adapts a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} to a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoData}. FilePaths are absolute
  * when received from a lint result, so they're converted to relative paths for stability in
  * serializing the contents to disc.
  *
  * @param lintResult - The lint result object.
  * @param lintMessage - A lint message object representing a specific violation for a file.
  * @param todoConfig - An object containing the warn or error days, in integers.
- * @returns - A {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoDataV2} object.
+ * @returns - A {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoData} object.
  */
 export function buildTodoDatum(
   baseDir: string,
   genericLintData: GenericLintData,
   todoConfig?: TodoConfig
-): TodoDataV2 {
+): TodoData {
   // Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
   // provided that the fix is landed on the supported node versions of this lib
   const filePath = isAbsolute(genericLintData.filePath)
     ? relative(baseDir, genericLintData.filePath)
     : genericLintData.filePath;
-  const todoDatum: TodoDataV2 = Object.assign(
+  const todoDatum: TodoData = Object.assign(
     genericLintData,
     {
       source: generateHash(genericLintData.source),
       filePath: slash(filePath),
-      fileFormat: TodoFileFormat.Version2,
     },
     getTodoDates(genericLintData.ruleId, todoConfig)
   );
 
   return todoDatum;
-}
-
-export function normalizeToV2(todoDatum: TodoData): TodoDataV2 {
-  // if we have a range property, we're already in V2 format
-  if ('range' in todoDatum) {
-    todoDatum.fileFormat = TodoFileFormat.Version2;
-
-    return <TodoDataV2>todoDatum;
-  }
-
-  const todoDatumV1 = <TodoDataV1>todoDatum;
-
-  const todoDatumV2: TodoDataV2 = {
-    engine: todoDatumV1.engine,
-    filePath: todoDatumV1.filePath,
-    ruleId: todoDatumV1.ruleId,
-    range: getRange(todoDatumV1),
-    source: '',
-    createdDate: todoDatumV1.createdDate,
-    fileFormat: TodoFileFormat.Version1,
-  };
-
-  if (todoDatumV1.warnDate) {
-    todoDatumV2.warnDate = todoDatumV1.warnDate;
-  }
-
-  if (todoDatumV1.errorDate) {
-    todoDatumV2.errorDate = todoDatumV1.errorDate;
-  }
-
-  return todoDatumV2;
 }
 
 export function generateHash(input: string, algorithm = 'sha1'): string {
@@ -98,21 +172,6 @@ function getTodoDates(ruleId: string, todoConfig?: TodoConfig): TodoDates {
   }
 
   return todoDates;
-}
-
-function getRange(loc: Location) {
-  return {
-    start: {
-      line: loc.line,
-      column: loc.column,
-    },
-    end: {
-      // eslint-disable-next-line unicorn/no-null
-      line: loc.endLine ?? loc.line,
-      // eslint-disable-next-line unicorn/no-null
-      column: loc.endColumn ?? loc.column,
-    },
-  };
 }
 
 function getDaysToDecay(ruleId: string, todoConfig?: TodoConfig) {

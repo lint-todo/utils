@@ -12,6 +12,7 @@
     "outDir": "lib",
     "rootDir": "src",
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "paths": {
       "*": ["./types/*"]
     }
