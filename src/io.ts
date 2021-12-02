@@ -137,8 +137,8 @@ export function writeTodos(
 
   try {
     const existing: Map<FilePath, TodoMatcher> = options.filePath
-      ? readTodosForFilePath(baseDir, options.filePath)
-      : readTodos(baseDir);
+      ? readTodosForFilePath(baseDir, options.filePath, false)
+      : readTodos(baseDir, false);
     batches = getTodoBatches(maybeTodos, existing, options);
 
     applyTodoChanges(baseDir, batches.add, batches.remove, false);
@@ -154,17 +154,26 @@ export function writeTodos(
   };
 }
 
-// TODO: change from using TodoFilePathHash to just FilePath, but do that once this is all working
 /**
  * Reads all todo files in the .lint-todo directory.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L25|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
-export function readTodos(baseDir: string): Map<FilePath, TodoMatcher> {
-  const todoOperations = readTodoStorageFile(getTodoStorageFilePath(baseDir));
+export function readTodos(baseDir: string, shouldLock = true): Map<FilePath, TodoMatcher> {
+  const release =
+    shouldLock && todoStorageFileExists(baseDir)
+      ? tryLockStorageFile(baseDir)
+      : // eslint-disable-next-line @typescript-eslint/no-empty-function
+        () => {};
 
-  return buildFromTodoOperations(todoOperations);
+  try {
+    const todoOperations = readTodoStorageFile(getTodoStorageFilePath(baseDir));
+
+    return buildFromTodoOperations(todoOperations);
+  } finally {
+    release();
+  }
 }
 
 /**
@@ -176,15 +185,14 @@ export function readTodos(baseDir: string): Map<FilePath, TodoMatcher> {
  */
 export function readTodosForFilePath(
   baseDir: string,
-  filePath: string
+  filePath: string,
+  shouldLock = true
 ): Map<FilePath, TodoMatcher> {
-  const todoOperations = readFileSync(getTodoStorageFilePath(baseDir), {
-    encoding: 'utf-8',
-  }).split(EOL);
+  const existingTodos = readTodos(baseDir, shouldLock);
 
-  return buildFromTodoOperations(
-    todoOperations.filter((operation) => operation.endsWith(filePath))
-  );
+  const matcher = existingTodos.get(filePath) || new TodoMatcher();
+
+  return new Map([[filePath, matcher]]);
 }
 
 /**
@@ -272,20 +280,33 @@ export const EXCLUDE_EXPIRED = (operation: Operation): boolean => {
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param compactStrategy - The strategy to use when compacting the storage file. Default: ADD_OPERATIONS_ONLY
+ * @returns The count of compacted todos.
  */
 export function compactTodoStorageFile(
   baseDir: string,
   compactStrategy: (operation: Operation) => boolean = ADD_OPERATIONS_ONLY
-): void {
+): {
+  originalOperations: Operation[];
+  compactedOperations: Operation[];
+  compacted: number;
+} {
   const todoStorageFilePath = getTodoStorageFilePath(baseDir);
   const release = tryLockStorageFile(baseDir);
 
   try {
-    const operations = readTodoStorageFile(todoStorageFilePath).filter((operation) =>
+    const originalOperations = readTodoStorageFile(todoStorageFilePath);
+    const originalCount = originalOperations.length;
+    const compactedOperations = originalOperations.filter((operation) =>
       compactStrategy(operation)
     );
 
-    writeTodoStorageFile(todoStorageFilePath, operations);
+    writeTodoStorageFile(todoStorageFilePath, compactedOperations);
+
+    return {
+      originalOperations,
+      compactedOperations,
+      compacted: originalCount - compactedOperations.length,
+    };
   } finally {
     release();
   }
