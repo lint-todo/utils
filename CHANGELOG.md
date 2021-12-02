@@ -1,4 +1,14 @@
 
+
+## v11.0.0-beta.1 (2021-12-02)
+
+#### :rocket: Enhancement
+* [#303](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/303) chore: Add locking on reads for storage file ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v11.0.0-beta.0 (2021-12-01)
 
 #### :boom: Breaking Change
