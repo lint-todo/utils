@@ -158,6 +158,7 @@ export function writeTodos(
  * Reads all todo files in the .lint-todo directory.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
+ * @param shouldLock - True if the .lint-todo storage file should be locked, otherwise false. Default: true.
  * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L25|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
 export function readTodos(baseDir: string, shouldLock = true): Map<FilePath, TodoMatcher> {
@@ -181,6 +182,7 @@ export function readTodos(baseDir: string, shouldLock = true): Map<FilePath, Tod
  *
  * @param todoStorageDir - The .lint-todo storage directory.
  * @param filePath - The relative file path of the file to return todo items for.
+ * @param shouldLock - True if the .lint-todo storage file should be locked, otherwise false. Default: true.
  * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L25|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
 export function readTodosForFilePath(
@@ -232,7 +234,7 @@ export function getTodoBatches(
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param add - Batch of todos to add.
  * @param remove - Batch of todos to remove.
- * @param options - An object containing write options.
+ * @param shouldLock - True if the .lint-todo storage file should be locked, otherwise false. Default: true.
  */
 export function applyTodoChanges(
   baseDir: string,
