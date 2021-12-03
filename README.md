@@ -47,10 +47,10 @@ hash to identify each.</p>
 <p>Given a list of todo lint violations, this function will also delete existing files that no longer
 have a todo lint violation.</p>
 </dd>
-<dt><a href="#readTodos">readTodos(baseDir)</a> ⇒</dt>
+<dt><a href="#readTodos">readTodos(baseDir, shouldLock)</a> ⇒</dt>
 <dd><p>Reads all todo files in the .lint-todo directory.</p>
 </dd>
-<dt><a href="#readTodosForFilePath">readTodosForFilePath(todoStorageDir, filePath)</a> ⇒</dt>
+<dt><a href="#readTodosForFilePath">readTodosForFilePath(todoStorageDir, filePath, shouldLock)</a> ⇒</dt>
 <dd><p>Reads todo files in the .lint-todo directory for a specific filePath.</p>
 </dd>
 <dt><a href="#readTodoData">readTodoData(baseDir)</a> ⇒</dt>
@@ -59,7 +59,7 @@ have a todo lint violation.</p>
 <dt><a href="#getTodoBatches">getTodoBatches(maybeTodos, existing, options)</a> ⇒</dt>
 <dd><p>Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).</p>
 </dd>
-<dt><a href="#applyTodoChanges">applyTodoChanges(baseDir, add, remove, options)</a></dt>
+<dt><a href="#applyTodoChanges">applyTodoChanges(baseDir, add, remove, shouldLock)</a></dt>
 <dd><p>Applies todo changes, either adding or removing, based on batches from <code>getTodoBatches</code>.</p>
 </dd>
 <dt><a href="#ADD_OPERATIONS_ONLY">ADD_OPERATIONS_ONLY(operation)</a> ⇒</dt>
@@ -68,7 +68,7 @@ have a todo lint violation.</p>
 <dt><a href="#EXCLUDE_EXPIRED">EXCLUDE_EXPIRED(operation)</a> ⇒</dt>
 <dd><p>Compact strategy to remove all expired operations from the todo storage file.</p>
 </dd>
-<dt><a href="#compactTodoStorageFile">compactTodoStorageFile(baseDir, compactStrategy)</a></dt>
+<dt><a href="#compactTodoStorageFile">compactTodoStorageFile(baseDir, compactStrategy)</a> ⇒</dt>
 <dd><p>Compacts the .lint-todo storage file based on the compact strategy.</p>
 </dd>
 <dt><a href="#getTodoConfig">getTodoConfig(baseDir, engine, customDaysToDecay)</a> ⇒</dt>
@@ -214,19 +214,20 @@ have a todo lint violation.
 
 <a name="readTodos"></a>
 
-## readTodos(baseDir) ⇒
+## readTodos(baseDir, shouldLock) ⇒
 Reads all todo files in the .lint-todo directory.
 
 **Kind**: global function  
 **Returns**: - A [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) of [FilePath](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L25)/[TodoMatcher](https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4).  
 
-| Param | Description |
-| --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
+| Param | Default | Description |
+| --- | --- | --- |
+| baseDir |  | The base directory that contains the .lint-todo storage directory. |
+| shouldLock | <code>true</code> | True if the .lint-todo storage file should be locked, otherwise false. Default: true. |
 
 <a name="readTodosForFilePath"></a>
 
-## readTodosForFilePath(todoStorageDir, filePath) ⇒
+## readTodosForFilePath(todoStorageDir, filePath, shouldLock) ⇒
 Reads todo files in the .lint-todo directory for a specific filePath.
 
 **Kind**: global function  
@@ -236,6 +237,7 @@ Reads todo files in the .lint-todo directory for a specific filePath.
 | --- | --- |
 | todoStorageDir | The .lint-todo storage directory. |
 | filePath | The relative file path of the file to return todo items for. |
+| shouldLock | True if the .lint-todo storage file should be locked, otherwise false. Default: true. |
 
 <a name="readTodoData"></a>
 
@@ -265,17 +267,17 @@ Gets 4 maps containing todo items to add, remove, those that are expired, or tho
 
 <a name="applyTodoChanges"></a>
 
-## applyTodoChanges(baseDir, add, remove, options)
+## applyTodoChanges(baseDir, add, remove, shouldLock)
 Applies todo changes, either adding or removing, based on batches from `getTodoBatches`.
 
 **Kind**: global function  
 
-| Param | Description |
-| --- | --- |
-| baseDir | The base directory that contains the .lint-todo storage directory. |
-| add | Batch of todos to add. |
-| remove | Batch of todos to remove. |
-| options | An object containing write options. |
+| Param | Default | Description |
+| --- | --- | --- |
+| baseDir |  | The base directory that contains the .lint-todo storage directory. |
+| add |  | Batch of todos to add. |
+| remove |  | Batch of todos to remove. |
+| shouldLock | <code>true</code> | True if the .lint-todo storage file should be locked, otherwise false. Default: true. |
 
 <a name="ADD_OPERATIONS_ONLY"></a>
 
@@ -303,10 +305,11 @@ Compact strategy to remove all expired operations from the todo storage file.
 
 <a name="compactTodoStorageFile"></a>
 
-## compactTodoStorageFile(baseDir, compactStrategy)
+## compactTodoStorageFile(baseDir, compactStrategy) ⇒
 Compacts the .lint-todo storage file based on the compact strategy.
 
 **Kind**: global function  
+**Returns**: The count of compacted todos.  
 
 | Param | Description |
 | --- | --- |
