@@ -1,5 +1,8 @@
 ## v11.0.0 (2021-12-03)
 
+
+## v11.0.0 (2021-12-03)
+
 #### :boom: Breaking Change
 
 - [#301](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/301) Implements single file todos described in #298 ([@scalvert](https://github.com/scalvert))
