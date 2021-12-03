@@ -159,7 +159,7 @@ export function writeTodos(
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
  * @param shouldLock - True if the .lint-todo storage file should be locked, otherwise false. Default: true.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L25|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
+ * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L25|FilePath}/{@link https://github.com/lint-todo/utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
 export function readTodos(baseDir: string, shouldLock = true): Map<FilePath, TodoMatcher> {
   const release =
@@ -183,7 +183,7 @@ export function readTodos(baseDir: string, shouldLock = true): Map<FilePath, Tod
  * @param todoStorageDir - The .lint-todo storage directory.
  * @param filePath - The relative file path of the file to return todo items for.
  * @param shouldLock - True if the .lint-todo storage file should be locked, otherwise false. Default: true.
- * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L25|FilePath}/{@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
+ * @returns - A {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} of {@link https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L25|FilePath}/{@link https://github.com/lint-todo/utils/blob/master/src/todo-matcher.ts#L4|TodoMatcher}.
  */
 export function readTodosForFilePath(
   baseDir: string,
@@ -201,7 +201,7 @@ export function readTodosForFilePath(
  * Reads todo files in the .lint-todo directory and returns Todo data in an array.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage directory.
- * @returns An array of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoData}
+ * @returns An array of {@link https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L61|TodoData}
  */
 export function readTodoData(baseDir: string): Set<TodoData> {
   return new Set(
@@ -217,7 +217,7 @@ export function readTodoData(baseDir: string): Set<TodoData> {
  * @param maybeTodos - The linting data for violations.
  * @param existing - Existing todo lint data.
  * @param options - An object containing write options.
- * @returns - An object of {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L36|TodoBatches}.
+ * @returns - An object of {@link https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L36|TodoBatches}.
  */
 export function getTodoBatches(
   maybeTodos: Set<TodoData>,

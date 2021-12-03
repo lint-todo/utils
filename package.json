@@ -1,7 +1,7 @@
 {
-  "name": "@ember-template-lint/todo-utils",
+  "name": "@lint-todo/utils",
   "version": "11.0.0",
-  "repository": "https://github.com/ember-template-lint/ember-template-lint-todo-utils.git",
+  "repository": "https://github.com/lint-todo/utils.git",
   "license": "MIT",
   "author": "Steve Calvert <steve.calvert@gmail.com>",
   "main": "lib/index.js",

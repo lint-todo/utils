@@ -121,14 +121,14 @@ export function toOperation(operation: OperationType, todoDatum: TodoData): stri
 }
 
 /**
- * Adapts a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/lint.ts#L31|LintResult} to a {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoData}. FilePaths are absolute
+ * Adapts a {@link https://github.com/lint-todo/utils/blob/master/src/types/lint.ts#L31|LintResult} to a {@link https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L61|TodoData}. FilePaths are absolute
  * when received from a lint result, so they're converted to relative paths for stability in
  * serializing the contents to disc.
  *
  * @param lintResult - The lint result object.
  * @param lintMessage - A lint message object representing a specific violation for a file.
  * @param todoConfig - An object containing the warn or error days, in integers.
- * @returns - A {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoData} object.
+ * @returns - A {@link https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L61|TodoData} object.
  */
 export function buildTodoDatum(
   baseDir: string,

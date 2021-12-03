@@ -23,7 +23,7 @@ export default class TodoBatchGenerator {
   constructor(private options?: Partial<WriteTodoOptions>) {}
 
   /**
-   * Matches todos to their associated {@link https://github.com/ember-template-lint/ember-template-lint-todo-utils/blob/master/src/types/todo.ts#L61|TodoData} object.
+   * Matches todos to their associated {@link https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L61|TodoData} object.
    *
    * The matching algorithm uses the following logic:
    *
