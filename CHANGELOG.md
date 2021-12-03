@@ -1,5 +1,15 @@
 
 
+
+## v11.0.0 (2021-12-03)
+
+#### :memo: Documentation
+* [#304](https://github.com/ember-template-lint/ember-template-lint-todo-utils/pull/304) Fixing jsdoc for new APIs ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v11.0.0-beta.1 (2021-12-02)
 
 #### :rocket: Enhancement
