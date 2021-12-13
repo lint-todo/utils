@@ -228,7 +228,7 @@ describe('builders', () => {
         'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
       ];
 
-      const todos = buildFromTodoOperations(todoOperations);
+      const todos = buildFromTodoOperations(todoOperations, 'ember-template-lint');
 
       expect(todos.size).toEqual(1);
       expect(todos).toMatchInlineSnapshot(`
@@ -265,7 +265,7 @@ describe('builders', () => {
         'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/fo|o.hbs',
       ];
 
-      const todos = buildFromTodoOperations(todoOperations);
+      const todos = buildFromTodoOperations(todoOperations, 'ember-template-lint');
 
       expect(todos.size).toEqual(1);
       expect(todos).toMatchInlineSnapshot(`
@@ -303,7 +303,7 @@ describe('builders', () => {
         'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
       ];
 
-      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`
+      expect(buildFromTodoOperations(todoOperations, 'ember-template-lint')).toMatchInlineSnapshot(`
         Map {
           "addon/templates/components/foo.hbs" => TodoMatcher {
             "unprocessed": Set {
@@ -338,7 +338,9 @@ describe('builders', () => {
         'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
       ];
 
-      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`Map {}`);
+      expect(buildFromTodoOperations(todoOperations, 'ember-template-lint')).toMatchInlineSnapshot(
+        `Map {}`
+      );
     });
 
     it('builds empty todos from single add and multiple identical removes', () => {
@@ -348,7 +350,9 @@ describe('builders', () => {
         'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
       ];
 
-      expect(buildFromTodoOperations(todoOperations)).toMatchInlineSnapshot(`Map {}`);
+      expect(buildFromTodoOperations(todoOperations, 'ember-template-lint')).toMatchInlineSnapshot(
+        `Map {}`
+      );
     });
   });
 

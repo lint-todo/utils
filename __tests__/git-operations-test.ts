@@ -153,7 +153,7 @@ describe('git operations', () => {
 
     expect(hasConflicts(storageFileContents)).toEqual(true);
 
-    readTodoData(tmp);
+    readTodoData(tmp, { engine: 'eslint', filePath: '' });
 
     expect(hasConflicts(readTodoStorageFileContents(todoStorageFilePath))).toEqual(false);
     expect(readFileSync(todoStorageFilePath, { encoding: 'utf-8' })).toMatchInlineSnapshot(`
@@ -215,7 +215,7 @@ describe('git operations', () => {
 
     expect(hasConflicts(storageFileContents)).toEqual(true);
 
-    readTodoData(tmp);
+    readTodoData(tmp, { engine: 'eslint', filePath: '' });
 
     expect(hasConflicts(readTodoStorageFileContents(todoStorageFilePath))).toEqual(false);
     expect(readFileSync(todoStorageFilePath, { encoding: 'utf-8' })).toMatchInlineSnapshot(`

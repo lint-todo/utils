@@ -4,6 +4,7 @@ import slash = require('slash');
 import { createHash } from 'crypto';
 import {
   DaysToDecay,
+  Engine,
   FilePath,
   GenericLintData,
   OperationType,
@@ -16,11 +17,18 @@ import TodoMatcher from './todo-matcher';
 
 const SEPARATOR = '|';
 
-export function buildFromTodoOperations(todoOperations: string[]): Map<FilePath, TodoMatcher> {
+export function buildFromTodoOperations(
+  todoOperations: string[],
+  engine: Engine
+): Map<FilePath, TodoMatcher> {
   const existingTodos = new Map<FilePath, TodoMatcher>();
 
   for (const todoOperation of todoOperations) {
     const [operation, todoDatum] = toTodoDatum(todoOperation);
+
+    if (todoDatum.engine !== engine) {
+      continue;
+    }
 
     if (!existingTodos.has(todoDatum.filePath)) {
       existingTodos.set(todoDatum.filePath, new TodoMatcher());
