@@ -212,7 +212,7 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
   });
 
   describe('writeTodos', () => {
-    it("creates .lint-todo directory if one doesn't exist", async () => {
+    it("creates .lint-todo file if one doesn't exist", async () => {
       const todoFile = getTodoStorageFilePath(tmp);
 
       writeTodos(tmp, new Set(), buildWriteOptions(tmp));

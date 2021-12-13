@@ -204,7 +204,7 @@ export function readTodosForFilePath(
 }
 
 /**
- * Reads todo files in the .lint-todo directory and returns Todo data in an array.
+ * Reads todo files in the .lint-todo file and returns Todo data in an array.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage file.
  * @param options - An object containing read options.
