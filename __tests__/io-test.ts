@@ -613,6 +613,37 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
       );
       expect(readTodoData(tmp, buildReadOptions()).size).toEqual(2);
     });
+
+    it('can read storage file with engine isolation', () => {
+      const eslintTodos = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
+      const emberTemplateLintTodos = buildMaybeTodosFromFixture(
+        tmp,
+        'ember-template-lint-with-errors'
+      );
+
+      const { addedCount: eslintAddedCount } = writeTodos(
+        tmp,
+        eslintTodos,
+        buildWriteOptions(tmp, { engine: 'eslint' })
+      );
+      expect(eslintAddedCount).toEqual(18);
+
+      const { addedCount: emberTemplateLintAddedCount } = writeTodos(
+        tmp,
+        emberTemplateLintTodos,
+        buildWriteOptions(tmp, { engine: 'ember-template-lint' })
+      );
+      expect(emberTemplateLintAddedCount).toEqual(4);
+
+      expect(
+        readTodoData(
+          tmp,
+          buildReadOptions({
+            engine: 'ember-template-lint',
+          })
+        ).size
+      ).toEqual(emberTemplateLintAddedCount);
+    });
   });
 
   describe('getTodoBatches', () => {
