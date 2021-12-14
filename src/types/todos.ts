@@ -99,14 +99,27 @@ export interface TodoConfigByEngine {
 }
 
 /**
- * An optional configuration object passed to writeTodos.
+ * A configuration object passed to write todos.
  *
+ * @param engine - The engine that represents the lint too being used with todos.
  * @param filePath - The relative file path of the file to update violations for.
  * @param todoConfig - An object containing the warn or error days, in integers.
  * @param skipRemoval - Allows for skipping removal of todo files.
  */
 export interface WriteTodoOptions {
+  engine: Engine;
   filePath: string;
   todoConfig: TodoConfig;
   shouldRemove: (todoDatum: TodoData) => boolean;
+}
+
+/**
+ * A configuration object passed to read todos.
+ *
+ * @param engine - The engine that represents the lint too being used with todos.
+ * @param filePath - The relative file path of the file to update violations for.
+ */
+export interface ReadTodoOptions {
+  engine: Engine;
+  filePath: string;
 }

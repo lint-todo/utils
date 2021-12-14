@@ -10,7 +10,15 @@ import {
   writeTodos,
   getTodoConfig,
 } from '../src';
-import { FilePath, LintResult, Operation, OperationOrConflictLine, TodoData } from '../src/types';
+import {
+  FilePath,
+  LintResult,
+  Operation,
+  OperationOrConflictLine,
+  ReadTodoOptions,
+  TodoData,
+  WriteTodoOptions,
+} from '../src/types';
 import { createTmpDir } from './__utils__/tmp-dir';
 import { getFixture } from './__utils__/get-fixture';
 import TodoMatcher from '../src/todo-matcher';
@@ -45,6 +53,30 @@ function stableTodoFragment(todoData: Set<TodoData>) {
       source: todoDatum.source,
     };
   });
+}
+
+function buildWriteOptions(tmp: string, options?: Partial<WriteTodoOptions>) {
+  return Object.assign(
+    {},
+    {
+      engine: 'eslint',
+      filePath: '',
+      todoConfig: getTodoConfig(tmp, 'eslint'),
+      shouldRemove: () => true,
+    },
+    options
+  );
+}
+
+function buildReadOptions(options?: Partial<ReadTodoOptions>) {
+  return Object.assign(
+    {},
+    {
+      engine: 'eslint',
+      filePath: '',
+    },
+    options
+  );
 }
 
 jest.setTimeout(100000);
@@ -180,35 +212,29 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
   });
 
   describe('writeTodos', () => {
-    it("creates .lint-todo directory if one doesn't exist", async () => {
+    it("creates .lint-todo file if one doesn't exist", async () => {
       const todoFile = getTodoStorageFilePath(tmp);
 
-      writeTodos(tmp, new Set(), {
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      writeTodos(tmp, new Set(), buildWriteOptions(tmp));
 
       expect(existsSync(todoFile)).toEqual(true);
     });
 
     it("doesn't write files when no todos provided", async () => {
-      writeTodos(tmp, new Set(), {
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      writeTodos(tmp, new Set(), buildWriteOptions(tmp));
 
-      expect(readTodos(tmp).size).toEqual(0);
+      expect(readTodos(tmp, buildReadOptions()).size).toEqual(0);
     });
 
     it('generates todos when todos provided', async () => {
       const { addedCount } = writeTodos(
         tmp,
         buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'),
-        {
-          todoConfig: getTodoConfig(tmp, 'eslint'),
-        }
+        buildWriteOptions(tmp)
       );
 
       expect(addedCount).toEqual(18);
-      expect(readTodoData(tmp).size).toEqual(18);
+      expect(readTodoData(tmp, buildReadOptions()).size).toEqual(18);
     });
 
     it("generates todos only if previous todo doesn't exist", async () => {
@@ -248,35 +274,37 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         },
       ];
 
-      const { addedCount } = writeTodos(tmp, buildMaybeTodos(tmp, initialTodos), {
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      const { addedCount } = writeTodos(
+        tmp,
+        buildMaybeTodos(tmp, initialTodos),
+        buildWriteOptions(tmp)
+      );
 
       expect(addedCount).toEqual(2);
-      expect(readTodoData(tmp).size).toEqual(2);
+      expect(readTodoData(tmp, buildReadOptions()).size).toEqual(2);
 
-      writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'));
+      writeTodos(
+        tmp,
+        buildMaybeTodosFromFixture(tmp, 'eslint-with-errors'),
+        buildWriteOptions(tmp)
+      );
 
-      const subsequentTodos = readTodoData(tmp);
+      const subsequentTodos = readTodoData(tmp, buildReadOptions());
 
       expect(subsequentTodos.size).toEqual(18);
     });
 
     it('removes old todos if todos no longer contains violations', async () => {
       const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
-      const { addedCount } = writeTodos(tmp, fixture, {
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
-      const initialTodos = readTodoData(tmp);
+      const { addedCount } = writeTodos(tmp, fixture, buildWriteOptions(tmp));
+      const initialTodos = readTodoData(tmp, buildReadOptions());
 
       expect(addedCount).toEqual(18);
       expect(initialTodos.size).toEqual(18);
 
       const [firstHalf] = chunk(fixture, 3);
-      const { removedCount } = writeTodos(tmp, new Set(firstHalf), {
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
-      const subsequentTodos = readTodoData(tmp);
+      const { removedCount } = writeTodos(tmp, new Set(firstHalf), buildWriteOptions(tmp));
+      const subsequentTodos = readTodoData(tmp, buildReadOptions());
 
       expect(removedCount).toEqual(15);
       expect(subsequentTodos.size).toEqual(3);
@@ -285,23 +313,22 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
     it('does not remove old todos if todos no longer contains violations if shouldRemove returns false', async () => {
       const fixture = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
 
-      const { addedCount } = writeTodos(tmp, fixture, {
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      const { addedCount } = writeTodos(tmp, fixture, buildWriteOptions(tmp));
 
-      const initialFiles = readTodoData(tmp);
+      const initialFiles = readTodoData(tmp, buildReadOptions());
 
       expect(addedCount).toEqual(18);
       expect(initialFiles.size).toEqual(18);
 
       const [firstHalf] = chunk(fixture, 3);
 
-      const { removedCount } = writeTodos(tmp, firstHalf, {
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-        shouldRemove: () => false,
-      });
+      const { removedCount } = writeTodos(
+        tmp,
+        firstHalf,
+        buildWriteOptions(tmp, { shouldRemove: () => false })
+      );
 
-      const subsequentFiles = readTodoData(tmp);
+      const subsequentFiles = readTodoData(tmp, buildReadOptions());
 
       expect(removedCount).toEqual(0);
       expect(subsequentFiles.size).toEqual(18);
@@ -310,13 +337,16 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
 
   describe('writeTodos for single file', () => {
     it('generates todos for a specific filePath', async () => {
-      const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
-        filePath: 'app/controllers/settings.js',
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      const { addedCount } = writeTodos(
+        tmp,
+        buildMaybeTodosFromFixture(tmp, 'single-file-todo'),
+        buildWriteOptions(tmp, {
+          filePath: 'app/controllers/settings.js',
+        })
+      );
 
       expect(addedCount).toEqual(3);
-      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp, buildReadOptions()))).toMatchInlineSnapshot(`
         Array [
           Object {
             "filePath": "app/controllers/settings.js",
@@ -365,13 +395,16 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
     });
 
     it('updates todos for a specific filePath', async () => {
-      const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
-        filePath: 'app/controllers/settings.js',
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      const { addedCount } = writeTodos(
+        tmp,
+        buildMaybeTodosFromFixture(tmp, 'single-file-todo'),
+        buildWriteOptions(tmp, {
+          filePath: 'app/controllers/settings.js',
+        })
+      );
 
       expect(addedCount).toEqual(3);
-      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp, buildReadOptions()))).toMatchInlineSnapshot(`
         Array [
           Object {
             "filePath": "app/controllers/settings.js",
@@ -418,10 +451,13 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         ]
       `);
 
-      const counts = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo-updated'), {
-        filePath: 'app/controllers/settings.js',
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      const counts = writeTodos(
+        tmp,
+        buildMaybeTodosFromFixture(tmp, 'single-file-todo-updated'),
+        buildWriteOptions(tmp, {
+          filePath: 'app/controllers/settings.js',
+        })
+      );
 
       expect(counts).toStrictEqual({
         addedCount: 1,
@@ -429,7 +465,7 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         removedCount: 1,
         stableCount: 2,
       });
-      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp, buildReadOptions()))).toMatchInlineSnapshot(`
         Array [
           Object {
             "filePath": "app/controllers/settings.js",
@@ -478,13 +514,16 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
     });
 
     it('deletes todos for a specific filePath', async () => {
-      const { addedCount } = writeTodos(tmp, buildMaybeTodosFromFixture(tmp, 'single-file-todo'), {
-        filePath: 'app/controllers/settings.js',
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      const { addedCount } = writeTodos(
+        tmp,
+        buildMaybeTodosFromFixture(tmp, 'single-file-todo'),
+        buildWriteOptions(tmp, {
+          filePath: 'app/controllers/settings.js',
+        })
+      );
 
       expect(addedCount).toEqual(3);
-      expect(stableTodoFragment(readTodoData(tmp))).toMatchInlineSnapshot(`
+      expect(stableTodoFragment(readTodoData(tmp, buildReadOptions()))).toMatchInlineSnapshot(`
         Array [
           Object {
             "filePath": "app/controllers/settings.js",
@@ -534,54 +573,76 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
       const { addedCount: addedCount2, removedCount } = writeTodos(
         tmp,
         buildMaybeTodosFromFixture(tmp, 'single-file-no-errors'),
-        {
+        buildWriteOptions(tmp, {
           filePath: 'app/controllers/settings.js',
-          todoConfig: getTodoConfig(tmp, 'eslint'),
-        }
+        })
       );
 
       expect(addedCount2).toEqual(0);
       expect(removedCount).toEqual(3);
-      expect(readTodoData(tmp).size).toEqual(0);
+      expect(readTodoData(tmp, buildReadOptions()).size).toEqual(0);
     });
   });
 
   describe('readTodos', () => {
     it('can read empty storage file', () => {
-      writeTodos(tmp, new Set(), {
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      writeTodos(tmp, new Set(), buildWriteOptions(tmp));
 
-      expect(readTodos(tmp).size).toEqual(0);
+      expect(readTodos(tmp, buildReadOptions()).size).toEqual(0);
     });
 
     it('can read storage file with adds only', () => {
       const initialTodos = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
-      const { addedCount } = writeTodos(tmp, initialTodos, {
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      const { addedCount } = writeTodos(tmp, initialTodos, buildWriteOptions(tmp));
 
-      expect(readTodoData(tmp).size).toEqual(addedCount);
+      expect(readTodoData(tmp, buildReadOptions()).size).toEqual(addedCount);
     });
 
     it('can read storage file with adds and removes', () => {
       const initialTodos = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
-      const { addedCount } = writeTodos(tmp, initialTodos, {
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      const { addedCount } = writeTodos(tmp, initialTodos, buildWriteOptions(tmp));
 
-      expect(readTodoData(tmp).size).toEqual(addedCount);
+      expect(readTodoData(tmp, buildReadOptions()).size).toEqual(addedCount);
 
       const [firstChunk] = chunk(initialTodos, 2);
 
-      const { removedCount } = writeTodos(tmp, firstChunk, {
-        todoConfig: getTodoConfig(tmp, 'eslint'),
-      });
+      const { removedCount } = writeTodos(tmp, firstChunk, buildWriteOptions(tmp));
 
       expect(readTodoStorageFile(getTodoStorageFilePath(tmp))).toHaveLength(
         addedCount + removedCount
       );
-      expect(readTodoData(tmp).size).toEqual(2);
+      expect(readTodoData(tmp, buildReadOptions()).size).toEqual(2);
+    });
+
+    it('can read storage file with engine isolation', () => {
+      const eslintTodos = buildMaybeTodosFromFixture(tmp, 'eslint-with-errors');
+      const emberTemplateLintTodos = buildMaybeTodosFromFixture(
+        tmp,
+        'ember-template-lint-with-errors'
+      );
+
+      const { addedCount: eslintAddedCount } = writeTodos(
+        tmp,
+        eslintTodos,
+        buildWriteOptions(tmp, { engine: 'eslint' })
+      );
+      expect(eslintAddedCount).toEqual(18);
+
+      const { addedCount: emberTemplateLintAddedCount } = writeTodos(
+        tmp,
+        emberTemplateLintTodos,
+        buildWriteOptions(tmp, { engine: 'ember-template-lint' })
+      );
+      expect(emberTemplateLintAddedCount).toEqual(4);
+
+      expect(
+        readTodoData(
+          tmp,
+          buildReadOptions({
+            engine: 'ember-template-lint',
+          })
+        ).size
+      ).toEqual(emberTemplateLintAddedCount);
     });
   });
 
@@ -1038,12 +1099,13 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
     it(`creates only stable and expired batches for exact match`, async () => {
       const { addedCount } = writeTodos(
         tmp,
-        buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match')
+        buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match'),
+        buildWriteOptions(tmp)
       );
 
       expect(addedCount).toEqual(5);
 
-      const existing: Map<FilePath, TodoMatcher> = readTodos(tmp);
+      const existing: Map<FilePath, TodoMatcher> = readTodos(tmp, buildReadOptions());
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const expiredTodo: TodoData = existing
         .get('app/components/foo.js')!
@@ -1142,12 +1204,13 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
     it(`creates only stable and expired batches for fuzzy match`, async () => {
       const { addedCount } = writeTodos(
         tmp,
-        buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match')
+        buildMaybeTodosFromFixture(tmp, 'eslint-with-errors-exact-match'),
+        buildWriteOptions(tmp)
       );
 
       expect(addedCount).toEqual(5);
 
-      const existing: Map<FilePath, TodoMatcher> = readTodos(tmp);
+      const existing: Map<FilePath, TodoMatcher> = readTodos(tmp, buildReadOptions());
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const expiredTodo: TodoData = existing
         .get('app/components/foo.js')!
