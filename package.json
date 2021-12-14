@@ -17,7 +17,7 @@
     "test:jest": "jest --no-cache"
   },
   "dependencies": {
-    "@types/eslint": "^7.2.13",
+    "@types/eslint": "^8.2.1",
     "fs-extra": "^9.1.0",
     "proper-lockfile": "^4.1.2",
     "slash": "^3.0.0",
