@@ -222,7 +222,25 @@ export function readTodoData(baseDir: string, options: ReadTodoOptions): Set<Tod
 }
 
 /**
- * Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).
+ * Gets 4 data structures containing todo items to add, remove, those that are expired, and those that are stable (not to be modified).
+ *
+ * @param baseDir - The base directory that contains the .lint-todo storage file.
+ * @param maybeTodos - The linting data for violations.
+ * @param options - An object containing write options.
+ * @returns - An object of {@link https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L36|TodoBatches}.
+ */
+export function generateTodoBatches(
+  baseDir: string,
+  maybeTodos: Set<TodoData>,
+  options: Partial<WriteTodoOptions>
+): TodoBatches {
+  const existingTodos = readTodosForFilePath(baseDir, options as ReadTodoOptions);
+
+  return getTodoBatches(maybeTodos, existingTodos, options);
+}
+
+/**
+ * Gets 4 data structures containing todo items to add, remove, those that are expired, and those that are stable (not to be modified).
  *
  * @param maybeTodos - The linting data for violations.
  * @param existing - Existing todo lint data.

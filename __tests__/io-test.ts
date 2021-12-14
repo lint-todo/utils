@@ -3,7 +3,6 @@ import { subDays } from 'date-fns';
 import {
   getDatePart,
   getTodoStorageFilePath,
-  getTodoBatches,
   todoStorageFileExists,
   readTodoData,
   readTodos,
@@ -31,6 +30,7 @@ import {
 import {
   compactTodoStorageFile,
   ensureTodoStorageFile,
+  getTodoBatches,
   hasConflicts,
   readTodoStorageFile,
   resolveConflicts,

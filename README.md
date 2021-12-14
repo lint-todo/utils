@@ -56,8 +56,11 @@ have a todo lint violation.</p>
 <dt><a href="#readTodoData">readTodoData(baseDir, options)</a> ⇒</dt>
 <dd><p>Reads todo files in the .lint-todo file and returns Todo data in an array.</p>
 </dd>
+<dt><a href="#generateTodoBatches">generateTodoBatches(baseDir, maybeTodos, options)</a> ⇒</dt>
+<dd><p>Gets 4 data structures containing todo items to add, remove, those that are expired, and those that are stable (not to be modified).</p>
+</dd>
 <dt><a href="#getTodoBatches">getTodoBatches(maybeTodos, existing, options)</a> ⇒</dt>
-<dd><p>Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).</p>
+<dd><p>Gets 4 data structures containing todo items to add, remove, those that are expired, and those that are stable (not to be modified).</p>
 </dd>
 <dt><a href="#applyTodoChanges">applyTodoChanges(baseDir, add, remove, shouldLock)</a></dt>
 <dd><p>Applies todo changes, either adding or removing, based on batches from <code>getTodoBatches</code>.</p>
@@ -253,10 +256,24 @@ Reads todo files in the .lint-todo file and returns Todo data in an array.
 | baseDir | The base directory that contains the .lint-todo storage file. |
 | options | An object containing read options. |
 
+<a name="generateTodoBatches"></a>
+
+## generateTodoBatches(baseDir, maybeTodos, options) ⇒
+Gets 4 data structures containing todo items to add, remove, those that are expired, and those that are stable (not to be modified).
+
+**Kind**: global function  
+**Returns**: - An object of [TodoBatches](https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L36).  
+
+| Param | Description |
+| --- | --- |
+| baseDir | The base directory that contains the .lint-todo storage file. |
+| maybeTodos | The linting data for violations. |
+| options | An object containing write options. |
+
 <a name="getTodoBatches"></a>
 
 ## getTodoBatches(maybeTodos, existing, options) ⇒
-Gets 4 maps containing todo items to add, remove, those that are expired, or those that are stable (not to be modified).
+Gets 4 data structures containing todo items to add, remove, those that are expired, and those that are stable (not to be modified).
 
 **Kind**: global function  
 **Returns**: - An object of [TodoBatches](https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L36).  

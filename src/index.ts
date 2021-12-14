@@ -4,7 +4,7 @@ export {
   compactTodoStorageFile,
   ensureTodoStorageFile,
   hasConflicts,
-  getTodoBatches,
+  generateTodoBatches,
   getTodoStorageFilePath,
   readTodos,
   readTodosForFilePath,
