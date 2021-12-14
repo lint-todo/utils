@@ -1,3 +1,19 @@
+
+## v12.0.0 (2021-12-14)
+
+#### :boom: Breaking Change
+* [#318](https://github.com/lint-todo/utils/pull/318) Add read options when reading from todo storage file ([@scalvert](https://github.com/scalvert))
+
+#### :rocket: Enhancement
+* [#321](https://github.com/lint-todo/utils/pull/321) Adding new API: generateTodoBatches ([@scalvert](https://github.com/scalvert))
+
+#### :house: Internal
+* [#322](https://github.com/lint-todo/utils/pull/322) Adding auto merge for dependabot ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v11.0.0 (2021-12-03)
 
 

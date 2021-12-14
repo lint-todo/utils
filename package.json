@@ -1,6 +1,6 @@
 {
   "name": "@lint-todo/utils",
-  "version": "11.0.0",
+  "version": "12.0.0",
   "repository": "https://github.com/lint-todo/utils.git",
   "license": "MIT",
   "author": "Steve Calvert <steve.calvert@gmail.com>",
