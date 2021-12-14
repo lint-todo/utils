@@ -9,12 +9,10 @@ type ConfigValidationResult = {
 };
 
 /**
- * Gets the todo configuration.
- * Config values can be present in
- *
- * The package.json
+ * Gets the todo configuration from one of a number of locations.
  *
  * @example
+ * Using the package.json
  * ```json
  * {
  *   "lintTodo": {
@@ -31,9 +29,8 @@ type ConfigValidationResult = {
  * }
  * ```
  *
- * A .lint-todorc.js file
- *
  * @example
+ * Using the .lint-todorc.js file
  * ```js
  * module.exports = {
  *   "some-engine": {
@@ -48,9 +45,11 @@ type ConfigValidationResult = {
  * }
  * ```
  *
- * Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
+ * @example
+ * Using environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
  * 	- Env vars override package.json config
  *
+ * @example
  * Passed in directly, such as from command line options.
  * 	- Passed in options override both env vars and package.json config
  *

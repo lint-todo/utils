@@ -75,9 +75,7 @@ have a todo lint violation.</p>
 <dd><p>Compacts the .lint-todo storage file based on the compact strategy.</p>
 </dd>
 <dt><a href="#getTodoConfig">getTodoConfig(baseDir, engine, customDaysToDecay)</a> ⇒</dt>
-<dd><p>Gets the todo configuration.
-Config values can be present in</p>
-<p>The package.json</p>
+<dd><p>Gets the todo configuration from one of a number of locations.</p>
 </dd>
 <dt><a href="#validateConfig">validateConfig(baseDir)</a> ⇒</dt>
 <dd><p>Validates whether we have a unique config in a single location.</p>
@@ -338,10 +336,7 @@ Compacts the .lint-todo storage file based on the compact strategy.
 <a name="getTodoConfig"></a>
 
 ## getTodoConfig(baseDir, engine, customDaysToDecay) ⇒
-Gets the todo configuration.
-Config values can be present in
-
-The package.json
+Gets the todo configuration from one of a number of locations.
 
 **Kind**: global function  
 **Returns**: - The todo config object.  
@@ -353,6 +348,7 @@ The package.json
 | customDaysToDecay | The optional custom days to decay configuration. |
 
 **Example**  
+Using the package.json
 ```json
 {
   "lintTodo": {
@@ -368,9 +364,8 @@ The package.json
   }
 }
 ```
-
-A .lint-todorc.js file
 **Example**  
+Using the .lint-todorc.js file
 ```js
 module.exports = {
   "some-engine": {
@@ -384,12 +379,16 @@ module.exports = {
   }
 }
 ```
-
-Environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
+**Example**  
+```js
+Using environment variables (`TODO_DAYS_TO_WARN` or `TODO_DAYS_TO_ERROR`)
 	- Env vars override package.json config
-
+```
+**Example**  
+```js
 Passed in directly, such as from command line options.
 	- Passed in options override both env vars and package.json config
+```
 <a name="validateConfig"></a>
 
 ## validateConfig(baseDir) ⇒
