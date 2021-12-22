@@ -1,4 +1,4 @@
-import { posix } from 'path';
+import { join, normalize } from 'path';
 import { EOL } from 'os';
 import { lockSync } from 'proper-lockfile';
 import { readFileSync, appendFileSync, writeFileSync, ensureFileSync, lstatSync } from 'fs-extra';
@@ -57,7 +57,7 @@ export function ensureTodoStorageFile(baseDir: string): string {
  * @returns - The todo storage file path.
  */
 export function getTodoStorageFilePath(baseDir: string): string {
-  return posix.join(baseDir, '.lint-todo');
+  return join(baseDir, '.lint-todo');
 }
 
 /**
@@ -197,14 +197,15 @@ export function readTodosForFilePath(
   shouldLock = true
 ): Map<FilePath, TodoMatcher> {
   const existingTodos = readTodos(baseDir, options, shouldLock);
+  const normalizedFilePath = normalize(options.filePath);
 
-  const matcher = existingTodos.get(options.filePath) || new TodoMatcher();
+  const matcher = existingTodos.get(normalizedFilePath) || new TodoMatcher();
 
-  return new Map([[options.filePath, matcher]]);
+  return new Map([[normalizedFilePath, matcher]]);
 }
 
 /**
- * Reads todo files in the .lint-todo file and returns Todo data in an array.
+ * Reads todos in the .lint-todo file and returns Todo data in an array.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage file.
  * @param options - An object containing read options.
@@ -213,6 +214,24 @@ export function readTodosForFilePath(
 export function readTodoData(baseDir: string, options: ReadTodoOptions): Set<TodoData> {
   return new Set(
     [...readTodos(baseDir, options).values()].reduce(
+      (matcherResults: TodoData[], matcher: TodoMatcher) => {
+        return [...matcherResults, ...matcher.unprocessed];
+      },
+      []
+    )
+  );
+}
+
+/**
+ * Reads todos for a single filePath in the .lint-todo file and returns Todo data in an array.
+ *
+ * @param baseDir - The base directory that contains the .lint-todo storage file.
+ * @param options - An object containing read options.
+ * @returns An array of {@link https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L61|TodoData}
+ */
+export function readTodoDataForFilePath(baseDir: string, options: ReadTodoOptions): Set<TodoData> {
+  return new Set(
+    [...readTodosForFilePath(baseDir, options).values()].reduce(
       (matcherResults: TodoData[], matcher: TodoMatcher) => {
         return [...matcherResults, ...matcher.unprocessed];
       },

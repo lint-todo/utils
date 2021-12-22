@@ -1,4 +1,4 @@
-import { isAbsolute, relative } from 'path';
+import { isAbsolute, relative, normalize } from 'path';
 import { EOL } from 'os';
 import slash = require('slash');
 import { createHash } from 'crypto';
@@ -143,11 +143,9 @@ export function buildTodoDatum(
   genericLintData: GenericLintData,
   todoConfig?: TodoConfig
 ): TodoData {
-  // Note: If https://github.com/nodejs/node/issues/13683 is fixed, remove slash() and use posix.relative
-  // provided that the fix is landed on the supported node versions of this lib
   const filePath = isAbsolute(genericLintData.filePath)
     ? relative(baseDir, genericLintData.filePath)
-    : genericLintData.filePath;
+    : normalize(genericLintData.filePath);
   const todoDatum: TodoData = Object.assign(
     genericLintData,
     {
