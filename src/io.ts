@@ -1,4 +1,5 @@
-import { join, normalize } from 'path';
+import { join } from 'path';
+import { normalize } from 'upath';
 import { EOL } from 'os';
 import { lockSync } from 'proper-lockfile';
 import { readFileSync, appendFileSync, writeFileSync, ensureFileSync, lstatSync } from 'fs-extra';

@@ -1,4 +1,4 @@
-import { isAbsolute, relative, normalize } from 'path';
+import { isAbsolute, relative, normalize } from 'upath';
 import { EOL } from 'os';
 import slash = require('slash');
 import { createHash } from 'crypto';
