@@ -32,6 +32,7 @@ import {
   ensureTodoStorageFile,
   getTodoBatches,
   hasConflicts,
+  readTodoDataForFilePath,
   readTodoStorageFile,
   resolveConflicts,
   writeTodoStorageFile,
@@ -346,7 +347,16 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
       );
 
       expect(addedCount).toEqual(3);
-      expect(stableTodoFragment(readTodoData(tmp, buildReadOptions()))).toMatchInlineSnapshot(`
+      expect(
+        stableTodoFragment(
+          readTodoDataForFilePath(
+            tmp,
+            buildReadOptions({
+              filePath: 'app/controllers/settings.js',
+            })
+          )
+        )
+      ).toMatchInlineSnapshot(`
         Array [
           Object {
             "filePath": "app/controllers/settings.js",
@@ -404,7 +414,16 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
       );
 
       expect(addedCount).toEqual(3);
-      expect(stableTodoFragment(readTodoData(tmp, buildReadOptions()))).toMatchInlineSnapshot(`
+      expect(
+        stableTodoFragment(
+          readTodoDataForFilePath(
+            tmp,
+            buildReadOptions({
+              filePath: 'app/controllers/settings.js',
+            })
+          )
+        )
+      ).toMatchInlineSnapshot(`
         Array [
           Object {
             "filePath": "app/controllers/settings.js",
@@ -465,7 +484,16 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         removedCount: 1,
         stableCount: 2,
       });
-      expect(stableTodoFragment(readTodoData(tmp, buildReadOptions()))).toMatchInlineSnapshot(`
+      expect(
+        stableTodoFragment(
+          readTodoDataForFilePath(
+            tmp,
+            buildReadOptions({
+              filePath: 'app/controllers/settings.js',
+            })
+          )
+        )
+      ).toMatchInlineSnapshot(`
         Array [
           Object {
             "filePath": "app/controllers/settings.js",
@@ -523,7 +551,16 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
       );
 
       expect(addedCount).toEqual(3);
-      expect(stableTodoFragment(readTodoData(tmp, buildReadOptions()))).toMatchInlineSnapshot(`
+      expect(
+        stableTodoFragment(
+          readTodoDataForFilePath(
+            tmp,
+            buildReadOptions({
+              filePath: 'app/controllers/settings.js',
+            })
+          )
+        )
+      ).toMatchInlineSnapshot(`
         Array [
           Object {
             "filePath": "app/controllers/settings.js",
@@ -580,7 +617,14 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
 
       expect(addedCount2).toEqual(0);
       expect(removedCount).toEqual(3);
-      expect(readTodoData(tmp, buildReadOptions()).size).toEqual(0);
+      expect(
+        readTodoDataForFilePath(
+          tmp,
+          buildReadOptions({
+            filePath: 'app/controllers/settings.js',
+          })
+        ).size
+      ).toEqual(0);
     });
   });
 
@@ -643,6 +687,105 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
           })
         ).size
       ).toEqual(emberTemplateLintAddedCount);
+    });
+  });
+
+  describe('readTodosForFilePath', () => {
+    it('can read empty storage file', () => {
+      writeTodos(tmp, new Set(), buildWriteOptions(tmp));
+
+      expect(
+        readTodos(
+          tmp,
+          buildReadOptions({
+            filePath: '/app/controllers/settings.js',
+          })
+        ).size
+      ).toEqual(0);
+    });
+
+    it('can read storage file with adds only', () => {
+      const initialTodos = buildMaybeTodosFromFixture(tmp, 'single-file-errors');
+      const { addedCount } = writeTodos(
+        tmp,
+        initialTodos,
+        buildWriteOptions(tmp, {
+          filePath: 'app/controllers/settings.js',
+        })
+      );
+      expect(addedCount).toEqual(3);
+
+      expect(
+        readTodoDataForFilePath(
+          tmp,
+          buildReadOptions({
+            filePath: 'app/controllers/settings.js',
+          })
+        ).size
+      ).toEqual(addedCount);
+    });
+
+    it('can read todos with non-normalized filePath', () => {
+      const initialTodos = buildMaybeTodosFromFixture(tmp, 'single-file-errors');
+      const { addedCount } = writeTodos(
+        tmp,
+        initialTodos,
+        buildWriteOptions(tmp, {
+          filePath: './app/controllers/settings.js',
+        })
+      );
+      expect(addedCount).toEqual(3);
+
+      expect(
+        readTodoDataForFilePath(
+          tmp,
+          buildReadOptions({
+            filePath: './app/controllers/settings.js',
+          })
+        ).size
+      ).toEqual(addedCount);
+    });
+
+    it('can read storage file with adds and removes', () => {
+      const initialTodos = buildMaybeTodosFromFixture(tmp, 'single-file-errors');
+      const { addedCount } = writeTodos(
+        tmp,
+        initialTodos,
+        buildWriteOptions(tmp, {
+          filePath: 'app/controllers/settings.js',
+        })
+      );
+
+      expect(
+        readTodoData(
+          tmp,
+          buildReadOptions({
+            filePath: 'app/controllers/settings.js',
+          })
+        ).size
+      ).toEqual(addedCount);
+
+      const [firstChunk] = chunk(initialTodos, 2);
+
+      const { removedCount } = writeTodos(
+        tmp,
+        firstChunk,
+        buildWriteOptions(tmp, {
+          filePath: 'app/controllers/settings.js',
+        })
+      );
+
+      expect(readTodoStorageFile(getTodoStorageFilePath(tmp))).toHaveLength(
+        addedCount + removedCount
+      );
+      expect(
+        readTodoData(
+          tmp,
+          buildReadOptions({
+            filePath: 'app/controllers/settings.js',
+          })
+        ).size
+      ).toEqual(2);
     });
   });
 
