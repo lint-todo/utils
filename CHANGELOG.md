@@ -1,4 +1,17 @@
 
+
+## v12.0.1 (2021-12-28)
+
+#### :bug: Bug Fix
+* [#325](https://github.com/lint-todo/utils/pull/325) Fixes todos not correctly matching up when using non-normalized relative paths ([@scalvert](https://github.com/scalvert))
+
+#### :house: Internal
+* [#326](https://github.com/lint-todo/utils/pull/326) Upgrading jest and associated dependencies and adding snapshotFormat ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v12.0.0 (2021-12-14)
 
 #### :boom: Breaking Change
