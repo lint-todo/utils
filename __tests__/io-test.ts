@@ -357,43 +357,43 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
           )
         )
       ).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 35,
                 "line": 25,
               },
-              "start": Object {
+              "start": {
                 "column": 21,
                 "line": 25,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 33,
                 "line": 26,
               },
-              "start": Object {
+              "start": {
                 "column": 19,
                 "line": 26,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 48,
                 "line": 32,
               },
-              "start": Object {
+              "start": {
                 "column": 34,
                 "line": 32,
               },
@@ -424,43 +424,43 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
           )
         )
       ).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 35,
                 "line": 25,
               },
-              "start": Object {
+              "start": {
                 "column": 21,
                 "line": 25,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 33,
                 "line": 26,
               },
-              "start": Object {
+              "start": {
                 "column": 19,
                 "line": 26,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 48,
                 "line": 32,
               },
-              "start": Object {
+              "start": {
                 "column": 34,
                 "line": 32,
               },
@@ -494,43 +494,43 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
           )
         )
       ).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 35,
                 "line": 25,
               },
-              "start": Object {
+              "start": {
                 "column": 21,
                 "line": 25,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 33,
                 "line": 26,
               },
-              "start": Object {
+              "start": {
                 "column": 19,
                 "line": 26,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 110,
                 "line": 50,
               },
-              "start": Object {
+              "start": {
                 "column": 101,
                 "line": 50,
               },
@@ -561,43 +561,43 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
           )
         )
       ).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 35,
                 "line": 25,
               },
-              "start": Object {
+              "start": {
                 "column": 21,
                 "line": 25,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 33,
                 "line": 26,
               },
-              "start": Object {
+              "start": {
                 "column": 19,
                 "line": 26,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 48,
                 "line": 32,
               },
-              "start": Object {
+              "start": {
                 "column": 34,
                 "line": 32,
               },
@@ -795,10 +795,10 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         shouldRemove: () => true,
       });
 
-      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`Array []`);
-      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`Array []`);
-      expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`Array []`);
-      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`[]`);
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`[]`);
+      expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`[]`);
+      expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`[]`);
     });
 
     it('creates items to add', async () => {
@@ -807,85 +807,85 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
       });
 
       expect(stableTodoFragment(add)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 35,
                 "line": 25,
               },
-              "start": Object {
+              "start": {
                 "column": 21,
                 "line": 25,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 33,
                 "line": 26,
               },
-              "start": Object {
+              "start": {
                 "column": 19,
                 "line": 26,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 48,
                 "line": 32,
               },
-              "start": Object {
+              "start": {
                 "column": 34,
                 "line": 32,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/initializers/tracer.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 17,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 11,
                 "line": 1,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/initializers/tracer.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 33,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 19,
                 "line": 1,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/initializers/tracer.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 133,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 119,
                 "line": 1,
               },
@@ -906,85 +906,85 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
       );
 
       expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 35,
                 "line": 25,
               },
-              "start": Object {
+              "start": {
                 "column": 21,
                 "line": 25,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 33,
                 "line": 26,
               },
-              "start": Object {
+              "start": {
                 "column": 19,
                 "line": 26,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 48,
                 "line": 32,
               },
-              "start": Object {
+              "start": {
                 "column": 34,
                 "line": 32,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/initializers/tracer.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 17,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 11,
                 "line": 1,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/initializers/tracer.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 33,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 19,
                 "line": 1,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/initializers/tracer.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 133,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 119,
                 "line": 1,
               },
@@ -1018,15 +1018,15 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
       );
 
       expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 35,
                 "line": 25,
               },
-              "start": Object {
+              "start": {
                 "column": 21,
                 "line": 25,
               },
@@ -1056,43 +1056,43 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
       );
 
       expect(stableTodoFragment(add)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 35,
                 "line": 25,
               },
-              "start": Object {
+              "start": {
                 "column": 21,
                 "line": 25,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 33,
                 "line": 26,
               },
-              "start": Object {
+              "start": {
                 "column": 19,
                 "line": 26,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/controllers/settings.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 48,
                 "line": 32,
               },
-              "start": Object {
+              "start": {
                 "column": 34,
                 "line": 32,
               },
@@ -1102,29 +1102,29 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         ]
       `);
       expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/models/build.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 64,
                 "line": 108,
               },
-              "start": Object {
+              "start": {
                 "column": 50,
                 "line": 108,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/models/build.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 39,
                 "line": 120,
               },
-              "start": Object {
+              "start": {
                 "column": 25,
                 "line": 120,
               },
@@ -1134,29 +1134,29 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         ]
       `);
       expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/initializers/tracer.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 33,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 19,
                 "line": 1,
               },
             },
             "source": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
           },
-          Object {
+          {
             "filePath": "app/initializers/tracer.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 133,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 119,
                 "line": 1,
               },
@@ -1166,15 +1166,15 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         ]
       `);
       expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/initializers/tracer.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 17,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 11,
                 "line": 1,
               },
@@ -1262,60 +1262,60 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         { shouldRemove: () => true }
       );
 
-      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`Array []`);
-      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`[]`);
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`[]`);
       expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/utils/util.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 16,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 10,
                 "line": 1,
               },
             },
             "source": "b618e5603b05243a5fe81039b3b18551e963f07f",
           },
-          Object {
+          {
             "filePath": "app/utils/util.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 15,
                 "line": 2,
               },
-              "start": Object {
+              "start": {
                 "column": 7,
                 "line": 2,
               },
             },
             "source": "b7c8adf0cc8799f2488de3116a72fc2bd326fc1f",
           },
-          Object {
+          {
             "filePath": "json-formatter.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 7,
                 "line": 18,
               },
-              "start": Object {
+              "start": {
                 "column": 1,
                 "line": 18,
               },
             },
             "source": "cfc137fb4c575a1564e767297c7f2b9dc4748a12",
           },
-          Object {
+          {
             "filePath": "rule-config.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 7,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 1,
                 "line": 1,
               },
@@ -1325,15 +1325,15 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         ]
       `);
       expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/components/foo.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 13,
                 "line": 7,
               },
-              "start": Object {
+              "start": {
                 "column": 9,
                 "line": 7,
               },
@@ -1367,60 +1367,60 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         { shouldRemove: () => true }
       );
 
-      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`Array []`);
-      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`Array []`);
+      expect(stableTodoFragment(add)).toMatchInlineSnapshot(`[]`);
+      expect(stableTodoFragment(remove)).toMatchInlineSnapshot(`[]`);
       expect(stableTodoFragment(stable)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/utils/util.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 16,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 10,
                 "line": 1,
               },
             },
             "source": "b618e5603b05243a5fe81039b3b18551e963f07f",
           },
-          Object {
+          {
             "filePath": "app/utils/util.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 15,
                 "line": 2,
               },
-              "start": Object {
+              "start": {
                 "column": 7,
                 "line": 2,
               },
             },
             "source": "b7c8adf0cc8799f2488de3116a72fc2bd326fc1f",
           },
-          Object {
+          {
             "filePath": "json-formatter.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 7,
                 "line": 18,
               },
-              "start": Object {
+              "start": {
                 "column": 1,
                 "line": 18,
               },
             },
             "source": "cfc137fb4c575a1564e767297c7f2b9dc4748a12",
           },
-          Object {
+          {
             "filePath": "rule-config.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 7,
                 "line": 1,
               },
-              "start": Object {
+              "start": {
                 "column": 1,
                 "line": 1,
               },
@@ -1430,15 +1430,15 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
         ]
       `);
       expect(stableTodoFragment(expired)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "filePath": "app/components/foo.js",
-            "range": Object {
-              "end": Object {
+            "range": {
+              "end": {
                 "column": 13,
                 "line": 7,
               },
-              "start": Object {
+              "start": {
                 "column": 9,
                 "line": 7,
               },
