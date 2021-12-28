@@ -198,19 +198,19 @@ describe('builders', () => {
       });
 
       expect(todoData).toMatchInlineSnapshot(`
-        Object {
+        {
           "createdDate": 1424649600000,
           "engine": "eslint",
           "filePath": "app/components/foo.js",
-          "originalLintResult": Object {
+          "originalLintResult": {
             "fake": true,
           },
-          "range": Object {
-            "end": Object {
+          "range": {
+            "end": {
               "column": 12,
               "line": 7,
             },
-            "start": Object {
+            "start": {
               "column": 9,
               "line": 7,
             },
@@ -235,17 +235,17 @@ describe('builders', () => {
         Map {
           "addon/templates/components/foo.hbs" => TodoMatcher {
             "unprocessed": Set {
-              Object {
+              {
                 "createdDate": 1629331200000,
                 "engine": "ember-template-lint",
                 "errorDate": 2493334800000,
                 "filePath": "addon/templates/components/foo.hbs",
-                "range": Object {
-                  "end": Object {
+                "range": {
+                  "end": {
                     "column": 8,
                     "line": 174,
                   },
-                  "start": Object {
+                  "start": {
                     "column": 8,
                     "line": 174,
                   },
@@ -272,17 +272,17 @@ describe('builders', () => {
         Map {
           "addon/templates/components/fo|o.hbs" => TodoMatcher {
             "unprocessed": Set {
-              Object {
+              {
                 "createdDate": 1629331200000,
                 "engine": "ember-template-lint",
                 "errorDate": 2493334800000,
                 "filePath": "addon/templates/components/fo|o.hbs",
-                "range": Object {
-                  "end": Object {
+                "range": {
+                  "end": {
                     "column": 8,
                     "line": 174,
                   },
-                  "start": Object {
+                  "start": {
                     "column": 8,
                     "line": 174,
                   },
@@ -307,17 +307,17 @@ describe('builders', () => {
         Map {
           "addon/templates/components/foo.hbs" => TodoMatcher {
             "unprocessed": Set {
-              Object {
+              {
                 "createdDate": 1629331200000,
                 "engine": "ember-template-lint",
                 "errorDate": 2493334800000,
                 "filePath": "addon/templates/components/foo.hbs",
-                "range": Object {
-                  "end": Object {
+                "range": {
+                  "end": {
                     "column": 8,
                     "line": 174,
                   },
-                  "start": Object {
+                  "start": {
                     "column": 8,
                     "line": 174,
                   },

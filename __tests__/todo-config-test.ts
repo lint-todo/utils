@@ -83,19 +83,19 @@ describe('todo-config', () => {
     const config = getTodoConfig(project.baseDir, 'foo');
 
     expect(config).toMatchInlineSnapshot(`
-        Object {
-          "daysToDecay": Object {
-            "error": 10,
-            "warn": 5,
+      {
+        "daysToDecay": {
+          "error": 10,
+          "warn": 5,
+        },
+        "daysToDecayByRule": {
+          "no-bare-strings": {
+            "error": 20,
+            "warn": 10,
           },
-          "daysToDecayByRule": Object {
-            "no-bare-strings": Object {
-              "error": 20,
-              "warn": 10,
-            },
-          },
-        }
-      `);
+        },
+      }
+    `);
   });
 
   it('can get lint todo config from .lint-todorc.js', () => {
@@ -124,19 +124,19 @@ describe('todo-config', () => {
     const config = getTodoConfig(project.baseDir, 'foo');
 
     expect(config).toMatchInlineSnapshot(`
-        Object {
-          "daysToDecay": Object {
-            "error": 10,
-            "warn": 5,
+      {
+        "daysToDecay": {
+          "error": 10,
+          "warn": 5,
+        },
+        "daysToDecayByRule": {
+          "no-bare-strings": {
+            "error": 20,
+            "warn": 10,
           },
-          "daysToDecayByRule": Object {
-            "no-bare-strings": Object {
-              "error": 20,
-              "warn": 10,
-            },
-          },
-        }
-      `);
+        },
+      }
+    `);
   });
 
   it('errors if both package.json and .lint-todorc.js contain todo configurations', () => {
