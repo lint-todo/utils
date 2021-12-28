@@ -1,4 +1,4 @@
-import { normalize } from 'path';
+import { normalize } from 'upath';
 
 export function updatePaths<T extends { filePath: string }>(path: string, data: T[]): T[] {
   data.forEach((d) => (d.filePath = normalize(d.filePath.replace('{{path}}', path))));
