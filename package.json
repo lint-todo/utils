@@ -27,7 +27,7 @@
   "devDependencies": {
     "@scalvert/readme-api-generator": "^0.1.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^27.0.3",
+    "@types/jest": "^27.4.0",
     "@types/proper-lockfile": "^4.1.2",
     "@types/slash": "^3.0.0",
     "@types/tmp": "^0.2.2",
