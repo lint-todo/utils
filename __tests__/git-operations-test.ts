@@ -32,8 +32,6 @@ function readTodoStorageFileContents(todoStorageFilePath: string) {
   return readFileSync(todoStorageFilePath, { encoding: 'utf-8' });
 }
 
-jest.setTimeout(5000000);
-
 describe('git operations', () => {
   let tmp: string;
 

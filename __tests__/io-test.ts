@@ -80,8 +80,6 @@ function buildReadOptions(options?: Partial<ReadTodoOptions>) {
   );
 }
 
-jest.setTimeout(100000);
-
 describe('io', () => {
   let tmp: string;
 

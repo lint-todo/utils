@@ -14,7 +14,8 @@
     "lint": "eslint . --ext .ts",
     "prepare": "yarn build",
     "test": "npm-run-all lint test:*",
-    "test:jest": "jest --no-cache"
+    "test:jest": "jest --no-cache",
+    "test:vitest": "vitest run"
   },
   "dependencies": {
     "@types/eslint": "^7.2.13",
