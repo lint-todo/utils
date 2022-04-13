@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { findUpSync } from 'find-up';
 import { DaysToDecay, LintTodoPackageJson, TodoConfig, TodoConfigByEngine } from './types';
 
 type ConfigValidationResult = {
@@ -153,7 +153,10 @@ function getFromConfigFile(baseDir: string, engine: string): TodoConfig | undefi
 
 function requireFile(baseDir: string, fileName: string) {
   try {
-    return require(join(baseDir, fileName));
+    const filePath = findUpSync(fileName, {
+      cwd: baseDir,
+    });
+    return filePath && require(filePath);
   } catch {
     return;
   }
