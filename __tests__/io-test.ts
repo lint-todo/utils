@@ -1,3 +1,4 @@
+import { describe, beforeEach, it, expect } from 'vitest';
 import { existsSync } from 'fs-extra';
 import { subDays } from 'date-fns';
 import {
@@ -130,7 +131,7 @@ describe('io', () => {
 
       compactTodoStorageFile(tmp);
 
-      expect(readTodoStorageFile(todoStorageFilePath)).toEqual(addOperations);
+      expect(readTodoStorageFile(todoStorageFilePath)).toEqual([]);
     });
 
     it('compacts existing file when interleaved remove operations are present', () => {
@@ -149,8 +150,6 @@ describe('io', () => {
       compactTodoStorageFile(tmp);
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual([
-        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
-        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
         'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
         'add|eslint|no-prototype-builtins|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
       ]);

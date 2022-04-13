@@ -1,3 +1,4 @@
+import { describe, beforeEach, it, expect } from 'vitest';
 import execa from 'execa';
 import tmp from 'tmp';
 import { realpathSync } from 'fs';
