@@ -66,6 +66,26 @@ describe('todo-config', () => {
     });
   });
 
+  it('can get lint todo config from package.json from a sub-directory', () => {
+    project.writeLegacyPackageJsonTodoConfig({
+      warn: 5,
+      error: 10,
+    });
+
+    project.write({
+      packages: {
+        subDir: {},
+      },
+    });
+
+    const config = getTodoConfig(join(project.baseDir, 'packages', 'subDir'), 'foo');
+
+    expect(config.daysToDecay).toEqual({
+      warn: 5,
+      error: 10,
+    });
+  });
+
   it('can get lint todo config from package.json with decay days by rule', () => {
     project.writeLegacyPackageJsonTodoConfig(
       {
@@ -102,6 +122,20 @@ describe('todo-config', () => {
     project.writeLintTodorc('foo', { warn: 20, error: 40 });
 
     const config = getTodoConfig(project.baseDir, 'foo');
+
+    expect(config.daysToDecay).toEqual({ warn: 20, error: 40 });
+  });
+
+  it('can get lint todo config from .lint-todorc.js from a sub-directory', () => {
+    project.writeLintTodorc('foo', { warn: 20, error: 40 });
+
+    project.write({
+      packages: {
+        subDir: {},
+      },
+    });
+
+    const config = getTodoConfig(join(project.baseDir, 'packages', 'subDir'), 'foo');
 
     expect(config.daysToDecay).toEqual({ warn: 20, error: 40 });
   });
