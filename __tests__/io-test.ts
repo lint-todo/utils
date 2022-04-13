@@ -110,7 +110,7 @@ describe('io', () => {
 
       writeTodoStorageFile(todoStorageFilePath, operations);
 
-      compactTodoStorageFile(tmp);
+      compactTodoStorageFile(tmp, buildReadOptions());
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual(operations);
     });
@@ -129,7 +129,7 @@ describe('io', () => {
 
       writeTodoStorageFile(todoStorageFilePath, [...addOperations, ...removeOperations]);
 
-      compactTodoStorageFile(tmp);
+      compactTodoStorageFile(tmp, buildReadOptions());
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual([]);
     });
@@ -147,7 +147,7 @@ describe('io', () => {
 
       writeTodoStorageFile(todoStorageFilePath, operations);
 
-      compactTodoStorageFile(tmp);
+      compactTodoStorageFile(tmp, buildReadOptions());
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual([
         'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',

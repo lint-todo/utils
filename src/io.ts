@@ -16,8 +16,7 @@ import {
 } from './types';
 import TodoMatcher from './todo-matcher';
 import TodoBatchGenerator from './todo-batch-generator';
-import { buildFromTodoOperations, buildTodoOperations, toTodoDatum } from './builders';
-import { isExpired } from './date-utils';
+import { buildFromTodoOperations, buildTodoOperations } from './builders';
 
 const CONFLICT_PATTERN = /^\|{7,}|<{7,}|={7,}|>{7,}|!.*/;
 
@@ -299,63 +298,41 @@ export function applyTodoChanges(
         () => {};
 
   try {
-    appendFileSync(todoStorageFilePath, ops);
+    appendFileSync(todoStorageFilePath, ops.join(EOL) + EOL);
   } finally {
     release();
   }
 }
 
 /**
- * Compact strategy to leave only add operations in the todo storage file.
- *
- * @param operation - The single line operation read from the todo storage file.
- * @returns True if the line matches an add operation, otherwise false.
- */
-export const ADD_OPERATIONS_ONLY = (operation: Operation): boolean => /^add.*/.test(operation);
-
-/**
- * Compact strategy to remove all expired operations from the todo storage file.
- *
- * @param operation - The single line operation read from the todo storage file.
- * @returns True if the operation is not expired, otherwise false.
- */
-export const EXCLUDE_EXPIRED = (operation: Operation): boolean => {
-  const [, todoDatum] = toTodoDatum(operation);
-
-  return !isExpired(todoDatum.errorDate);
-};
-
-/**
  * Compacts the .lint-todo storage file based on the compact strategy.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage file.
- * @param compactStrategy - The strategy to use when compacting the storage file. Default: ADD_OPERATIONS_ONLY
+ * @param options - An object containing read options.
  * @returns The count of compacted todos.
  */
 export function compactTodoStorageFile(
   baseDir: string,
-  compactStrategy: (operation: Operation) => boolean = ADD_OPERATIONS_ONLY
+  options: ReadTodoOptions
 ): {
   originalOperations: Operation[];
   compactedOperations: Operation[];
   compacted: number;
 } {
   const todoStorageFilePath = getTodoStorageFilePath(baseDir);
+  const todos = readTodoData(baseDir, options);
   const release = tryLockStorageFile(baseDir);
 
   try {
     const originalOperations = readTodoStorageFile(todoStorageFilePath);
-    const originalCount = originalOperations.length;
-    const compactedOperations = originalOperations.filter((operation) =>
-      compactStrategy(operation)
-    );
+    const compactedOperations = buildTodoOperations(todos, new Set());
 
-    writeTodoStorageFile(todoStorageFilePath, compactedOperations);
+    writeTodoStorageFile(getTodoStorageFilePath(baseDir), compactedOperations);
 
     return {
       originalOperations,
       compactedOperations,
-      compacted: originalCount - compactedOperations.length,
+      compacted: originalOperations.length - compactedOperations.length,
     };
   } finally {
     release();
