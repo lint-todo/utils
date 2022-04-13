@@ -327,7 +327,7 @@ export function compactTodoStorageFile(
     const originalOperations = readTodoStorageFile(todoStorageFilePath);
     const compactedOperations = buildTodoOperations(todos, new Set());
 
-    writeTodoStorageFile(getTodoStorageFilePath(baseDir), compactedOperations);
+    writeTodoStorageFile(todoStorageFilePath, compactedOperations);
 
     return {
       originalOperations,
