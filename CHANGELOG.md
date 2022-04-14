@@ -1,5 +1,25 @@
 
 
+
+## v13.0.0 (2022-04-14)
+
+#### :boom: Breaking Change
+* [#376](https://github.com/lint-todo/utils/pull/376) Fix incorrect logic for todo storage file compacting. ([@scalvert](https://github.com/scalvert))
+
+#### :rocket: Enhancement
+* [#372](https://github.com/lint-todo/utils/pull/372) Update config finding logic to traverse upwards to find config ([@scalvert](https://github.com/scalvert))
+
+#### :bug: Bug Fix
+* [#376](https://github.com/lint-todo/utils/pull/376) Fix incorrect logic for todo storage file compacting. ([@scalvert](https://github.com/scalvert))
+
+#### :house: Internal
+* [#377](https://github.com/lint-todo/utils/pull/377) Rename testing directories ([@scalvert](https://github.com/scalvert))
+* [#336](https://github.com/lint-todo/utils/pull/336) Converting jest to vitest ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v12.0.1 (2021-12-28)
 
 #### :bug: Bug Fix
