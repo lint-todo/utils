@@ -3,7 +3,7 @@ import { unlink } from 'fs-extra';
 import { join } from 'path';
 import { getTodoConfig } from '../src';
 import { validateConfig } from '../src/todo-config';
-import { FakeProject } from './__utils__/fake-project';
+import { FakeProject } from './utils/fake-project';
 
 describe('todo-config', () => {
   let project: FakeProject;

@@ -50,7 +50,7 @@
   },
   "overrides": [
     {
-      "files": ["__tests__/**/*.ts"],
+      "files": ["tests/**/*.ts"],
       "env": {
         "jest": true
       },

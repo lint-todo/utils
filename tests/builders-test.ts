@@ -3,8 +3,8 @@ import { describe, beforeEach, it, expect } from 'vitest';
 import { differenceInDays } from 'date-fns';
 import { getDatePart } from '../src/date-utils';
 import { buildFromTodoOperations, buildTodoDatum, buildTodoOperations } from '../src/builders';
-import { createTmpDir } from './__utils__/tmp-dir';
-import { buildMaybeTodosFromFixture } from './__utils__/build-todo-data';
+import { createTmpDir } from './utils/tmp-dir';
+import { buildMaybeTodosFromFixture } from './utils/build-todo-data';
 
 describe('builders', () => {
   let tmp: string;
