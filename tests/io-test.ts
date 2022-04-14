@@ -19,15 +19,15 @@ import {
   TodoData,
   WriteTodoOptions,
 } from '../src/types';
-import { createTmpDir } from './__utils__/tmp-dir';
-import { getFixture } from './__utils__/get-fixture';
+import { createTmpDir } from './utils/tmp-dir';
+import { getFixture } from './utils/get-fixture';
 import TodoMatcher from '../src/todo-matcher';
 import {
   buildMaybeTodos,
   buildExistingTodos,
   buildMaybeTodosFromFixture,
   buildExistingTodosFromFixture,
-} from './__utils__/build-todo-data';
+} from './utils/build-todo-data';
 import {
   compactTodoStorageFile,
   ensureTodoStorageFile,

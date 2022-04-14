@@ -9,7 +9,7 @@ export function getFixture<T extends ESLint.LintResult | TemplateLintResult>(
   tmp: string,
   shouldUpdatePaths = true
 ): T[] {
-  const fixture = readJsonSync(resolve(join('./__tests__/__fixtures__/', `${fileName}.json`)));
+  const fixture = readJsonSync(resolve(join('./tests/fixtures/', `${fileName}.json`)));
 
   return shouldUpdatePaths ? updatePaths(tmp, fixture) : fixture;
 }
