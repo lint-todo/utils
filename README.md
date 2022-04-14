@@ -54,7 +54,10 @@ have a todo lint violation.</p>
 <dd><p>Reads todo files in the .lint-todo file for a specific filePath.</p>
 </dd>
 <dt><a href="#readTodoData">readTodoData(baseDir, options)</a> ⇒</dt>
-<dd><p>Reads todo files in the .lint-todo file and returns Todo data in an array.</p>
+<dd><p>Reads todos in the .lint-todo file and returns Todo data in an array.</p>
+</dd>
+<dt><a href="#readTodoDataForFilePath">readTodoDataForFilePath(baseDir, options)</a> ⇒</dt>
+<dd><p>Reads todos for a single filePath in the .lint-todo file and returns Todo data in an array.</p>
 </dd>
 <dt><a href="#generateTodoBatches">generateTodoBatches(baseDir, maybeTodos, options)</a> ⇒</dt>
 <dd><p>Gets 4 data structures containing todo items to add, remove, those that are expired, and those that are stable (not to be modified).</p>
@@ -65,14 +68,8 @@ have a todo lint violation.</p>
 <dt><a href="#applyTodoChanges">applyTodoChanges(baseDir, add, remove, shouldLock)</a></dt>
 <dd><p>Applies todo changes, either adding or removing, based on batches from <code>getTodoBatches</code>.</p>
 </dd>
-<dt><a href="#ADD_OPERATIONS_ONLY">ADD_OPERATIONS_ONLY(operation)</a> ⇒</dt>
-<dd><p>Compact strategy to leave only add operations in the todo storage file.</p>
-</dd>
-<dt><a href="#EXCLUDE_EXPIRED">EXCLUDE_EXPIRED(operation)</a> ⇒</dt>
-<dd><p>Compact strategy to remove all expired operations from the todo storage file.</p>
-</dd>
-<dt><a href="#compactTodoStorageFile">compactTodoStorageFile(baseDir, compactStrategy)</a> ⇒</dt>
-<dd><p>Compacts the .lint-todo storage file based on the compact strategy.</p>
+<dt><a href="#compactTodoStorageFile">compactTodoStorageFile(baseDir, options)</a> ⇒</dt>
+<dd><p>Compacts the .lint-todo storage file.</p>
 </dd>
 <dt><a href="#getTodoConfig">getTodoConfig(baseDir, engine, customDaysToDecay)</a> ⇒</dt>
 <dd><p>Gets the todo configuration from one of a number of locations.</p>
@@ -244,7 +241,20 @@ Reads todo files in the .lint-todo file for a specific filePath.
 <a name="readTodoData"></a>
 
 ## readTodoData(baseDir, options) ⇒
-Reads todo files in the .lint-todo file and returns Todo data in an array.
+Reads todos in the .lint-todo file and returns Todo data in an array.
+
+**Kind**: global function  
+**Returns**: An array of [TodoData](https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L61)  
+
+| Param | Description |
+| --- | --- |
+| baseDir | The base directory that contains the .lint-todo storage file. |
+| options | An object containing read options. |
+
+<a name="readTodoDataForFilePath"></a>
+
+## readTodoDataForFilePath(baseDir, options) ⇒
+Reads todos for a single filePath in the .lint-todo file and returns Todo data in an array.
 
 **Kind**: global function  
 **Returns**: An array of [TodoData](https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L61)  
@@ -296,34 +306,10 @@ Applies todo changes, either adding or removing, based on batches from `getTodoB
 | remove |  | Batch of todos to remove. |
 | shouldLock | <code>true</code> | True if the .lint-todo storage file should be locked, otherwise false. Default: true. |
 
-<a name="ADD_OPERATIONS_ONLY"></a>
-
-## ADD\_OPERATIONS\_ONLY(operation) ⇒
-Compact strategy to leave only add operations in the todo storage file.
-
-**Kind**: global function  
-**Returns**: True if the line matches an add operation, otherwise false.  
-
-| Param | Description |
-| --- | --- |
-| operation | The single line operation read from the todo storage file. |
-
-<a name="EXCLUDE_EXPIRED"></a>
-
-## EXCLUDE\_EXPIRED(operation) ⇒
-Compact strategy to remove all expired operations from the todo storage file.
-
-**Kind**: global function  
-**Returns**: True if the operation is not expired, otherwise false.  
-
-| Param | Description |
-| --- | --- |
-| operation | The single line operation read from the todo storage file. |
-
 <a name="compactTodoStorageFile"></a>
 
-## compactTodoStorageFile(baseDir, compactStrategy) ⇒
-Compacts the .lint-todo storage file based on the compact strategy.
+## compactTodoStorageFile(baseDir, options) ⇒
+Compacts the .lint-todo storage file.
 
 **Kind**: global function  
 **Returns**: The count of compacted todos.  
@@ -331,7 +317,7 @@ Compacts the .lint-todo storage file based on the compact strategy.
 | Param | Description |
 | --- | --- |
 | baseDir | The base directory that contains the .lint-todo storage file. |
-| compactStrategy | The strategy to use when compacting the storage file. Default: ADD_OPERATIONS_ONLY |
+| options | An object containing read options. |
 
 <a name="getTodoConfig"></a>
 

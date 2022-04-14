@@ -305,7 +305,7 @@ export function applyTodoChanges(
 }
 
 /**
- * Compacts the .lint-todo storage file based on the compact strategy.
+ * Compacts the .lint-todo storage file.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage file.
  * @param options - An object containing read options.
