@@ -1,5 +1,4 @@
 import { isAbsolute, relative, normalize } from 'upath';
-import { EOL } from 'os';
 import slash = require('slash');
 import { createHash } from 'crypto';
 import {
@@ -7,6 +6,7 @@ import {
   Engine,
   FilePath,
   GenericLintData,
+  Operation,
   OperationType,
   TodoConfig,
   TodoData,
@@ -48,9 +48,9 @@ export function buildFromTodoOperations(
   return existingTodos;
 }
 
-export function buildTodoOperations(add: Set<TodoData>, remove: Set<TodoData>): string {
+export function buildTodoOperations(add: Set<TodoData>, remove: Set<TodoData>): Operation[] {
   if (add.size === 0 && remove.size === 0) {
-    return '';
+    return [];
   }
 
   const ops: string[] = [];
@@ -63,7 +63,7 @@ export function buildTodoOperations(add: Set<TodoData>, remove: Set<TodoData>): 
     ops.push(toOperation('remove', todoDatum));
   }
 
-  return ops.join(EOL) + EOL;
+  return ops as Operation[];
 }
 
 export function toTodoDatum(todoOperation: string): [OperationType, TodoData] {
