@@ -2,6 +2,16 @@
 
 
 
+
+## v13.0.2 (2022-04-15)
+
+#### :bug: Bug Fix
+* [#379](https://github.com/lint-todo/utils/pull/379) Fix compacting to not be destructive with other engines ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v13.0.1 (2022-04-15)
 
 #### :bug: Bug Fix
