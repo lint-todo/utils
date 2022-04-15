@@ -31,7 +31,7 @@ export type TodoBatches = {
   remove: Set<TodoData>;
 };
 
-export type Engine = 'eslint' | 'ember-template-lint' | string;
+export type Engine = 'all' | 'eslint' | 'ember-template-lint' | string;
 export type OperationType = 'add' | 'remove';
 export type Operation =
   `${OperationType}|${Engine}|${string}|${number}|${number}|${number}|${number}|${string}|${

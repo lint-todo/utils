@@ -129,7 +129,7 @@ describe('io', () => {
 
       writeTodoStorageFile(todoStorageFilePath, [...addOperations, ...removeOperations]);
 
-      compactTodoStorageFile(tmp, buildReadOptions());
+      compactTodoStorageFile(tmp);
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual([]);
     });
@@ -147,11 +147,37 @@ describe('io', () => {
 
       writeTodoStorageFile(todoStorageFilePath, operations);
 
-      compactTodoStorageFile(tmp, buildReadOptions());
+      compactTodoStorageFile(tmp);
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual([
         'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
         'add|eslint|no-prototype-builtins|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+      ]);
+    });
+
+    it('compacts respects multiple co-existing engines', () => {
+      const todoStorageFilePath = getTodoStorageFilePath(tmp);
+      const operations: Operation[] = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|30|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|ember-template-lint|no-html-comments|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/templates/settings.hbs',
+        'remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+        'add|eslint|no-prototype-builtins|90|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+        'add|ember-template-lint|no-html-comments|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/templates/insights.hbs',
+        'remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+      ];
+
+      writeTodoStorageFile(todoStorageFilePath, operations);
+
+      compactTodoStorageFile(tmp);
+
+      expect(readTodoStorageFile(todoStorageFilePath)).toEqual([
+        'add|eslint|no-prototype-builtins|30|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|ember-template-lint|no-html-comments|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/templates/settings.hbs',
+        'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+        'add|eslint|no-prototype-builtins|90|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
+        'add|ember-template-lint|no-html-comments|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/templates/insights.hbs',
       ]);
     });
   });

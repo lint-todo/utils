@@ -26,7 +26,7 @@ export function buildFromTodoOperations(
   for (const todoOperation of todoOperations) {
     const [operation, todoDatum] = toTodoDatum(todoOperation);
 
-    if (todoDatum.engine !== engine) {
+    if (engine !== 'all' && todoDatum.engine !== engine) {
       continue;
     }
 
