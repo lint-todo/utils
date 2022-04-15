@@ -308,19 +308,18 @@ export function applyTodoChanges(
  * Compacts the .lint-todo storage file.
  *
  * @param baseDir - The base directory that contains the .lint-todo storage file.
- * @param options - An object containing read options.
  * @returns The count of compacted todos.
  */
-export function compactTodoStorageFile(
-  baseDir: string,
-  options: ReadTodoOptions
-): {
+export function compactTodoStorageFile(baseDir: string): {
   originalOperations: Operation[];
   compactedOperations: Operation[];
   compacted: number;
 } {
   const todoStorageFilePath = getTodoStorageFilePath(baseDir);
-  const todos = readTodoData(baseDir, options);
+  const todos = readTodoData(baseDir, {
+    engine: 'all',
+    filePath: '',
+  });
   const release = tryLockStorageFile(baseDir);
 
   try {
