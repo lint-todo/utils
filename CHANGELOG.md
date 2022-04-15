@@ -1,6 +1,16 @@
 
 
 
+
+## v13.0.1 (2022-04-15)
+
+#### :bug: Bug Fix
+* [#378](https://github.com/lint-todo/utils/pull/378) Downgrading find-up as it collides with other projects using ESM ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v13.0.0 (2022-04-14)
 
 #### :boom: Breaking Change
