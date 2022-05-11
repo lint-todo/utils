@@ -1,6 +1,6 @@
 {
   "name": "@lint-todo/utils",
-  "version": "13.0.2",
+  "version": "13.0.3",
   "repository": "https://github.com/lint-todo/utils.git",
   "license": "MIT",
   "author": "Steve Calvert <steve.calvert@gmail.com>",
@@ -22,7 +22,7 @@
     "fs-extra": "^9.1.0",
     "proper-lockfile": "^4.1.2",
     "slash": "^3.0.0",
-    "tslib": "^2.3.1",
+    "tslib": "^2.4.0",
     "upath": "^2.0.1"
   },
   "devDependencies": {
