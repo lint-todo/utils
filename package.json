@@ -1,6 +1,6 @@
 {
   "name": "@lint-todo/utils",
-  "version": "13.0.2",
+  "version": "13.0.3",
   "repository": "https://github.com/lint-todo/utils.git",
   "license": "MIT",
   "author": "Steve Calvert <steve.calvert@gmail.com>",
@@ -51,7 +51,7 @@
     "type-fest": "^2.8.0",
     "typescript": "^4.6.2",
     "vite": "^2.7.13",
-    "vitest": "^0.9.3"
+    "vitest": "^0.12.4"
   },
   "engines": {
     "node": "12.* || >= 14"
