@@ -297,6 +297,10 @@ export function applyTodoChanges(
       : // eslint-disable-next-line @typescript-eslint/no-empty-function
         () => {};
 
+  if (ops.length === 0) {
+    return;
+  }
+
   try {
     appendFileSync(todoStorageFilePath, ops.join(EOL) + EOL);
   } finally {
