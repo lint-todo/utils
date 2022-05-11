@@ -3,6 +3,16 @@
 
 
 
+
+## v13.0.3 (2022-05-11)
+
+#### :bug: Bug Fix
+* [#386](https://github.com/lint-todo/utils/pull/386) Fixes erroneous blank lines in .lint-todo storage file ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 1
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v13.0.2 (2022-04-15)
 
 #### :bug: Bug Fix
