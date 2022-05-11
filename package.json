@@ -1,6 +1,6 @@
 {
   "name": "@lint-todo/utils",
-  "version": "13.0.2",
+  "version": "13.0.3",
   "repository": "https://github.com/lint-todo/utils.git",
   "license": "MIT",
   "author": "Steve Calvert <steve.calvert@gmail.com>",
@@ -26,7 +26,7 @@
     "upath": "^2.0.1"
   },
   "devDependencies": {
-    "@scalvert/readme-api-generator": "^0.1.0",
+    "@scalvert/readme-api-generator": "^0.2.4",
     "@types/fs-extra": "^9.0.13",
     "@types/proper-lockfile": "^4.1.2",
     "@types/slash": "^3.0.0",
