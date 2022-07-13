@@ -17,7 +17,7 @@ Those utilities are:
 
 <dl>
 <dt><a href="#buildTodoDatum">buildTodoDatum(lintResult, lintMessage, todoConfig)</a> ⇒</dt>
-<dd><p>Adapts a <a href="https://github.com/lint-todo/utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a <a href="https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L61">TodoData</a>. FilePaths are absolute
+<dd><p>Adapts a <a href="https://github.com/lint-todo/utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a <a href="https://github.com/lint-todo/utils/blob/master/src/types/todos.ts#L46">TodoData</a>. FilePaths are absolute
 when received from a lint result, so they&#39;re converted to relative paths for stability in
 serializing the contents to disc.</p>
 </dd>
