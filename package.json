@@ -10,9 +10,9 @@
     "build": "tsc --build",
     "build:watch": "tsc --watch",
     "clean": "tsc --build --clean",
-    "docs:update": "yarn build && readme-api-generator lib/builders.js lib/io.js lib/todo-config.js lib/get-severity.js lib/date-utils.js",
+    "docs:update": "npm run build && readme-api-generator lib/builders.js lib/io.js lib/todo-config.js lib/get-severity.js lib/date-utils.js",
     "lint": "eslint . --ext .ts",
-    "prepare": "yarn build",
+    "prepare": "npm run build",
     "test": "npm-run-all lint test:*",
     "test:vitest": "vitest run"
   },
@@ -83,6 +83,6 @@
   },
   "volta": {
     "node": "14.18.3",
-    "yarn": "1.22.10"
+    "npm": "8.19.2"
   }
 }
