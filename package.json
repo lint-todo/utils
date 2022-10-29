@@ -10,7 +10,7 @@
     "build": "tsc --build",
     "build:watch": "tsc --watch",
     "clean": "tsc --build --clean",
-    "docs:update": "npm run build && readme-api-generator lib/builders.js lib/io.js lib/todo-config.js lib/get-severity.js lib/date-utils.js",
+    "docs:update": "npm run build && readme-api-generator lib/builders.js lib/io.js lib/todo-config.js lib/get-severity.js lib/date-utils.js lib/source.js",
     "lint": "eslint . --ext .ts",
     "prepare": "npm run build",
     "test": "npm-run-all lint test:*",

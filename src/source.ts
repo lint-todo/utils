@@ -4,7 +4,21 @@ import { Range } from './types';
 const LINES_PATTERN = /(.*?(?:\r\n?|\n|$))/gm;
 export const _sourceCache = new Map<string, string>();
 
-export function buildRange(line: number, column: number, endLine?: number, endColumn?: number) {
+/**
+ * Converts node positional numbers into a Range object.
+ *
+ * @param line - The source start line.
+ * @param column - The source start column.
+ * @param endLine - The source end line.
+ * @param endColumn - The source end column.
+ * @returns A range object.
+ */
+export function buildRange(
+  line: number,
+  column: number,
+  endLine?: number,
+  endColumn?: number
+): Range {
   return {
     start: {
       line: line,
@@ -17,7 +31,13 @@ export function buildRange(line: number, column: number, endLine?: number, endCo
   };
 }
 
-export function readSource(filePath: string | undefined) {
+/**
+ * Reads a source file, optionally caching it if it's already been read.
+ *
+ * @param filePath - The path to the source file.
+ * @returns The file contents.
+ */
+export function readSource(filePath: string | undefined): string {
   if (!filePath) {
     return '';
   }
@@ -31,7 +51,14 @@ export function readSource(filePath: string | undefined) {
   return _sourceCache.get(filePath) || '';
 }
 
-export function getSourceForRange(source: string, range: Range) {
+/**
+ * Extracts a source fragment from a file's contents based on the provided Range.
+ *
+ * @param source - The file contents.
+ * @param range - A Range object representing the range to extract from the file contents.
+ * @returns The source fragment.
+ */
+export function getSourceForRange(source: string, range: Range): string {
   if (!source) {
     return '';
   }
