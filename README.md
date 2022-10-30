@@ -17,7 +17,7 @@ Those utilities are:
 
 <dl>
 <dt><a href="#buildTodoDatum">buildTodoDatum(lintResult, lintMessage, todoConfig)</a> ⇒</dt>
-<dd><p>Adapts a <a href="https://github.com/lint-todo/utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a <a href="https://github.com/lint-todo/utils/blob/master/src/types/todos.ts#L46">TodoData</a>. FilePaths are absolute
+<dd><p>Adapts a <a href="https://github.com/lint-todo/utils/blob/master/src/types/lint.ts#L31">LintResult</a> to a <a href="https://github.com/lint-todo/utils/blob/master/src/types/todo.ts#L61">TodoData</a>. FilePaths are absolute
 when received from a lint result, so they&#39;re converted to relative paths for stability in
 serializing the contents to disc.</p>
 </dd>
@@ -68,7 +68,7 @@ have a todo lint violation.</p>
 <dt><a href="#applyTodoChanges">applyTodoChanges(baseDir, add, remove, shouldLock)</a></dt>
 <dd><p>Applies todo changes, either adding or removing, based on batches from <code>getTodoBatches</code>.</p>
 </dd>
-<dt><a href="#compactTodoStorageFile">compactTodoStorageFile(baseDir, options)</a> ⇒</dt>
+<dt><a href="#compactTodoStorageFile">compactTodoStorageFile(baseDir)</a> ⇒</dt>
 <dd><p>Compacts the .lint-todo storage file.</p>
 </dd>
 <dt><a href="#getTodoConfig">getTodoConfig(baseDir, engine, customDaysToDecay)</a> ⇒</dt>
@@ -91,6 +91,15 @@ have a todo lint violation.</p>
 </dd>
 <dt><a href="#format">format(date)</a> ⇒</dt>
 <dd><p>Formats the date in short form, eg. 2021-01-01</p>
+</dd>
+<dt><a href="#buildRange">buildRange(line, column, endLine, endColumn)</a> ⇒</dt>
+<dd><p>Converts node positional numbers into a Range object.</p>
+</dd>
+<dt><a href="#readSource">readSource(filePath)</a> ⇒</dt>
+<dd><p>Reads a source file, optionally caching it if it&#39;s already been read.</p>
+</dd>
+<dt><a href="#getSourceForRange">getSourceForRange(source, range)</a> ⇒</dt>
+<dd><p>Extracts a source fragment from a file&#39;s contents based on the provided Range.</p>
 </dd>
 </dl>
 
@@ -308,7 +317,7 @@ Applies todo changes, either adding or removing, based on batches from `getTodoB
 
 <a name="compactTodoStorageFile"></a>
 
-## compactTodoStorageFile(baseDir, options) ⇒
+## compactTodoStorageFile(baseDir) ⇒
 Compacts the .lint-todo storage file.
 
 **Kind**: global function  
@@ -317,7 +326,6 @@ Compacts the .lint-todo storage file.
 | Param | Description |
 | --- | --- |
 | baseDir | The base directory that contains the .lint-todo storage file. |
-| options | An object containing read options. |
 
 <a name="getTodoConfig"></a>
 
@@ -449,6 +457,46 @@ Formats the date in short form, eg. 2021-01-01
 | Param | Description |
 | --- | --- |
 | date | The date to format |
+
+<a name="buildRange"></a>
+
+## buildRange(line, column, endLine, endColumn) ⇒
+Converts node positional numbers into a Range object.
+
+**Kind**: global function  
+**Returns**: A range object.  
+
+| Param | Description |
+| --- | --- |
+| line | The source start line. |
+| column | The source start column. |
+| endLine | The source end line. |
+| endColumn | The source end column. |
+
+<a name="readSource"></a>
+
+## readSource(filePath) ⇒
+Reads a source file, optionally caching it if it's already been read.
+
+**Kind**: global function  
+**Returns**: The file contents.  
+
+| Param | Description |
+| --- | --- |
+| filePath | The path to the source file. |
+
+<a name="getSourceForRange"></a>
+
+## getSourceForRange(source, range) ⇒
+Extracts a source fragment from a file's contents based on the provided Range.
+
+**Kind**: global function  
+**Returns**: The source fragment.  
+
+| Param | Description |
+| --- | --- |
+| source | The file contents. |
+| range | A Range object representing the range to extract from the file contents. |
 
 
 <!--DOCS_END-->
