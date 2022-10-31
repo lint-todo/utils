@@ -4,6 +4,20 @@
 
 
 
+
+## v13.1.0 (2022-10-31)
+
+#### :rocket: Enhancement
+* [#531](https://github.com/lint-todo/utils/pull/531) Adding utils to read and extract source fragments ([@scalvert](https://github.com/scalvert))
+
+#### :house: Internal
+* [#528](https://github.com/lint-todo/utils/pull/528) Convert to using npm over yarn ([@scalvert](https://github.com/scalvert))
+
+#### Committers: 2
+- Julien Palmas ([@bartocc](https://github.com/bartocc))
+- Steve Calvert ([@scalvert](https://github.com/scalvert))
+
+
 ## v13.0.3 (2022-05-11)
 
 #### :bug: Bug Fix
