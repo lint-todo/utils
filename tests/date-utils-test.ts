@@ -48,7 +48,7 @@ describe('date-utils', () => {
     });
 
     it('returns correctly formatted date for number', () => {
-      expect(format(1609459200000)).toEqual('2021-01-01');
+      expect(format(1_609_459_200_000)).toEqual('2021-01-01');
     });
 
     it('returns correctly formatted date for date', () => {
