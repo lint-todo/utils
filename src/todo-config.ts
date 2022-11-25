@@ -156,7 +156,7 @@ function requireFile(baseDir: string, fileName: string) {
     const filePath = findUp.sync(fileName, {
       cwd: baseDir,
     });
-    return filePath && require(filePath);
+    return filePath && require(filePath); // eslint-disable-line unicorn/prefer-module
   } catch {
     return;
   }

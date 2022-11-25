@@ -1,6 +1,6 @@
 import { isAbsolute, relative, normalize } from 'upath';
 import slash = require('slash');
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import {
   DaysToDecay,
   Engine,

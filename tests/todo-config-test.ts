@@ -1,6 +1,6 @@
 import { describe, beforeEach, afterEach, it, expect } from 'vitest';
 import { unlink } from 'fs-extra';
-import { join } from 'path';
+import { join } from 'node:path';
 import { getTodoConfig } from '../src';
 import { validateConfig } from '../src/todo-config';
 import { FakeProject } from './utils/fake-project';

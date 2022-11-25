@@ -30,7 +30,7 @@ export function getDatePart(date: Date = new Date()): Date {
  * @returns a number representing the days between the dates
  */
 export function differenceInDays(startDate: Date, endDate: Date): number {
-  const millisecondsPerDay = 86400000;
+  const millisecondsPerDay = 86_400_000;
 
   return Math.round(
     (getDatePart(endDate).getTime() - getDatePart(startDate).getTime()) / millisecondsPerDay

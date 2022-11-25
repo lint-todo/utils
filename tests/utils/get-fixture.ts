@@ -1,5 +1,5 @@
 import { readJsonSync } from 'fs-extra';
-import { join, resolve } from 'path';
+import { join, resolve } from 'node:path';
 import { updatePaths } from './update-path';
 import { ESLint } from 'eslint';
 import { TemplateLintResult } from '../../src/types';

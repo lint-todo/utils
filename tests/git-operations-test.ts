@@ -1,7 +1,7 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import execa from 'execa';
 import tmp from 'tmp';
-import { realpathSync } from 'fs';
+import { realpathSync } from 'node:fs';
 import {
   applyTodoChanges,
   getTodoStorageFilePath,
@@ -30,7 +30,7 @@ function buildTodosFromOperations(operations: Operation[]): Set<TodoData> {
 }
 
 function readTodoStorageFileContents(todoStorageFilePath: string) {
-  return readFileSync(todoStorageFilePath, { encoding: 'utf-8' });
+  return readFileSync(todoStorageFilePath, { encoding: 'utf8' });
 }
 
 describe('git operations', () => {
@@ -59,7 +59,7 @@ describe('git operations', () => {
       "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
       add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
       "
-      `);
+    `);
 
     await git('add -A');
     await git(['commit', '-m', '"Initial storage file"']);
@@ -155,7 +155,7 @@ describe('git operations', () => {
     readTodoData(tmp, { engine: 'eslint', filePath: '' });
 
     expect(hasConflicts(readTodoStorageFileContents(todoStorageFilePath))).toEqual(false);
-    expect(readFileSync(todoStorageFilePath, { encoding: 'utf-8' })).toMatchInlineSnapshot(`
+    expect(readFileSync(todoStorageFilePath, { encoding: 'utf8' })).toMatchInlineSnapshot(`
       "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
       add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
       add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1777107200000|||app/controllers/settings.js
@@ -217,7 +217,7 @@ describe('git operations', () => {
     readTodoData(tmp, { engine: 'eslint', filePath: '' });
 
     expect(hasConflicts(readTodoStorageFileContents(todoStorageFilePath))).toEqual(false);
-    expect(readFileSync(todoStorageFilePath, { encoding: 'utf-8' })).toMatchInlineSnapshot(`
+    expect(readFileSync(todoStorageFilePath, { encoding: 'utf8' })).toMatchInlineSnapshot(`
       "add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
       add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js
       remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js

@@ -1,6 +1,6 @@
-import { join } from 'path';
+import { join } from 'node:path';
 import { normalize } from 'upath';
-import { EOL } from 'os';
+import { EOL } from 'node:os';
 import { lockSync } from 'proper-lockfile';
 import { readFileSync, appendFileSync, writeFileSync, ensureFileSync, lstatSync } from 'fs-extra';
 
@@ -88,7 +88,7 @@ export function resolveConflicts(operations: OperationOrConflictLine[]): Operati
  */
 export function readTodoStorageFile(todoStorageFilePath: string): Operation[] {
   const todoContents = readFileSync(todoStorageFilePath, {
-    encoding: 'utf-8',
+    encoding: 'utf8',
   });
 
   let operations = todoContents.split(EOL) as OperationOrConflictLine[];

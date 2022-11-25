@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { Range } from './types';
 
 const LINES_PATTERN = /(.*?(?:\r\n?|\n|$))/gm;

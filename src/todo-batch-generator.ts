@@ -107,7 +107,7 @@ export default class TodoBatchGenerator {
       maybeTodos.delete(unmatchedTodoData);
     }
 
-    for (const matcher of [...existingTodos.values()]) {
+    for (const matcher of existingTodos.values()) {
       remove = new Set([...remove, ...matcher.unmatched(this.options?.shouldRemove)]);
     }
 
