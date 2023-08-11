@@ -3,6 +3,7 @@ import { describe, beforeEach, it, expect } from 'vitest';
 import { differenceInDays } from 'date-fns';
 import { getDatePart } from '../src/date-utils';
 import { buildFromTodoOperations, buildTodoDatum, buildTodoOperations } from '../src/builders';
+import { Operation } from '../src/types';
 import { createTmpDir } from './utils/tmp-dir';
 import { buildMaybeTodosFromFixture } from './utils/build-todo-data';
 
@@ -225,7 +226,7 @@ describe('builders', () => {
 
   describe('buildFromOperations', () => {
     it('builds single todo from single add', () => {
-      const todoOperations: string[] = [
+      const todoOperations: Operation[] = [
         'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
       ];
 
@@ -262,7 +263,7 @@ describe('builders', () => {
     });
 
     it('builds single todo from single add with pipes in filePath', () => {
-      const todoOperations: string[] = [
+      const todoOperations: Operation[] = [
         'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/fo|o.hbs',
       ];
 
@@ -299,7 +300,7 @@ describe('builders', () => {
     });
 
     it('builds single todo from multiple identical adds', () => {
-      const todoOperations: string[] = [
+      const todoOperations: Operation[] = [
         'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
         'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
       ];
@@ -334,7 +335,7 @@ describe('builders', () => {
     });
 
     it('builds empty todos from single add and remove', () => {
-      const todoOperations: string[] = [
+      const todoOperations: Operation[] = [
         'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
         'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
       ];
@@ -345,7 +346,7 @@ describe('builders', () => {
     });
 
     it('builds empty todos from single add and multiple identical removes', () => {
-      const todoOperations: string[] = [
+      const todoOperations: Operation[] = [
         'add|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
         'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
         'remove|ember-template-lint|no-implicit-this|174|8|174|8|864e3ef2438ac413d96a032cdd141e567fcc04b3|1629331200000|2493248400000|2493334800000|addon/templates/components/foo.hbs',
