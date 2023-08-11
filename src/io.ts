@@ -91,7 +91,8 @@ export function readTodoStorageFile(todoStorageFilePath: string): Operation[] {
     encoding: 'utf8',
   });
 
-  let operations = todoContents.split(EOL) as OperationOrConflictLine[];
+  // when splitting by EOL, make sure to filter off the '' caused by the final EOL
+  let operations: OperationOrConflictLine[] = todoContents.split(EOL).filter((op: OperationOrConflictLine | '') => op !== '')
 
   if (hasConflicts(todoContents)) {
     operations = resolveConflicts(operations);
@@ -109,7 +110,7 @@ export function readTodoStorageFile(todoStorageFilePath: string): Operation[] {
  * @param operations - An array of string operations that are used to recreate todos.
  */
 export function writeTodoStorageFile(todoStorageFilePath: string, operations: Operation[]): void {
-  writeFileSync(todoStorageFilePath, operations.join(EOL));
+  writeFileSync(todoStorageFilePath, operations.join(EOL) + EOL);
 }
 
 /**
