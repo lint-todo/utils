@@ -5,6 +5,17 @@
 
 
 
+
+## v13.1.1 (2023-08-11)
+
+#### :bug: Bug Fix
+* [#578](https://github.com/lint-todo/utils/pull/578) Fix compact todo EOL issues, add more tests ([@Techn1x](https://github.com/Techn1x))
+
+#### Committers: 2
+- Bert De Block ([@bertdeblock](https://github.com/bertdeblock))
+- Brad Overton ([@Techn1x](https://github.com/Techn1x))
+
+
 ## v13.1.0 (2022-10-31)
 
 #### :rocket: Enhancement
