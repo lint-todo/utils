@@ -92,7 +92,7 @@ export function readTodoStorageFile(todoStorageFilePath: string): Operation[] {
   });
 
   // when splitting by EOL, make sure to filter off the '' caused by the final EOL
-  let operations: OperationOrConflictLine[] = todoContents.split(EOL).filter((op: OperationOrConflictLine | '') => op !== '')
+  let operations = todoContents.split(EOL).filter((op: string) => op !== '') as OperationOrConflictLine[]
 
   if (hasConflicts(todoContents)) {
     operations = resolveConflicts(operations);
