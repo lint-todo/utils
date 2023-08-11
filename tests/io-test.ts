@@ -38,6 +38,7 @@ import {
   readTodoStorageFile,
   resolveConflicts,
   writeTodoStorageFile,
+  appendTodoStorageFile,
 } from '../src/io';
 
 function chunk<T>(initial: Set<T>, firstChunk = 1): [Set<T>, Set<T>] {
@@ -113,6 +114,28 @@ describe('io', () => {
 
       const todoContents = readFileSync(todoStorageFilePath, { encoding: 'utf8' });
       expect(todoContents).toEqual(operations[0] + EOL + operations[1] + EOL)
+    })
+  })
+
+  describe('appendTodoStorageFile', () => {
+    it('appends operations, joining with EOL and ending with EOL', () => {
+      const todoStorageFilePath = getTodoStorageFilePath(tmp);
+      const operations: Operation[] = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+      ];
+
+      writeTodoStorageFile(todoStorageFilePath, operations);
+
+      const moreOperations: Operation[] = [
+        'add|eslint|no-prototype-builtins|27|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|28|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+      ];
+
+      appendTodoStorageFile(todoStorageFilePath, moreOperations)
+
+      const todoContents = readFileSync(todoStorageFilePath, { encoding: 'utf8' });
+      expect(todoContents).toEqual(operations[0] + EOL + operations[1] + EOL + moreOperations[0] + EOL + moreOperations[1] + EOL)
     })
   })
 

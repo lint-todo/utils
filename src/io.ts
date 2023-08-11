@@ -114,6 +114,16 @@ export function writeTodoStorageFile(todoStorageFilePath: string, operations: Op
 }
 
 /**
+ * Appends the operations to the .lint-todo storage file to the path provided by the todoStorageFilePath
+ *
+ * @param todoStorageFilePath - The .lint-todo storage file path.
+ * @param operations - An array of string operations that are used to recreate todos.
+ */
+export function appendTodoStorageFile(todoStorageFilePath: string, operations: Operation[]): void {
+  appendFileSync(todoStorageFilePath, operations.join(EOL) + EOL);
+}
+
+/**
  * Writes files for todo lint violations. One file is generated for each violation, using a generated
  * hash to identify each.
  *
@@ -303,7 +313,7 @@ export function applyTodoChanges(
   }
 
   try {
-    appendFileSync(todoStorageFilePath, ops.join(EOL) + EOL);
+    appendTodoStorageFile(todoStorageFilePath, ops)
   } finally {
     release();
   }
