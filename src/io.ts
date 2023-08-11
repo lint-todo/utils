@@ -91,7 +91,8 @@ export function readTodoStorageFile(todoStorageFilePath: string): Operation[] {
     encoding: 'utf8',
   });
 
-  let operations = todoContents.split(EOL) as OperationOrConflictLine[];
+  // when splitting by EOL, make sure to filter off the '' caused by the final EOL
+  let operations = todoContents.split(EOL).filter((op: string) => op !== '') as OperationOrConflictLine[]
 
   if (hasConflicts(todoContents)) {
     operations = resolveConflicts(operations);
@@ -99,7 +100,7 @@ export function readTodoStorageFile(todoStorageFilePath: string): Operation[] {
     writeTodoStorageFile(todoStorageFilePath, operations as Operation[]);
   }
 
-  return operations.filter(Boolean) as Operation[];
+  return operations as Operation[];
 }
 
 /**
@@ -109,7 +110,17 @@ export function readTodoStorageFile(todoStorageFilePath: string): Operation[] {
  * @param operations - An array of string operations that are used to recreate todos.
  */
 export function writeTodoStorageFile(todoStorageFilePath: string, operations: Operation[]): void {
-  writeFileSync(todoStorageFilePath, operations.join(EOL));
+  writeFileSync(todoStorageFilePath, operations.join(EOL) + EOL);
+}
+
+/**
+ * Appends the operations to the .lint-todo storage file to the path provided by the todoStorageFilePath
+ *
+ * @param todoStorageFilePath - The .lint-todo storage file path.
+ * @param operations - An array of string operations that are used to recreate todos.
+ */
+export function appendTodoStorageFile(todoStorageFilePath: string, operations: Operation[]): void {
+  appendFileSync(todoStorageFilePath, operations.join(EOL) + EOL);
 }
 
 /**
@@ -302,7 +313,7 @@ export function applyTodoChanges(
   }
 
   try {
-    appendFileSync(todoStorageFilePath, ops.join(EOL) + EOL);
+    appendTodoStorageFile(todoStorageFilePath, ops)
   } finally {
     release();
   }
