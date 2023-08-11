@@ -1,6 +1,7 @@
 import { describe, beforeEach, it, expect } from 'vitest';
-import { existsSync } from 'fs-extra';
+import { existsSync, readFileSync } from 'fs-extra';
 import { subDays } from 'date-fns';
+import { EOL } from 'node:os';
 import {
   getDatePart,
   getTodoStorageFilePath,
@@ -100,6 +101,21 @@ describe('io', () => {
     });
   });
 
+  describe('writeTodoStorageFile', () => {
+    it('writes operations, joining with EOL and ending with EOL', () => {
+      const todoStorageFilePath = getTodoStorageFilePath(tmp);
+      const operations: Operation[] = [
+        'add|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+        'add|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
+      ];
+
+      writeTodoStorageFile(todoStorageFilePath, operations);
+
+      const todoContents = readFileSync(todoStorageFilePath, { encoding: 'utf8' });
+      expect(todoContents).toEqual(operations[0] + EOL + operations[1] + EOL)
+    })
+  })
+
   describe('compactTodoStorageFile', () => {
     it('preserves existing file when no remove operations are present', () => {
       const todoStorageFilePath = getTodoStorageFilePath(tmp);
@@ -113,6 +129,9 @@ describe('io', () => {
       compactTodoStorageFile(tmp, buildReadOptions());
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual(operations);
+
+      const todoContents = readFileSync(todoStorageFilePath, { encoding: 'utf8' });
+      expect(todoContents.endsWith(EOL)).toEqual(true)
     });
 
     it('compacts existing file when remove operations are present', () => {
@@ -132,6 +151,9 @@ describe('io', () => {
       compactTodoStorageFile(tmp);
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual([]);
+
+      const todoContents = readFileSync(todoStorageFilePath, { encoding: 'utf8' });
+      expect(todoContents.endsWith(EOL)).toEqual(true)
     });
 
     it('compacts existing file when interleaved remove operations are present', () => {
