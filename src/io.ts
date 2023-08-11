@@ -100,7 +100,7 @@ export function readTodoStorageFile(todoStorageFilePath: string): Operation[] {
     writeTodoStorageFile(todoStorageFilePath, operations as Operation[]);
   }
 
-  return operations.filter(Boolean) as Operation[];
+  return operations as Operation[];
 }
 
 /**
