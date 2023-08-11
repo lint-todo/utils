@@ -18,7 +18,7 @@ import TodoMatcher from './todo-matcher';
 const SEPARATOR = '|';
 
 export function buildFromTodoOperations(
-  todoOperations: string[],
+  todoOperations: Operation[],
   engine: Engine
 ): Map<FilePath, TodoMatcher> {
   const existingTodos = new Map<FilePath, TodoMatcher>();
@@ -66,7 +66,7 @@ export function buildTodoOperations(add: Set<TodoData>, remove: Set<TodoData>): 
   return ops as Operation[];
 }
 
-export function toTodoDatum(todoOperation: string): [OperationType, TodoData] {
+export function toTodoDatum(todoOperation: Operation): [OperationType, TodoData] {
   const [
     operation,
     engine,
