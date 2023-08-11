@@ -83,6 +83,12 @@ function buildReadOptions(options?: Partial<ReadTodoOptions>) {
   );
 }
 
+function joinOperations(...operations: (Operation[] | Operation)[]): string {
+  // eslint-disable-next-line unicorn/prefer-spread
+  const flatOperations = ([] as Operation[]).concat(...operations);
+  return flatOperations.join(EOL) + EOL;
+}
+
 describe('io', () => {
   let tmp: string;
 
@@ -113,7 +119,7 @@ describe('io', () => {
       writeTodoStorageFile(todoStorageFilePath, operations);
 
       const todoContents = readFileSync(todoStorageFilePath, { encoding: 'utf8' });
-      expect(todoContents).toEqual(operations[0] + EOL + operations[1] + EOL);
+      expect(todoContents).toEqual(joinOperations(operations));
     });
   });
 
@@ -135,16 +141,7 @@ describe('io', () => {
       appendTodoStorageFile(todoStorageFilePath, moreOperations);
 
       const todoContents = readFileSync(todoStorageFilePath, { encoding: 'utf8' });
-      expect(todoContents).toEqual(
-        operations[0] +
-          EOL +
-          operations[1] +
-          EOL +
-          moreOperations[0] +
-          EOL +
-          moreOperations[1] +
-          EOL
-      );
+      expect(todoContents).toEqual(joinOperations(operations, moreOperations));
     });
   });
 
