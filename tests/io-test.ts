@@ -113,9 +113,9 @@ describe('io', () => {
       writeTodoStorageFile(todoStorageFilePath, operations);
 
       const todoContents = readFileSync(todoStorageFilePath, { encoding: 'utf8' });
-      expect(todoContents).toEqual(operations[0] + EOL + operations[1] + EOL)
-    })
-  })
+      expect(todoContents).toEqual(operations[0] + EOL + operations[1] + EOL);
+    });
+  });
 
   describe('appendTodoStorageFile', () => {
     it('appends operations, joining with EOL and ending with EOL', () => {
@@ -132,12 +132,21 @@ describe('io', () => {
         'add|eslint|no-prototype-builtins|28|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
       ];
 
-      appendTodoStorageFile(todoStorageFilePath, moreOperations)
+      appendTodoStorageFile(todoStorageFilePath, moreOperations);
 
       const todoContents = readFileSync(todoStorageFilePath, { encoding: 'utf8' });
-      expect(todoContents).toEqual(operations[0] + EOL + operations[1] + EOL + moreOperations[0] + EOL + moreOperations[1] + EOL)
-    })
-  })
+      expect(todoContents).toEqual(
+        operations[0] +
+          EOL +
+          operations[1] +
+          EOL +
+          moreOperations[0] +
+          EOL +
+          moreOperations[1] +
+          EOL
+      );
+    });
+  });
 
   describe('compactTodoStorageFile', () => {
     it('preserves existing file when no remove operations are present', () => {
@@ -149,16 +158,16 @@ describe('io', () => {
 
       writeTodoStorageFile(todoStorageFilePath, operations);
 
-      const { originalOperations, compactedOperations, compacted } = compactTodoStorageFile(tmp, buildReadOptions());
+      const { originalOperations, compactedOperations, compacted } = compactTodoStorageFile(tmp);
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual(operations);
 
       const todoContents = readFileSync(todoStorageFilePath, { encoding: 'utf8' });
-      expect(todoContents.endsWith(EOL)).toEqual(true)
+      expect(todoContents.endsWith(EOL)).toEqual(true);
 
-      expect(originalOperations).toEqual(operations)
-      expect(compactedOperations).toEqual(operations)
-      expect(compacted).toEqual(0)
+      expect(originalOperations).toEqual(operations);
+      expect(compactedOperations).toEqual(operations);
+      expect(compacted).toEqual(0);
     });
 
     it('compacts existing file when remove operations are present', () => {
@@ -171,7 +180,7 @@ describe('io', () => {
         'remove|eslint|no-prototype-builtins|25|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
         'remove|eslint|no-prototype-builtins|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
       ];
-      const operations = [...addOperations, ...removeOperations]
+      const operations = [...addOperations, ...removeOperations];
 
       writeTodoStorageFile(todoStorageFilePath, operations);
 
@@ -180,11 +189,11 @@ describe('io', () => {
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual(compactedOperations);
 
       const todoContents = readFileSync(todoStorageFilePath, { encoding: 'utf8' });
-      expect(todoContents.endsWith(EOL)).toEqual(true)
+      expect(todoContents.endsWith(EOL)).toEqual(true);
 
-      expect(originalOperations).toEqual(operations)
-      expect(compactedOperations).toEqual([])
-      expect(compacted).toEqual(4)
+      expect(originalOperations).toEqual(operations);
+      expect(compactedOperations).toEqual([]);
+      expect(compacted).toEqual(4);
     });
 
     it('compacts existing file when interleaved remove operations are present', () => {
@@ -204,12 +213,12 @@ describe('io', () => {
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual(compactedOperations);
 
-      expect(originalOperations).toEqual(operations)
+      expect(originalOperations).toEqual(operations);
       expect(compactedOperations).toEqual([
         'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
         'add|eslint|no-prototype-builtins|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
-      ])
-      expect(compacted).toEqual(4)
+      ]);
+      expect(compacted).toEqual(4);
     });
 
     it('compacts respects multiple co-existing engines', () => {
@@ -231,15 +240,15 @@ describe('io', () => {
 
       expect(readTodoStorageFile(todoStorageFilePath)).toEqual(compactedOperations);
 
-      expect(originalOperations).toEqual(operations)
+      expect(originalOperations).toEqual(operations);
       expect(compactedOperations).toEqual([
         'add|eslint|no-prototype-builtins|30|21|25|35|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/controllers/settings.js',
         'add|ember-template-lint|no-html-comments|26|19|26|33|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/templates/settings.hbs',
         'add|eslint|no-prototype-builtins|65|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
         'add|eslint|no-prototype-builtins|90|27|65|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||tests/unit/services/insights-test.js',
         'add|ember-template-lint|no-html-comments|80|27|80|41|da39a3ee5e6b4b0d3255bfef95601890afd80709|1637107200000|||app/templates/insights.hbs',
-      ])
-      expect(compacted).toEqual(3)
+      ]);
+      expect(compacted).toEqual(3);
     });
   });
 
@@ -356,6 +365,8 @@ remove|eslint|no-unused-vars|30|19|30|33|da39a3ee5e6b4b0d3255bfef95601890afd8070
           fixableWarningCount: 0,
           source: '',
           usedDeprecatedRules: [],
+          suppressedMessages: [],
+          fatalErrorCount: 0,
         },
       ];
 
